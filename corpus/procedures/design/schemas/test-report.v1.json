@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mindbricks-test-report/v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "ranAt",
+    "durationMs",
+    "repo",
+    "plan",
+    "target",
+    "summary",
+    "services",
+    "coverage",
+    "skipLedger"
+  ],
+  "properties": {
+    "schema": {
+      "const": "mindbricks-test-report/v1"
+    },
+    "ranAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "durationMs": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "repo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "dirty"
+      ],
+      "properties": {
+        "revision": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "dirty": {
+          "const": false
+        }
+      }
+    },
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "docName",
+        "version"
+      ],
+      "properties": {
+        "docName": {
+          "const": "test-plan"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "env",
+        "base",
+        "builds"
+      ],
+      "properties": {
+        "env": {
+          "type": "string"
+        },
+        "base": {
+          "type": "string"
+        },
+        "builds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "serviceName",
+              "commitSha"
+            ],
+            "properties": {
+              "serviceName": {
+                "type": "string"
+              },
+              "commitSha": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "pattern": "^[0-9a-f]{7,40}$"
+              }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "$ref": "#/$defs/counts"
+    },
+    "services": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "serviceName",
+          "pass",
+          "fail",
+          "skip",
+          "inventory",
+          "missing"
+        ],
+        "properties": {
+          "serviceName": {
+            "type": "string"
+          },
+          "pass": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "fail": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "skip": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "inventory": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "missing": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gate",
+        "missingCount",
+        "missing"
+      ],
+      "properties": {
+        "gate": {
+          "enum": [
+            "PASS",
+            "FAIL"
+          ]
+        },
+        "missingCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "missing": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "serviceName",
+              "apiName"
+            ],
+            "properties": {
+              "serviceName": {
+                "type": "string"
+              },
+              "apiName": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "skipLedger": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "class",
+          "count"
+        ],
+        "properties": {
+          "class": {
+            "enum": [
+              "STATIC-TRANSPORT",
+              "KNOWN-DEFECT",
+              "ENVIRONMENT",
+              "BLOCKED-IDENTITY",
+              "BUILT-IN-UNUSED",
+              "PRECONDITION"
+            ]
+          },
+          "ref": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pass",
+        "fail",
+        "skip",
+        "total"
+      ],
+      "properties": {
+        "pass": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skip": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

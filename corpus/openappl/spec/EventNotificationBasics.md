@@ -1,0 +1,30 @@
+# EventNotificationBasics
+
+**Level:** `section` · **Family:** [EventNotification](../ontology/families.md#eventnotification) (domain `NotificationService`)
+
+**Ontology:** [EventNotificationBasics in Part 1](../ontology/EventNotificationBasics.md)
+
+Defines the basic properties of an event notification, including its name, description, storage behavior, and job type. This section is used to configure how the notification behaves and what type of message it sends.
+
+## Properties
+
+| Name | Type | Required | Default | Allowed values | Details | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| `name` | `String` | yes |  |  | format [codeName](./value-formats.md#codename) | The unique, human-readable name of the event notification. Use one-word camelCase names such as userCreated or orderShipped. For services resolved to Java, authored Kafka listener names and group IDs are limited to 249 Unicode code points; longer values are refused at design time before Spring listener startup. This Java-specific bound does not refuse other service languages or unresolved contexts. |
+| `description` | `Text` | no |  |  |  | A brief explanation of the event notification's purpose and scope. |
+| `isStored` | `Boolean` | no | `false` |  |  | Determines whether the notification should be stored in the database for future reference. If true, notifications are saved and can be listed in the frontend. If false, they are only sent during the request lifecycle and are not retained. |
+| `jobType` | `NotificationJobTypes` | yes |  | `email`, `sms`, `push`, `telegram`, `whatsapp`, `inApp` |  | The type of notification to send: email, sms, push, telegram, whatsapp, or inApp. A whatsapp notification sends free-form text unless its template declares `whatsappTemplate` (see NotificationTemplate.whatsappTemplate): free-form WhatsApp is delivered only inside the 24-hour customer-service window, so a business-initiated whatsapp notification (order, shipment, refund, OTP) needs an approved template. An email, sms, push, telegram or whatsapp notification in a project that declares no provider of that channel still builds: it sends to the channel's built-in sink on every deployment, and project validation warns once per channel (MAIL_ / SMS_ / PUSH_ / TELEGRAM_ / WHATSAPP_FLOWS_GO_TO_SINK). |
+| `actionDeepLink` | [`MScript`](./MScript.md) | no |  |  | MScript kind `code` | An MScript expression that generates a deep link for client-side actions. The frontend can use this to navigate or perform custom logic when the user interacts with the notification. Leave null for no integration case. |
+| `actionText` | [`MScript`](./MScript.md) | no |  |  | MScript kind `code` | An MScript expression defining the display text for the action deep link in the frontend interface. Leave null for no integration case. |
+| `fromUser` | [`MScript`](./MScript.md) | no |  |  | MScript kind `code` | Reserved MScript sender intent. Generated Node.js notification handling does not evaluate this expression to select or store a sender, or override an email provider sender. The generic /mscript-sample demo may separately select and execute a demo-compatible compiled expression and return its value; that does not implement notification sender behavior. Email From remains configured on the provider. Result type, channel semantics and sender persistence/override policy require a maintainer ruling. |
+| `dedupKey` | [`MScript`](./MScript.md) | no |  |  | MScript kind `code` | An optional MScript expression that names WHAT this notification is about, for the delivery dedup gate of the Node.js, .NET and Java notification listeners. Before every delivery (a provider send, or the stored in-app row) the listener claims the identity (notification name, channel, recipient, dedup key) in Redis with SET NX and a TTL; a second claim of the same identity inside the window is logged and skipped, so a redelivered event does not send twice. Leave it null to use the event envelope id, which stops exactly the redelivery of one event. Set it to deduplicate across events, e.g. `data.orderId + ':shipped'` sends the shipped notice once per order and recipient even when two events announce it. It is evaluated once per event, after the DataView read and includeData, with the same `this` and `data` as the condition; a null, empty or throwing value falls back to the envelope id. A constant value would suppress every later event for the same recipient for the whole window. The window is the NOTIFICATION_DEDUP_TTL_SECONDS env var of the notification service (default 86400 = 24 h, 0 turns the gate off). When Redis is unavailable the gate fails open: it delivers and logs a warning. A failed send gives its claim back. Other service languages do not apply it yet (NOTIF_DEDUP_KEY_NOT_EMITTED). |
+| `triggerSource` | `EventTriggerSource` | no | `"kafka"` | `kafka`, `geofence` |  | What triggers this notification. 'kafka' (default) — a real Kafka topic named in eventDataSettings.channel (typically a DB-event topic from another service). 'geofence' — a user device entering/exiting/dwelling inside one of the named fences in geofenceTrigger.fenceNames. The factory auto-derives eventDataSettings.channel for geofence events; designers do not set it. |
+| `providerName` | `String` | no |  |  | format [codeName](./value-formats.md#codename) | Optional override of the default notification provider for this event. When set, must match an entry in projectSettings.notificationProvidersSettings.notificationProviders[].name with kind compatible with eventNotificationBasics.jobType. When null, the matching default*ProviderName from NotificationServiceOptions is used. |
+
+## Constraints
+
+Property rules:
+
+- `name`, `jobType` must be present. (`REQUIRED_FIELD_MISSING`)
+- `jobType`, `triggerSource` must be one of the allowed values (compared case-insensitively). (`INVALID_ENUM_VALUE`)
+- `name`, `providerName` must be in the [`codeName`](./value-formats.md#codename) format. (`INVALID_CODE_NAME_FORMAT`)

@@ -1,0 +1,21 @@
+# SelectClauseSettings
+
+**Level:** `section` · **Family:** [BusinessApiQuery](../ontology/families.md#businessapiquery) (domain `BusinessApi`)
+
+**Ontology:** [SelectClauseSettings in Part 1](../ontology/SelectClauseSettings.md)
+
+Defines which fields are included in the response of a Business API. Use this to limit returned properties for performance or visibility. On `get` and `list` APIs it shapes the read and its output; on `create`, `update` and `delete` APIs only `selectProperties` is read, as the boundary of the answer (the written row narrowed to the declared properties + `id`, the write itself never projected). The system `id` column is always kept: an explicit selection that omits `id` still returns it, so rows remain addressable. A declared select list is always the response boundary; the runtime may read more columns but never returns them.
+
+## Properties
+
+| Name | Type | Required | Default | Allowed values | Details | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| `selectProperties` | [`PropRefer`](./PropRefer.md)[] | no |  |  | names a [DataProperty](./DataProperty.md) from `>apiOptions.dataObjectName` | An array of property names to return in the response. Leave empty to return all fields. The system `id` column is always included in the response even when the list omits it — a projected row stays addressable on every language lane. The projection is applied AT THE QUERY (`attributes` on sequelize, `projection` on mongo), so a property left out of this list is not merely hidden downstream: the fetched row never carried it, and the row is bound under `this.<objectName>` for every workflow action on the api. An MScript slot that dereferences an omitted property therefore reads `undefined` — reported as `SELECT_PROJECTION_HIDES_MSCRIPT_READ`. When that slot is a VALIDATION GUARD, the consequence is not a wrong value but a closed door: a must-be-true guard throws on `undefined` for every request, so the api refuses its entire audience while a sibling api with a wider projection answers 200 (MasaV6 `GET /events/:id`). That case is the ERROR-tier `GATE_READS_REDACTED_FIELD`; fix it by gating on a criterion this list carries, or by adding the property to this list for that audience. A declared select list is always the response boundary; the runtime may read more columns but never returns them: where framework code must read a column the list omits - the owner column an instance `ownershipCheck` on a `get` compares, the foreign key a selectJoin reads, or (full row) the attributes a `permissionCheck` ABAC condition names on an ownership-gated get or a permission-filtered list - and, on those same shapes, every column the api's own actions read off the row (the full row when such a read is dynamic) - the READ is widened by exactly that, the gate, the join and every workflow action see the widened row, and the RESPONSE is narrowed back to this list + `id` + the selectJoin payload keys. On a get/list api bound to a DataView (apiOptions.dataViewName) this list is INERT: the read returns the view document, whose columns are decided by the view's viewBasics.properties alone (DATAVIEW_SELECT_PROPERTIES_INERT); on an unauthenticated api, a view that projects a column this list withholds is the ERROR DATAVIEW_PUBLIC_PROJECTION_LEAK, so narrow the view, not this list. On a `create` / `update` / `delete` api this list bounds the ANSWER only: the write, the instance fetch, the ownership check and every action see the full row, and the response record carries this list + `id` (the api's route event keeps the full row). Declare it on a buyer-facing write behind an ownership check so the caller does not receive internal columns; without it the write answers the full row. |
+| `selectJoins` | [`SelectJoin`](./SelectJoin.md)[] | no |  |  |  | An array of join definition to a related object with the properties to be selected from the join. The result is encapsulated in the result with the `joinName` of the SelectJoin. |
+
+## Constraints
+
+Property rules:
+
+- `selectProperties` must be a well-formed [`PropRefer`](./PropRefer.md) (a property of a data object). (`INVALID_PROP_REFER_FORMAT`)
+- The items of `selectJoins` must have distinct names (`joinName`, compared case-insensitively). (`DUPLICATE_ASSET_NAME`)

@@ -1,0 +1,31 @@
+# AgentChatSettings
+
+**Level:** `section` · **Family:** [AIAgent](../ontology/families.md#aiagent) (domain `Service`)
+
+**Ontology:** [AgentChatSettings in Part 1](../ontology/AgentChatSettings.md)
+
+Conversation history management for chat-mode agents. Controls how messages are stored, truncated, and optionally summarized. Only applicable when executionMode is 'chat'.
+
+## Properties
+
+| Name | Type | Required | Default | Allowed values | Details | Description |
+| --- | --- | --- | --- | --- | --- | --- |
+| `historyStorage` | `AgentHistoryStorage` | yes |  | `memory`, `database` |  | Where conversation history is persisted: 'memory' for in-process storage (fast but lost on restart), 'database' for persistent storage (survives restarts, required for production). |
+| `maxHistoryMessages` | `Integer` | no | `100` |  | min 1 | Read window of the conversation history: the most recent stored messages read into a new run (turn-aware: the window starts on a user message and never splits a tool call from its result). With historyStorage database nothing is trimmed when a turn is saved: every message stays stored as an appended transcript row, and older messages are only left out of what the next run reads (or folded into a summary if summarizeAfter is set). The in-process memory store still keeps at most this many. Default: 100. |
+| `summarizeAfter` | `Integer` | no | `0` |  | min 0 | When the conversation exceeds this many messages, the runtime summarizes the OLDER turns (everything except the pinned recent window) into a single context message via the agent's own provider. With historyStorage database the summary is stored as one transcript row and the next turn's history starts at it (the summarized messages stay stored, they are only no longer read); with historyStorage memory the compacted history is saved. Set to 0 to disable summarization and use simple sliding-window truncation instead. Also used as the compaction strategy selector when the estimated conversation size approaches the model's context window. Recommended for chat agents with long tool loops (for example 40): the default 0 only drops the oldest messages once the window is nearly full. |
+| `refreshSystemPrompt` | `Boolean` | no | `false` |  |  | When true, the system message pipeline is re-evaluated on every conversation turn. When false, the system message is built once per runtime instance and cached. Dynamic systemPromptSources (SCHEDULED) will ride the same switch once wired. |
+| `pinnedRecentMessages` | `Integer` | no | `4` |  | min 1 | Number of most-recent conversation messages that are ALWAYS kept verbatim (never summarized or dropped) during context compaction, in addition to the system prompt. Default: 4. |
+| `maxToolResultCharsInHistory` | `Integer` | no | `0` |  | min 0 | Cap for tool results in the conversation history a chat agent REPLAYS. When > 0, every tool result of the history is cut to this many characters with the same row-aware truncation as guardrails.maxToolResultChars (a JSON list keeps whole leading rows and a note naming how many were left out). With historyStorage database the cap is applied when a new run READS the history; the stored transcript rows keep the results the run saw. With historyStorage memory it is applied when the turn is saved. The run that produced the results still read them whole; the cap keeps the NEXT turns, which replay the history, from carrying old bulk results. 0 (default) = off. |
+| `retentionDays` | `Integer` | no | `null` |  | min 1 | Retention window in days for the stored conversations of this chat agent (historyStorage database). A positive integer enables a periodic, single-replica sweep that hard-deletes every conversation whose last activity (its newest message) is older than the window: the session row, every transcript row of the conversation (sys_agentMessage), the conversation's runs with their stored inputs and outputs, the run events of those runs, and the search-index documents of the deleted rows. A conversation with a run that is still running or paused for approval is kept until that run is decided or expires. Every deletion writes an audit record (who or what deleted it, the conversation, the agent, row counts; never message content). Unset or null keeps conversations indefinitely and emits no sweep; new projects get no default, because erasure is the project owner's choice. Users can list and delete their own conversations through the agent's conversation routes independently of this setting. Validation refuses the window when historyStorage is not database (nothing is stored, so nothing can be swept) and, for now, on an agent that a generator other than nodejs or rust emits (the agentHub, an assignedService or the declaring service in java, dotnet, python or golang), because those lanes have no sweep yet. |
+
+## Constraints
+
+Property rules:
+
+- `historyStorage` must be present. (`REQUIRED_FIELD_MISSING`)
+- `historyStorage` must be one of the allowed values (compared case-insensitively). (`INVALID_ENUM_VALUE`)
+- `maxHistoryMessages` must be at least 1. (`VALUE_OUT_OF_RANGE`)
+- `summarizeAfter` must be at least 0. (`VALUE_OUT_OF_RANGE`)
+- `pinnedRecentMessages` must be at least 1. (`VALUE_OUT_OF_RANGE`)
+- `maxToolResultCharsInHistory` must be at least 0. (`VALUE_OUT_OF_RANGE`)
+- `retentionDays` must be at least 1. (`VALUE_OUT_OF_RANGE`)

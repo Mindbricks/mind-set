@@ -1,0 +1,9 @@
+{
+  "__patternsVersion": "9.9.9-test",
+  "Primitives": ["String", "Boolean"],
+  "Project": {
+    "name": "String",
+    "public": "Boolean",
+    "__public.default": false
+  }
+}

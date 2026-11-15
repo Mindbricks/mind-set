@@ -1,0 +1,36 @@
+{
+  "name": "mind-set",
+  "version": "0.1.0",
+  "description": "OpenAPPL blueprint skills for coding agents (Claude Code, Codex): design, authoring, contract and review, with a local structural validator.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "mind-set": "bin/mind-set.mjs"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "skills/",
+    "corpus/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node test/run.mjs"
+  },
+  "keywords": [
+    "openappl",
+    "blueprint",
+    "claude-code",
+    "codex",
+    "agent-skills"
+  ],
+  "dependencies": {},
+  "openappl": {
+    "version": "1.103.0"
+  }
+}

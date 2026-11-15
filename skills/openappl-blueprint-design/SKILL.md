@@ -1,0 +1,98 @@
+---
+name: openappl-blueprint-design
+description: Design a new OpenAPPL application before any blueprint JSON exists, or re-scope a designed one, by running the requirements interview and writing the requirement, spec and blueprint-plan documents as local files under design/. Do not use it to write or edit blueprint JSON (openappl-blueprint-authoring), to audit a blueprint (openappl-blueprint-review), or to write code against one (openappl-blueprint-contract).
+---
+
+# OpenAPPL blueprint design
+
+You take a product idea to a set of design documents that an author can turn into a
+blueprint without asking the user again. This skill writes Markdown files only. It never
+writes blueprint JSON.
+
+The corpus is at `{{CORPUS}}`. Read the files named in each step when you reach that step,
+not all at once.
+
+## Before you start
+
+1. Read `{{CORPUS}}/procedures/project-lifecycle.md`, the design part (Phase D). It gives
+   the order of the stages and who decides what. Skip its build phases: they are not
+   part of this skill.
+2. Read `{{CORPUS}}/procedures/design/writer-contract.md`. Every document you write
+   follows it: decide, do not discuss; mark real unknowns `OPEN`; never invent
+   requirements; use the exact OpenAPPL vocabulary.
+3. Open `{{CORPUS}}/procedures/design/pipeline.json`. It is the one list of the design
+   documents, their stage, their inputs and when each one is needed. Never copy it; read
+   it when you pick the next document.
+4. Look for an existing `design/` folder in the working folder. If it has an
+   `interview-record.md`, resume from the stage the files show instead of starting over.
+
+All documents go to `design/<docName>.md` in the working folder (a service spec is
+`design/service-spec-<service-name>.md`). Write a document completely, then check it
+against the required sections of its writer guide before you move on.
+
+## Step 1. The interview (stage D0)
+
+Follow `{{CORPUS}}/procedures/interview.md`, with
+`{{CORPUS}}/procedures/design/interview-playbook.md` for what to ask and
+`{{CORPUS}}/procedures/design/interview-record.md` for the record's shape.
+
+- Run it in the main conversation, one question at a time. Use the agent's choice UI for
+  questions with a short list of answers, plain text for open questions.
+- Write `design/interview-record.md` as you go: at the latest every five answers.
+- Never accept a secret. If the user pastes a key or a password, do not repeat it and do
+  not write it anywhere; providers are named, credentials are set in the deployment.
+- Close only with the user's two explicit approvals (the interview is complete; move on
+  to the documents).
+
+## Step 2. Requirement documents (stages D1 to D2')
+
+Follow `{{CORPUS}}/procedures/requirements.md`. For each document, in the order of
+`pipeline.json`, read its writer guide `{{CORPUS}}/procedures/design/writers/<docName>.md`,
+give it only the inputs `pipeline.json` lists, and save the result. Skip a document whose
+`when` condition does not hold (for example `frontend-spec` without a frontend).
+
+End the stage with one open-questions round: put every `OPEN (designer)` item to the user
+at once, record the answers in the interview record, and update the affected documents.
+
+## Step 3. Spec documents (stages D3 to D5')
+
+Follow `{{CORPUS}}/procedures/specs.md`: `project-basic-setup`,
+`microservice-definitions`, one `service-spec-<service-name>` per domain service, then the
+platform specs that the project needs (`auth-spec`, `notification-definitions`,
+`bff-spec`, `agent-hub-spec`). The specs use pattern names and property names exactly as
+OpenAPPL spells them: check each one in `{{CORPUS}}/openappl/spec/<Pattern>.md` or
+`{{CORPUS}}/openappl.json`, and use `{{CORPUS}}/procedures/patterns-catalog.md` to pick
+patterns for a need. An `OPEN (platform)` item that the spec pages cannot settle travels to
+the blueprint plan.
+
+## Step 4. The blueprint plan
+
+Write `design/blueprint-plan.md`, the hand-over to authoring. It contains:
+
+1. **Root and project settings**: the codename, the providers by name (no credentials),
+   and whether the project is multi-tenant.
+2. **Sections in authoring order**: `projectSettings`, `authentication`, each domain
+   service, then `notificationService`, `bffService` and `agentHub` when the specs ask for
+   them.
+3. **Per service**: the data objects with their owner field, tenant scope and relations
+   (with the delete action), the business APIs with their `crudType` and access, and the
+   high-level patterns used (checkout, subscription, moderation, buckets, ...) with the
+   spec page of each.
+4. **The derived surface you expect**: for each high-level pattern, what the compiler
+   adds (see `{{CORPUS}}/openappl/compiler/12-derived-surface.md`), so that nobody declares
+   it a second time.
+5. **Open items**: the `OPEN (platform)` items, each with the spec page to check.
+
+## Step 5. Hand over
+
+Show the user the list of files under `design/` and the open items. The next step is the
+`openappl-blueprint-authoring` skill, which reads `design/blueprint-plan.md` and the
+service specs.
+
+## Validation
+
+This skill writes no blueprint, so there is nothing to validate with `mind-set validate`
+yet. Check each document against the required sections of its writer guide. Pattern and
+property names in the specs are checked when the blueprint is written: authoring runs
+`mind-set validate <file>` (structural only) and, when the environment offers one, a
+semantic OpenAPPL validator.

@@ -1,0 +1,682 @@
+# Ontology tree
+
+The containment tree of OpenAPPL: every pattern under the pattern that holds it, starting from the root, [Project](./Project.md). A pattern held in several places is listed once: under the most specific service, module or namespace that holds it directly, otherwise under the shortest path from the root. Its page lists every place it is contained in.
+
+Open a branch to see what it contains.
+
+- [Project](./Project.md) `root`: Project is the root class representing the entire architecture of a software project in OpenAPPL.
+
+<details><summary>ProjectSettings (73)</summary>
+
+- [ProjectSettings](./ProjectSettings.md) `chapter`: Defines the core configuration of your OpenAPPL project, including metadata, environment preferences, and infrastructure settings.
+  - [BasicProjectSettings](./BasicProjectSettings.md) `section`: Defines the basic settings of your OpenAPPL project, including its identity, descriptive metadata, environment variables, and current lifecycle stage.
+    - [DataMapSimpleItem](./DataMapSimpleItem.md) `subsection`: Represents a single key-value pair used in most context.
+    - [FrontendUrl](./FrontendUrl.md) `subsection`: Per-environment base URLs for the frontend application.
+  - [AiProvidersSettings](./AiProvidersSettings.md) `section`: Container for AI provider configurations — LLM, image, audio, and video backends used by AI agents (`agentHub.aiAgents`), `AiCallAction` business-API actions, and the mcpbff chat surface.
+    - [AiProvider](./AiProvider.md) `subsection`: A named AI provider configuration.
+      - [AiProviderCredentialScopes](./AiProviderCredentialScopes.md) `subsection`: Which credential levels below the application owner (saas) may supply the key for one AI provider entry, and who pays for calls made with those keys.
+        - [AiProviderResourceCredentialScope](./AiProviderResourceCredentialScope.md) `subsection`: The resource level of one AI provider entry's scoped credentials: which data object's rows may own a key, how the row is found from a call, and which member roles manage and use the key.
+          - [AiProviderResourceCredentialBudget](./AiProviderResourceCredentialBudget.md) `subsection`: The per-row spend limit of the resource level.
+    - [AiModelPrice](./AiModelPrice.md) `subsection`: One model price override for the AI agent cost governor: a model key and its USD prices per 1M input, output, prompt-cache read and prompt-cache write tokens.
+  - [BucketProvidersSettings](./BucketProvidersSettings.md) `section`: Container for cloud-storage bucket provider configurations.
+    - [BucketProvider](./BucketProvider.md) `subsection`: A named cloud-storage bucket provider configuration.
+      - [BucketProviderConfig](./BucketProviderConfig.md) `subsection`: Provider credentials and defaults.
+  - [ComputeSettings](./ComputeSettings.md) `section`: Project-level compute-layer configuration (docs/ADR-calculation-layer.md §10).
+    - [ComputeResourceProfile](./ComputeResourceProfile.md) `section`: The resource envelope of a ComputeJob (docs/ADR-calculation-layer.md §9).
+  - [GraphProvidersSettings](./GraphProvidersSettings.md) `section`: Container for graph-database provider configurations (docs/ADR-graph-database-layer.md §1).
+    - [GraphProvider](./GraphProvider.md) `subsection`: A named graph-database provider configuration.
+      - [GraphProviderConfig](./GraphProviderConfig.md) `subsection`: Graph-database connection credentials and defaults.
+  - [BigLoadProvidersSettings](./BigLoadProvidersSettings.md) `section`: Container for big-load datastore provider configurations.
+    - [BigLoadStoreProvider](./BigLoadStoreProvider.md) `subsection`: A named big-load datastore provider configuration.
+      - [BigLoadStoreConfig](./BigLoadStoreConfig.md) `subsection`: Big-load datastore connection credentials and defaults.
+  - [ElasticLogsSettings](./ElasticLogsSettings.md) `section`: Registry container for the project's ElasticLog declarations (docs/ADR-elastic-log-pattern.md).
+    - [ElasticLog](./ElasticLog.md) `subsection`: A single ES-only append log declaration.
+      - [ElasticLogField](./ElasticLogField.md) `subsection`: One mapping field of an ElasticLog — becomes an Elasticsearch mapping property of the given type.
+  - [NotificationProvidersSettings](./NotificationProvidersSettings.md) `section`: Container for notification provider configurations (email, SMS, push, Telegram, WhatsApp).
+    - [NotificationProvider](./NotificationProvider.md) `subsection`: A named notification provider configuration.
+      - [ChatHandlingSettings](./ChatHandlingSettings.md) `subsection`: Deterministic chat handlers and push prompts of one channel provider (`notificationProviders[].chatHandling`), matched in declared order before any AI agent bound to the provider.
+        - [ChatHandler](./ChatHandler.md) `subsection`: One deterministic chat handler: a match, an optional business API call and a reply template.
+          - [ChatHandlerMatch](./ChatHandlerMatch.md) `subsection`: What a chat handler claims.
+          - [ChatHandlerAction](./ChatHandlerAction.md) `subsection`: The one business API call of a chat handler, over the API's REST route.
+          - [ChatHandlerResponse](./ChatHandlerResponse.md) `subsection`: The reply of a chat handler, plain text cut at 4096 characters: `text`, then one line per row of `list`, or `list.emptyText` when the list is empty.
+            - [ChatHandlerResponseList](./ChatHandlerResponseList.md) `subsection`: A reply list built from an array in a chat handler's API answer: one line per row, rendered from the `item` template.
+        - [ChatPrompt](./ChatPrompt.md) `subsection`: A push prompt of a channel provider: an EventNotification delivered by this provider whose rendered text becomes a message with choices.
+          - [ChatPromptChoice](./ChatPromptChoice.md) `subsection`: One choice of a push prompt: the id a `promptReply` handler matches and the title shown on the button or list row.
+          - [ChatHandlerParameter](./ChatHandlerParameter.md) `subsection`: One name and template value pair of a chat handler: an API parameter of `action.parameters`, or a data key a push prompt records (`prompts[].data`).
+  - [PaymentProvidersSettings](./PaymentProvidersSettings.md) `section`: Container for payment provider configurations — PSPs and merchant-of-record providers.
+    - [PaymentProvider](./PaymentProvider.md) `subsection`: A named payment provider configuration.
+      - [PaymentCapabilities](./PaymentCapabilities.md) `subsection`: Per-entry capability flags for a PaymentProvider.
+      - [KycOnboardingConfig](./KycOnboardingConfig.md) `subsection`: Per-provider marketplace KYC onboarding configuration.
+      - [PayoutCadenceConfig](./PayoutCadenceConfig.md) `subsection`: Per-provider payout scheduling + reserve configuration.
+  - [InvoiceProvidersSettings](./InvoiceProvidersSettings.md) `section`: Container for invoice provider configurations — the backends that issue, number, finalize and collect legal/commercial invoices for the project's invoicing-enabled data objects.
+    - [InvoiceProvider](./InvoiceProvider.md) `subsection`: A named invoice provider configuration.
+      - [InvoiceCapabilities](./InvoiceCapabilities.md) `subsection`: Per-entry capability flags for an InvoiceProvider.
+  - [FiscalProvidersSettings](./FiscalProvidersSettings.md) `section`: Container for fiscal provider configurations - the integrators that submit documents into a government's fiscal infrastructure (e-invoice, e-archive, real-time reporting).
+    - [FiscalProvider](./FiscalProvider.md) `subsection`: A named fiscal provider configuration.
+      - [FiscalCapabilities](./FiscalCapabilities.md) `subsection`: Per-entry capability flags for a FiscalProvider.
+  - [DecisionProvidersSettings](./DecisionProvidersSettings.md) `section`: Container for calibrated decision provider configurations — System One models that answer typed questions about a piece of state with a calibrated probability (docs/ADR-decision-layer-system-one.md).
+    - [DecisionProvider](./DecisionProvider.md) `subsection`: A named calibrated decision provider configuration.
+      - [DecisionCapabilities](./DecisionCapabilities.md) `subsection`: Per-entry capability flags for a DecisionProvider — which question types the adapter behind this entry supports and the ceilings it enforces (mirrors PaymentCapabilities).
+      - [DecisionProviderConfig](./DecisionProviderConfig.md) `subsection`: Provider credentials and settings for a DecisionProvider entry.
+  - [SocialLoginProvidersSettings](./SocialLoginProvidersSettings.md) `section`: Container for social login provider entries, one per brand (google, apple, facebook, microsoft, linkedin, github, gitlab).
+    - [SocialLoginProvider](./SocialLoginProvider.md) `subsection`: One social login provider: the brand, its OAuth client credentials and when the email it returns counts as verified.
+      - [SocialLoginProviderConfig](./SocialLoginProviderConfig.md) `subsection`: OAuth client credentials of a SocialLoginProvider entry.
+  - [ChatProvidersSettings](./ChatProvidersSettings.md) `section`: RETIRED (patterns 1.60.0) - kept loadable so an older blueprint converts on load.
+    - [ChatProvider](./ChatProvider.md) `subsection`: RETIRED (patterns 1.60.0) - a legacy chat bot, kept loadable for the on-load conversion only.
+  - [McpbffSettings](./McpbffSettings.md) `section`: Settings of the mcpbff system service (the project's native full-API assistant host).
+    - [ChatSurfaceSettings](./ChatSurfaceSettings.md) `subsection`: Binds a chat consumer (an aiAgent, or the mcpbff assistant through `mcpbffSettings.chatSurfaces[]`) to one messaging surface by naming a CHANNEL PROVIDER.
+  - [AmqpProvidersSettings](./AmqpProvidersSettings.md) `section`: Container for external AMQP broker configurations.
+    - [AmqpProvider](./AmqpProvider.md) `subsection`: A named external AMQP broker configuration.
+      - [AmqpProviderConfig](./AmqpProviderConfig.md) `subsection`: External AMQP broker connection credentials and the mirrored-topics mapping.
+        - [AmqpMirroredTopic](./AmqpMirroredTopic.md) `subsection`: One explicit mirrored mapping between an AMQP address and a Kafka topic.
+  - [EnterpriseIntegrationsSettings](./EnterpriseIntegrationsSettings.md) `section`: Container for enterprise-platform integrations.
+    - [EnterpriseIntegration](./EnterpriseIntegration.md) `subsection`: A named enterprise-platform integration.
+  - [VideoProvidersSettings](./VideoProvidersSettings.md) `section`: Container for video-conference / live-broadcast provider configurations (docs/ADR-video-conference-pattern-family.md §3).
+    - [VideoProvider](./VideoProvider.md) `subsection`: A named video-conference / live-broadcast provider configuration.
+  - [MailAccountsSettings](./MailAccountsSettings.md) `section`: Container for project-level mail-account configurations (docs/ADR-mail-account-family.md).
+    - [MailAccount](./MailAccount.md) `subsection`: A named mail account — a real mailbox the project can listen to, check, read, and send from (docs/ADR-mail-account-family.md).
+  - [ClamAvSettings](./ClamAvSettings.md) `section`: Settings for the ClamAV scanner that checks files uploaded through DbBucket / NativeBucket / RemoteBucket when bucket.virusScan is true.
+    - [ClamAvSettingsConfig](./ClamAvSettingsConfig.md) `subsection`: ClamAV connection configuration: protocol picks REST (url) or clamd INSTREAM (host:port), and scanTimeoutMs bounds every scan.
+  - [CorsSettings](./CorsSettings.md) `section`: Defines CORS settings for service accesses.
+    - [CorsSettingsConfig](./CorsSettingsConfig.md) `subsection`: Defines the configuration for CORS settings.
+  - [PipelineTemplate](./PipelineTemplate.md) `section`: The asset to store a template for generating custom pipeline files.
+  - [ServicePlanEntry](./ServicePlanEntry.md) `section`: One service the project INTENDS to create, as named by the microservice-definition plan.
+
+</details>
+
+<details><summary>ProjectAuthentication (61)</summary>
+
+- [ProjectAuthentication](./ProjectAuthentication.md) `module`: Defines the authentication and authorization configuration for the entire project.
+  - [AuthBasics](./AuthBasics.md) `chapter`: Defines the fundamental authentication configuration for the project.
+    - [ModuleDocumentation](./ModuleDocumentation.md) `section`: Holds the module-level frontendDocument UX prompt.
+    - [JWTAuth](./JWTAuth.md) `section`: Defines the configuration for JWT-based authentication, where the project issues and verifies its own JSON Web Tokens.
+      - [JWTAuthConfig](./JWTAuthConfig.md) `subsection`: Defines the configuration details for JWT-based authentication.
+    - [SSOAuth](./SSOAuth.md) `section`: Retained Single Sign-On (SSO) configuration schema.
+      - [SSOAuthConfig](./SSOAuthConfig.md) `subsection`: Retained external identity provider settings for the unavailable SSO feature.
+        - [SSOServerSettings](./SSOServerSettings.md) `subsection`: Retained endpoint and credential settings for the unavailable SSO feature.
+    - [APIKeyAuth](./APIKeyAuth.md) `section`: Enables API key authentication for the project.
+      - [APIKeyAuthConfig](./APIKeyAuthConfig.md) `subsection`: Fine-tune API key authentication behavior.
+    - [RefreshTokenSettings](./RefreshTokenSettings.md) `section`: Configures opt-in refresh tokens for the auth service.
+    - [AuthHttpSettings](./AuthHttpSettings.md) `section`: Defines the HTTP configuration of the auth service.
+    - [CookieSettings](./CookieSettings.md) `section`: Arranges the allow-list for the session cookie.
+  - [LoginDefinition](./LoginDefinition.md) `chapter`: Defines the core login architecture of the project, including the user and tenant structures that underpin authentication and access.
+    - [LoginDefUserSettings](./LoginDefUserSettings.md) `section`: Defines how users are stored, managed, and authenticated within the project.
+    - [LoginDefTenantSettings](./LoginDefTenantSettings.md) `section`: Specifies how tenant-based access control is structured for multi-tenant projects.
+      - [LoginDefTenantSettingsConfig](./LoginDefTenantSettingsConfig.md) `subsection`: Configuration details for tenant-based access control, including tenant registration, naming, and avatar script.
+  - [VerificationServices](./VerificationServices.md) `chapter`: Defines user-related verification features such as password resets and two-factor authentication (2FA).
+    - [VerificationSettings](./VerificationSettings.md) `section`: General options for all verifications.
+    - [PasswordResetByEmail](./PasswordResetByEmail.md) `section`: Configuration for enabling password reset via email.
+      - [VerificationConfig](./VerificationConfig.md) `subsection`: Defines the configuration for verification flows, including password resets and two-factor authentication.
+    - [PasswordResetByMobile](./PasswordResetByMobile.md) `section`: Configuration for enabling password reset via mobile.
+    - [Email2Factor](./Email2Factor.md) `section`: Configuration for email-based two-factor authentication.
+    - [Mobile2Factor](./Mobile2Factor.md) `section`: Configuration for mobile-based two-factor authentication.
+    - [EmailVerification](./EmailVerification.md) `section`: Defines the settings for verifying a user's email address.
+    - [MobileVerification](./MobileVerification.md) `section`: Defines the settings for verifying a user's mobile number.
+  - [AccessControl](./AccessControl.md) `chapter`: Configuration chapter for defining the access control architecture of the project.
+    - [PermissionBasics](./PermissionBasics.md) `section`: Defines the foundational permission model of the project.
+      - [PermissionBasicsConfig](./PermissionBasicsConfig.md) `subsection`: Configuration details for permission basics, including permission groups.
+        - [PermissionGroup](./PermissionGroup.md) `subsection`: Defines a group of permissions under a shared namespace.
+    - [RBACSettings](./RBACSettings.md) `section`: Configuration for Role-Based Access Control (RBAC) within the project.
+      - [RBACSettingsConfig](./RBACSettingsConfig.md) `subsection`: Configuration details for RBAC, including roles, role ID data type, custom role lookups, and multi-role support.
+        - [RoleItem](./RoleItem.md) `subsection`: Represents a role definition in the RBAC system.
+        - [RolePermission](./RolePermission.md) `subsection`: A single SEED role-to-permission binding (ADR-native-permission-system §9.1).
+    - [PermissionTypes](./PermissionTypes.md) `section`: Defines the active permission mechanisms in the project.
+    - [OBACPermission](./OBACPermission.md) `section`: Configuration for Object-Based Access Control (OBAC), which restricts access to specific data objects based on object ownership or association.
+    - [AbacPermission](./AbacPermission.md) `section`: Configuration for Attribute-Based Access Control (ABAC), allowing fine-grained permission control using attribute-level rules on data objects.
+      - [ABACDefinititon](./ABACDefinititon.md) `subsection`: Defines a single ABAC (Attribute-Based Access Control) rule for a given data object.
+  - [SocialLoginSettings](./SocialLoginSettings.md) `chapter`: Configuration for enabling social login support within the project.
+    - [GoogleLoginSetting](./GoogleLoginSetting.md) `section`: Configuration for Google OAuth login.
+      - [GoogleLoginConfig](./GoogleLoginConfig.md) `subsection`: Configuration details for Google OAuth login, including client ID and secret.
+    - [AppleLoginSetting](./AppleLoginSetting.md) `section`: Configuration for Apple Sign In with Apple.
+      - [AppleLoginConfig](./AppleLoginConfig.md) `subsection`: Configuration details for Apple Sign In.
+    - [FacebookLoginSetting](./FacebookLoginSetting.md) `section`: Configuration for Facebook OAuth login.
+      - [FacebookLoginConfig](./FacebookLoginConfig.md) `subsection`: Configuration details for Facebook OAuth login, including App ID and App Secret.
+    - [MicrosoftLoginSetting](./MicrosoftLoginSetting.md) `section`: Configuration for Microsoft Azure AD / Microsoft Entra ID OAuth login.
+      - [MicrosoftLoginConfig](./MicrosoftLoginConfig.md) `subsection`: Configuration details for Microsoft OAuth login.
+    - [LinkedinLoginSetting](./LinkedinLoginSetting.md) `section`: Configuration for LinkedIn OAuth login.
+      - [LinkedinLoginConfig](./LinkedinLoginConfig.md) `subsection`: Configuration details for LinkedIn OAuth login, including client ID and secret.
+    - [GitlabLoginSetting](./GitlabLoginSetting.md) `section`: Configuration for GitLab OAuth login.
+      - [GitlabLoginConfig](./GitlabLoginConfig.md) `subsection`: Configuration details for GitLab OAuth login, including client ID and secret.
+    - [GithubLoginSetting](./GithubLoginSetting.md) `section`: Configuration for GitHub OAuth login.
+      - [GithubLoginConfig](./GithubLoginConfig.md) `subsection`: Configuration details for GitHub OAuth login, including client ID and secret.
+  - [SessionGeoSensitivity](./SessionGeoSensitivity.md) `section`: Activates location-based session sensitivity.
+    - [SessionGeoSensitivityConfig](./SessionGeoSensitivityConfig.md) `subsection`: Defines how a location change is detected and what happens when it occurs.
+  - [ForeignPermissionProvider](./ForeignPermissionProvider.md) `chapter`: Project-wide foreign permission server configuration (one foreign server, one transport).
+    - [ForeignPermissionProviderBasics](./ForeignPermissionProviderBasics.md) `section`: Transport and decision policy of the foreign permission server (one server, one transport).
+    - [GrpcClientTls](./GrpcClientTls.md) `section`: Transport security for a foreign gRPC client (see GrpcClientConfig.tls).
+    - [GrpcClientMetadataItem](./GrpcClientMetadataItem.md) `section`: A single STATIC gRPC metadata header sent on every call to a foreign gRPC server (see GrpcClientConfig.metadata).
+    - [ForeignPermissionSessionBinding](./ForeignPermissionSessionBinding.md) `section`: One session-field → request-PLACEMENT binding.
+  - [ProfileSettings](./ProfileSettings.md) `section`: The project's declaration of a readable user profile — the sanctioned way to show WHO a record belongs to.
+
+</details>
+
+<details><summary>BFFService (7)</summary>
+
+- [BFFService](./BFFService.md) `module`: Configuration settings for the BFF (Backend-for-Frontend) service in the project.
+  - [BffServiceSettings](./BffServiceSettings.md) `chapter`: Module-level settings chapter for the BFF service.
+  - [DataView](./DataView.md) `chapter`: A DataView defines an aggregated projection of data for the BFF service in OpenAPPL.
+    - [ViewBasics](./ViewBasics.md) `section`: Configuration for a DataView's identity and structure.
+    - [ViewAggregate](./ViewAggregate.md) `section`: Defines an aggregate (join) within a DataView that links related objects to the main object, similar to SQL-style joins.
+    - [ViewStat](./ViewStat.md) `section`: Defines a statistical aggregation for a DataView.
+      - [AggregateItem](./AggregateItem.md) `subsection`: Defines a single mathematical operation to apply to a group of records within a ViewStat.
+
+</details>
+
+<details><summary>NotificationService (15)</summary>
+
+- [NotificationService](./NotificationService.md) `module`: Defines the global notification configuration for the project.
+  - [NotificationServiceSettings](./NotificationServiceSettings.md) `chapter`: Defines the basic notification configuration for the project.
+    - [NotificationServiceOptions](./NotificationServiceOptions.md) `section`: Default notification provider per channel plus storage policy.
+  - [EventNotification](./EventNotification.md) `chapter`: Defines a single event-triggered notification within the project.
+    - [EventNotificationBasics](./EventNotificationBasics.md) `section`: Defines the basic properties of an event notification, including its name, description, storage behavior, and job type.
+    - [EventDataSettings](./EventDataSettings.md) `section`: Defines how the event notification extracts and processes data from incoming Kafka messages.
+    - [GeofenceTrigger](./GeofenceTrigger.md) `section`: Geofence trigger spec — applied to EventNotifications with triggerSource='geofence'.
+    - [NotificationTarget](./NotificationTarget.md) `section`: Defines a recipient or list of recipients for an event notification.
+    - [NotificationTemplate](./NotificationTemplate.md) `section`: Defines a notification template used to render the content of event notifications.
+      - [NotificationTemplateVariant](./NotificationTemplateVariant.md) `subsection`
+      - [NotificationWhatsAppTemplate](./NotificationWhatsAppTemplate.md) `subsection`: An approved WhatsApp template for a jobType='whatsapp' EventNotification: the Meta template name or the Twilio Content SID, its language, and the parameter scripts.
+        - [WhatsAppTemplateButton](./WhatsAppTemplateButton.md) `subsection`: One button of an approved WhatsApp template (Meta).
+    - [ContentModeration](./ContentModeration.md) `section`: Decision moderation of content that is not a DataObject write: objectModeration applied to RealtimeHub messages and outbound notification content.
+  - [WhatsAppIngressSettings](./WhatsAppIngressSettings.md) `chapter`: Explicit routes of the WhatsApp inbound dispatcher (`notificationService.whatsappIngress`).
+    - [WhatsAppIngressRoute](./WhatsAppIngressRoute.md) `section`: One explicit listener on a WhatsApp provider's door.
+
+</details>
+
+<details><summary>AgentHubConfig (14)</summary>
+
+- [AgentHubConfig](./AgentHubConfig.md) `module`: Configuration for the AgentHub service — a centralized AI agent management platform.
+  - [AgentHubSettings](./AgentHubSettings.md) `chapter`: Hub settings chapter containing the basic configuration and tool source definitions for the Agent Hub service.
+    - [AgentHubBasics](./AgentHubBasics.md) `section`: Core settings for the Agent Hub service including dynamic agent creation controls and tool discovery configuration.
+    - [AgentHubToolSource](./AgentHubToolSource.md) `section`: Defines a service from which the Agent Hub discovers tools.
+  - [AgentHarness](./AgentHarness.md) `chapter`: An agent harness hosted by agentHub: a long-running, autonomous agent run by an open-source harness runtime (docs/ADR-agent-harness.md).
+    - [AgentHarnessBasics](./AgentHarnessBasics.md) `section`: Identity of an AgentHarness: its unique name, description, runtime and enabled flag.
+    - [AgentHarnessModelSettings](./AgentHarnessModelSettings.md) `section`: The model an AgentHarness runs on, and how the session authenticates to it.
+    - [AgentHarnessAssets](./AgentHarnessAssets.md) `section`: Skills, documents and scripts of an AgentHarness.
+    - [AgentHarnessPlugin](./AgentHarnessPlugin.md) `section`: A runtime-native plugin of an AgentHarness, installed into the harness profile at runner build.
+    - [AgentHarnessToolSettings](./AgentHarnessToolSettings.md) `section`: The project tools an AgentHarness may call.
+      - [AgentHarnessWebTools](./AgentHarnessWebTools.md) `subsection`: Platform web tools offered to an AgentHarness through its session MCP endpoint, each backed by a root `integrations[]` entry of the project.
+    - [AgentHarnessNetworkSettings](./AgentHarnessNetworkSettings.md) `section`: Outbound network policy of an AgentHarness's sandboxed process (maintainer ruling Q3).
+    - [AgentHarnessSessionSettings](./AgentHarnessSessionSettings.md) `section`: Frontend access and per-user limits of an AgentHarness's sessions.
+    - [AgentHarnessTrigger](./AgentHarnessTrigger.md) `section`: A Kafka trigger of an AgentHarness: a matching event starts a background session (origin `kafka`) as the agentHub M2M service identity.
+
+</details>
+
+<details><summary>EnterpriseHubConfig (6)</summary>
+
+- [EnterpriseHubConfig](./EnterpriseHubConfig.md) `module`: The project-level enterprise-integration asset hub (module).
+  - [EnterpriseModel](./EnterpriseModel.md) `chapter`: A model of one connected enterprise platform's assets (chapter).
+    - [EnterpriseModelBasics](./EnterpriseModelBasics.md) `section`: Core settings for an EnterpriseModel (section).
+    - [EnterpriseObject](./EnterpriseObject.md) `section`: A reference to a business object in the platform's metadata (section) — e.g. SAP A_BusinessPartner, Salesforce Account, HubSpot contacts.
+    - [EnterpriseEvent](./EnterpriseEvent.md) `section`: A business event the model subscribes to (section), mapped to a Kafka topic so the rest of the OpenAPPL application can consume it.
+    - [EnterpriseAction](./EnterpriseAction.md) `section`: An invokable platform-side business function (section) — a SAP BAPI / OData function import / action, a Salesforce Apex REST or invocable action, a Dataverse bound/unbound action, etc.
+
+</details>
+
+<details><summary>Service (447)</summary>
+
+- [Service](./Service.md) `service`: Defines the overall structure and configuration for a microservice within the project.
+  - [ServiceSettings](./ServiceSettings.md) `chapter`: Defines the foundational settings of the service module, including basic metadata and authentication configurations.
+    - [ServiceBasics](./ServiceBasics.md) `section`: Provides core identifiers and metadata for the service.
+      - [Package](./Package.md) `subsection`: A unified, language-agnostic third-party package dependency declaration.
+    - [ServiceOptions](./ServiceOptions.md) `section`: Defines a configuration class for the basic options of the service for authentication, http and data model
+    - [RealtimeConfig](./RealtimeConfig.md) `section`: Service-level configuration for the Socket.IO server powering realtime hubs.
+    - [GrpcClientConfig](./GrpcClientConfig.md) `section`: A named, FOREIGN gRPC server this service can call via a `GrpcCallAction` (docs/ADR-grpc-interservice-and-grpccall.md, Part B).
+  - [ShoppingCartConfig](./ShoppingCartConfig.md) `chapter`: Shopping cart configuration chapter.
+    - [ShoppingCartBasicSettings](./ShoppingCartBasicSettings.md) `section`: Core shopping cart settings with activation flag.
+    - [ShoppingCartPricingSettings](./ShoppingCartPricingSettings.md) `section`: Price calculation settings.
+      - [CartDiscountConfig](./CartDiscountConfig.md) `subsection`: Configuration for discount handling.
+      - [CartShipmentConfig](./CartShipmentConfig.md) `subsection`: Configuration for shipment/delivery charges.
+      - [CartExtraChargeConfig](./CartExtraChargeConfig.md) `subsection`: Configuration for additional charges like handling, packaging, insurance, etc.
+    - [ShoppingCartItemSettings](./ShoppingCartItemSettings.md) `section`: Configuration for cart line items.
+    - [ShoppingCartProductCatalogSettings](./ShoppingCartProductCatalogSettings.md) `section`: Optional product catalog integration.
+      - [ProductFieldMappings](./ProductFieldMappings.md) `subsection`: Declares product DataObject property-name mappings.
+    - [ShoppingCartReservationSettings](./ShoppingCartReservationSettings.md) `section`: Opt-in TTL stock reservation.
+      - [CartGuestHoldQuota](./CartGuestHoldQuota.md) `subsection`: Bounds on the reservation holds one guest session may accumulate.
+    - [ShoppingCartLogisticsSettings](./ShoppingCartLogisticsSettings.md) `section`: Configuration for shipping logistics.
+    - [ShoppingCartLoyaltySettings](./ShoppingCartLoyaltySettings.md) `section`: Loyalty program configuration.
+    - [ShoppingCartPromotionSettings](./ShoppingCartPromotionSettings.md) `section`: Promotion engine configuration.
+      - [StaticPromotionSettings](./StaticPromotionSettings.md) `subsection`: Simple cart-level promotion tiers (free-shipping threshold, cart total and quantity discounts, membership discounts, a loyalty points multiplier).
+        - [FreeShippingPromotion](./FreeShippingPromotion.md) `subsection`: Static promotion: Free shipping when cart total exceeds threshold.
+        - [CartTotalDiscountPromotion](./CartTotalDiscountPromotion.md) `subsection`: Static promotion: Tiered discount based on cart total.
+          - [CartTotalDiscountTier](./CartTotalDiscountTier.md) `subsection`: A single tier in cart total discount promotion.
+        - [CartQuantityDiscountPromotion](./CartQuantityDiscountPromotion.md) `subsection`: Static promotion: Tiered discount based on total item quantity.
+          - [CartQuantityDiscountTier](./CartQuantityDiscountTier.md) `subsection`: A single tier in cart quantity discount promotion.
+        - [MembershipDiscountPromotion](./MembershipDiscountPromotion.md) `subsection`: Static promotion: Discount based on customer membership level.
+          - [MembershipDiscountLevel](./MembershipDiscountLevel.md) `subsection`: Discount configuration for a specific membership level.
+        - [LoyaltyPointsMultiplierPromotion](./LoyaltyPointsMultiplierPromotion.md) `subsection`: Static promotion: Points multiplier based on membership level.
+          - [PointsMultiplierLevel](./PointsMultiplierLevel.md) `subsection`: Points multiplier configuration for a specific membership level.
+      - [DynamicPromotionSettings](./DynamicPromotionSettings.md) `subsection`: Configuration for complex, database-driven promotions evaluated by the Promotion Engine at runtime.
+        - [AutoGeneratedCampaignSettings](./AutoGeneratedCampaignSettings.md) `subsection`: Configuration for the auto-generated Campaign DataObject.
+        - [PromotionCacheSettings](./PromotionCacheSettings.md) `subsection`: Redis caching configuration for promotion campaign data.
+    - [ShoppingCartRedisSettings](./ShoppingCartRedisSettings.md) `section`: Redis-first cart storage settings.
+    - [ShoppingCartApiSettings](./ShoppingCartApiSettings.md) `section`: Configuration for auto-generated cart management API routes.
+      - [CartApiRoutes](./CartApiRoutes.md) `subsection`: Which cart API routes to generate.
+    - [ShoppingCartCheckoutSettings](./ShoppingCartCheckoutSettings.md) `section`: Configuration for cart-to-order checkout process.
+      - [CartToOrderPropertyMapping](./CartToOrderPropertyMapping.md) `subsection`: Maps a cart property to an order property, optionally with a transformation.
+  - [DataObject](./DataObject.md) `namespace`: A DataObject is the core building block of a service in OpenAPPL.
+    - [ObjectSettings](./ObjectSettings.md) `chapter`: Configuration settings that govern the behavior, access control, and optimization strategies of a data object.
+      - [ObjectBasicSettings](./ObjectBasicSettings.md) `section`: Basic configuration for a data object, including its identity, documentation, and deletion strategy.
+      - [ObjectAuthorization](./ObjectAuthorization.md) `section`: Defines access control scope for this data object, including tenant scoping and public accessibility.
+      - [RedisEntityCacheSettings](./RedisEntityCacheSettings.md) `section`: Configuration for Redis-based entity-level caching.
+      - [CompositeIndex](./CompositeIndex.md) `section`: Defines a composite index for a data object.
+      - [Checkout](./Checkout.md) `section`: Provider-neutral one-time-payment activation for a DataObject.
+        - [CheckoutConfig](./CheckoutConfig.md) `subsection`: Configuration for provider-neutral one-time payments.
+          - [PaymentResultMap](./PaymentResultMap.md) `subsection`: Defines how normalized payment outcomes (started, success, failed, canceled) map to internal order status values using MScript expressions.
+          - [StripeOrderItemRelation](./StripeOrderItemRelation.md) `subsection`: Declares the local join between an order and its order items: item[orderItemLocalKey] matches order[orderForeignKey].
+          - [LifecycleHook](./LifecycleHook.md) `subsection`: A designer-authored MScript handler fired by the payment dispatcher when a normalized payment event advances the state machine.
+      - [Subscription](./Subscription.md) `section`: Provider-neutral subscription activation for a DataObject.
+        - [SubscriptionConfig](./SubscriptionConfig.md) `subsection`: Configuration for recurring subscriptions on a DataObject.
+      - [Marketplace](./Marketplace.md) `section`: Provider-neutral marketplace activation for a DataObject.
+        - [MarketplaceConfig](./MarketplaceConfig.md) `subsection`: Configuration for marketplace payouts on a DataObject.
+          - [PayoutGateConfig](./PayoutGateConfig.md) `subsection`: Invoice-gated payout release (the TR marketplace MERCHANT model's mutabakat step).
+          - [SellerOnboardingConfig](./SellerOnboardingConfig.md) `subsection`: Role-to-property map that lets the FRAMEWORK PROVISION a seller's connected sub-merchant account (level 2), instead of a designer hand-pasting a provider-side key into `sellerAccountProperty`.
+          - [SettlementReleaseConfig](./SettlementReleaseConfig.md) `subsection`: When a providerSplit marketplace sale's seller share is released (MarketplaceConfig.settlementRelease).
+          - [SettlementGateConfig](./SettlementGateConfig.md) `subsection`: Invoice gate on the approve step of platformSettled settlement instructions (MarketplaceConfig.settlementGate).
+      - [Invoicing](./Invoicing.md) `section`: Provider-neutral accounts-receivable invoicing activation for a DataObject.
+        - [InvoicingConfig](./InvoicingConfig.md) `subsection`: Configuration for provider-neutral accounts-receivable invoicing on a DataObject.
+          - [InvoiceLineRelation](./InvoiceLineRelation.md) `subsection`: How an invoicing-enabled object relates to its line item object (provider-neutral sibling of StripeOrderItemRelation).
+          - [InvoiceNumberingConfig](./InvoiceNumberingConfig.md) `subsection`: Invoice numbering configuration for an invoicing-enabled DataObject.
+          - [InvoiceCollectionConfig](./InvoiceCollectionConfig.md) `subsection`: How finalized invoices on an invoicing-enabled DataObject are collected.
+          - [InvoiceLifecycleHook](./InvoiceLifecycleHook.md) `subsection`: A designer-authored MScript handler fired by the invoice dispatcher when the invoice state machine advances.
+      - [Fiscalization](./Fiscalization.md) `section`: Regulatory fiscalization activation for a DataObject.
+        - [FiscalizationConfig](./FiscalizationConfig.md) `subsection`: Configuration for regulatory fiscalization on a DataObject.
+          - [FiscalPartyConfig](./FiscalPartyConfig.md) `subsection`: Identity of one party (seller or buyer) on a fiscal document.
+          - [FiscalInternetSaleConfig](./FiscalInternetSaleConfig.md) `subsection`: Bindings sourcing the internet-sales content of a fiscal document from the owning DataObject.
+          - [FiscalLifecycleHook](./FiscalLifecycleHook.md) `subsection`: A designer-authored MScript handler fired by the fiscal dispatcher when the fiscal document state machine advances.
+      - [MembershipSettings](./MembershipSettings.md) `section`: Configuration settings for membership-based access control of a data object.
+        - [MembershipSettingsConfig](./MembershipSettingsConfig.md) `subsection`: Configuration settings for membership-based access control of a data object.
+          - [MembershipRolePermission](./MembershipRolePermission.md) `subsection`: A single CONFIG-ONLY membership-role-to-permission binding (ADR-native-permission-system §9.3).
+      - [LedgerSettings](./LedgerSettings.md) `section`: Append-only-ledger activation for a DataObject.
+        - [LedgerConfig](./LedgerConfig.md) `subsection`: Configuration for the append-only ledger owned by each row of the decorated DataObject.
+          - [LedgerUnit](./LedgerUnit.md) `subsection`: The ledger's unit of account.
+          - [LedgerBalance](./LedgerBalance.md) `subsection`: Defines the available, pending and reserved balances returned by getBalance.
+          - [LedgerParties](./LedgerParties.md) `subsection`: Names of the generated party-reference columns on the movement rows: earn carries a SOURCE ref (what granted the value), consume/reserve carry a TARGET ref (what the value was spent on).
+            - [LedgerPartyRef](./LedgerPartyRef.md) `subsection`: Column names for one party side of a movement.
+          - [LedgerEntrySource](./LedgerEntrySource.md) `subsection`: Configures the source-reference column and optional owner/source uniqueness of credited lots.
+          - [LedgerEntryMaturity](./LedgerEntryMaturity.md) `subsection`: Lot maturity.
+          - [LedgerExpiry](./LedgerExpiry.md) `subsection`: Lot expiry sweep and pre-expiry reminders.
+          - [LedgerReservation](./LedgerReservation.md) `subsection`: Two-phase holds: reserve places a hold (available → reserved), commitReservation consumes it, releaseReservation returns it.
+          - [LedgerAdditionalProperties](./LedgerAdditionalProperties.md) `subsection`: Designer-declared extra columns on the generated satellite objects — full DataProperty declarations, relations included.
+          - [LedgerEvents](./LedgerEvents.md) `subsection`: Event emission for the ledger.
+          - [LedgerGeneratedApis](./LedgerGeneratedApis.md) `subsection`: Per-API bindings for the generated roster.
+            - [LedgerApiBinding](./LedgerApiBinding.md) `subsection`: Binding overrides for one generated ledger API.
+      - [GraphProjection](./GraphProjection.md) `section`: Projects a DataObject into a graph database (docs/ADR-graph-database-layer.md §3/§4b/§5).
+        - [GraphEdgeProjection](./GraphEdgeProjection.md) `subsection`: Projects each row of the owning DataObject as a graph relationship.
+          - [GraphEdgeEnd](./GraphEdgeEnd.md) `subsection`: One end of an edge-shaped projection (docs/ADR-graph-database-layer.md §4b).
+      - [EnterpriseProjection](./EnterpriseProjection.md) `section`: Projects a DataObject onto an EnterpriseObject (section, under objectSettings).
+        - [EnterpriseFieldMapItem](./EnterpriseFieldMapItem.md) `subsection`: One property↔field binding in an EnterpriseProjection.fieldMap (subsection).
+      - [ObjectGeoSettings](./ObjectGeoSettings.md) `section`: Design-time settings for the /geo REST surface a data object's geo-typed properties generate.
+      - [VisitTracking](./VisitTracking.md) `section`: Object-level visit storage (docs/ADR-object-visits-pattern.md section 2.1): WHERE the visits of this object go.
+      - [RecommendationSettings](./RecommendationSettings.md) `section`: Recommendation lists of a data object as the ITEM being recommended (docs/ADR-recommendation-engine.md section 4).
+        - [InteractionSource](./InteractionSource.md) `subsection`: A resolved descriptor of interaction records with known roles (recommendation ADR section 2).
+        - [RecommendationList](./RecommendationList.md) `subsection`: One recommendation list of an item object (recommendation ADR section 4).
+          - [RecommendationEvidence](./RecommendationEvidence.md) `subsection`: One evidence relation of a recommendation list (recommendation ADR section 3): the relation, the source that feeds it and its weight in an explicit blend.
+          - [RecommendationFilters](./RecommendationFilters.md) `subsection`: Deterministic serve-time filters of a recommendation list (recommendation ADR section 5.2).
+          - [RecommendationListPolicy](./RecommendationListPolicy.md) `subsection`: Diversity and dedupe rules of a recommendation list, applied to the filtered, ranked page.
+          - [RecommendationRerank](./RecommendationRerank.md) `subsection`: Optional decision-provider rerank of a recommendation list (recommendation ADR section 7).
+          - [RecommendationApi](./RecommendationApi.md) `subsection`: Serving-route options of a recommendation list (recommendation ADR section 5.4).
+      - [DefaultChoice](./DefaultChoice.md) `section`: A default row per scope for a data object (`objectSettings.defaultChoice`).
+    - [DataProperty](./DataProperty.md) `chapter`: The definition of a data property within a data object.
+      - [PropertyBasicSettings](./PropertyBasicSettings.md) `section`: Defines the core structure and behavior of a data property.
+      - [PropertyIndexSettings](./PropertyIndexSettings.md) `section`: Index configuration for the data property across supported storage and caching layers.
+      - [PropertyRelation](./PropertyRelation.md) `section`: Defines the foreign-key relationship for this property to another data object.
+      - [PropertySessionSettings](./PropertySessionSettings.md) `section`: Defines how this property is populated from the session context when this block is populated.
+      - [PropertyStaticJoin](./PropertyStaticJoin.md) `section`: Static join settings define how this property's value is derived from another data object at the time of creation when this block is populated.
+      - [PropertyGraphEdge](./PropertyGraphEdge.md) `section`: Projects an FK-relation property as a graph edge (docs/ADR-graph-database-layer.md §4a).
+      - [PropertyDecisionSource](./PropertyDecisionSource.md) `section`: Write-time classification of one DataProperty by a decision provider.
+        - [DecisionQuestion](./DecisionQuestion.md) `subsection`: One typed question inside a DecisionAction's bundle.
+      - [PropertyUploadSettings](./PropertyUploadSettings.md) `section`: Where the through-server upload of a RemoteBucket / NativeBucket takes a `{name}RemoteFile` twin column from.
+  - [BusinessApi](./BusinessApi.md) `namespace`: Defines a Business API, a high-level abstraction representing a specific business operation on a primary data object.
+    - [BusinessApiBasics](./BusinessApiBasics.md) `chapter`: Groups a BusinessApi's core API options and authentication settings.
+      - [ApiOptions](./ApiOptions.md) `section`: Main configuration section for a Business API.
+        - [VisitSettings](./VisitSettings.md) `subsection`: Api-level visit trigger (docs/ADR-object-visits-pattern.md section 2.2).
+          - [VisitContextField](./VisitContextField.md) `subsection`: One analytic dimension captured on a visit history row (visits ADR section 2.3): its name in the row's `context` JSON, and the MScript that computes it at visit time.
+      - [ApiAuthOptions](./ApiAuthOptions.md) `section`: Defines core authentication and authorization settings for a Business API.
+        - [ApiParentOwnershipCheck](./ApiParentOwnershipCheck.md) `subsection`: One PARENT-ownership gate for a Business API.
+        - [ApiForeignPermissionCheck](./ApiForeignPermissionCheck.md) `subsection`: Per-BusinessApi foreign-permission question.
+        - [ApiPermissionCheck](./ApiPermissionCheck.md) `subsection`: Per-BusinessApi NATIVE permission gate (ADR-native-permission-system §9.5).
+        - [ApiApprovalRequirement](./ApiApprovalRequirement.md) `subsection`: The step-up approval requirement of one Business API: the channel of its one-time code, the input binding, the code lifetime and the action text the message shows.
+    - [BusinessApiParameters](./BusinessApiParameters.md) `chapter`: Parameter sources of a `BusinessApi` (section): custom `requestParameters` (validated request inputs fed into the workflow context) and `redisParameters` (values read from Redis into the context).
+      - [BusinessApiParameter](./BusinessApiParameter.md) `section`: Defines a customizable input parameter for a Business API.
+      - [RedisApiParameter](./RedisApiParameter.md) `section`: Defines a parameter whose value is fetched from Redis before Business API execution begins.
+    - [BusinessApiControllers](./BusinessApiControllers.md) `chapter`: Transport bindings of a `BusinessApi` (section): the optional REST, gRPC, Kafka, SSE, cron and internal-call controller settings that expose the API.
+      - [ApiRestSettings](./ApiRestSettings.md) `section`: Defines the REST controller configuration for a Business API.
+      - [ApiGrpcSettings](./ApiGrpcSettings.md) `section`: Enables gRPC interface for the Business API.
+      - [ApiKafkaSettings](./ApiKafkaSettings.md) `section`: Configures Kafka as a trigger mechanism for the Business API.
+      - [ApiSseSettings](./ApiSseSettings.md) `section`: Enables Server-Sent Events (SSE) streaming for a Business API, allowing the API to stream its response as chunks or emit progress events over an SSE connection.
+        - [StreamSourceConfig](./StreamSourceConfig.md) `subsection`: Reserved: not read by the code generator yet.
+        - [KafkaProgressListener](./KafkaProgressListener.md) `subsection`: Configures a Kafka topic subscription for receiving progress updates from remote processes during an SSE connection.
+      - [ApiCronSettings](./ApiCronSettings.md) `section`: Schedules the Business API for periodic execution using a cron expression.
+      - [ApiInternalCallSettings](./ApiInternalCallSettings.md) `section`: Marks the Business API as callable IN-PROCESS from ANY MScript-evaluated designer script of the same service, not only from payment lifecycle hooks.
+    - [BusinessApiQuery](./BusinessApiQuery.md) `chapter`: Data-access shape of a `BusinessApi` (section): the select / where / data clauses plus delete / get / list / pagination options that drive the API's primary data-object query.
+      - [SelectClauseSettings](./SelectClauseSettings.md) `section`: Defines which fields are included in the response of a Business API.
+        - [SelectJoin](./SelectJoin.md) `subsection`: Select join is a definition object for a join from the main object to another related data object to select additional properties from it.
+      - [WhereClauseSettings](./WhereClauseSettings.md) `section`: Defines how records are filtered in a Business API.
+        - [ExtendedClause](./ExtendedClause.md) `subsection`: Defines an optional filtering clause that is dynamically included in the query when a single MScript condition is met.
+        - [FuzzyDomainFilter](./FuzzyDomainFilter.md) `subsection`: Narrows a list API by a judgement no column holds, by classifying the DISTINCT VALUES of one column with a decision provider, never the rows (ADR binding point A).
+      - [DeleteOptions](./DeleteOptions.md) `section`: Options block of a `delete`-type Business API.
+      - [GetOptions](./GetOptions.md) `section`: Options specific to `get`-type Business APIs for customizing how a single record is fetched.
+      - [ListOptions](./ListOptions.md) `section`: Behavioral options for Business APIs of type `list`.
+        - [SortByItem](./SortByItem.md) `subsection`: Sort clause configuration for list operations.
+        - [ListOrderSet](./ListOrderSet.md) `subsection`: One named row order a list api can switch to per request: the `key` a `listOrderSelector` request value is matched against, and the `sortBy` items that become the order when it matches.
+        - [ListPermissionFilter](./ListPermissionFilter.md) `subsection`: Permission-based filter that operate on list queries before execution.
+        - [ListMembershipFilter](./ListMembershipFilter.md) `subsection`: A settings object to add a membership filter to the WHERE clause of the list.
+        - [ListSearchFilter](./ListSearchFilter.md) `subsection`: Searches one or more records from the main data object and uses the id array in the where clause of the list.
+        - [ListJointFilterSettings](./ListJointFilterSettings.md) `subsection`: The settings definition for a list api to define any joint filter and combine them with an AND or OR operator
+          - [ListJointFilter](./ListJointFilter.md) `subsection`: ListJointFilter definition object for a joint filter from the main object to another related data object to filter the main list result.
+        - [ListRuntimeFilterSettings](./ListRuntimeFilterSettings.md) `subsection`: Per-list-API runtime filter behavior.
+      - [PaginationOptions](./PaginationOptions.md) `section`: Defines how pagination is handled in list-type Business APIs.
+    - [BusinessApiActionStore](./BusinessApiActionStore.md) `chapter`: Represents the centralized registry of all executable logic units (actions) that can be used inside a Business API's workflow.
+      - [FetchObjectAction](./FetchObjectAction.md) `section`: Fetches one or more records from a foreign or related data object and stores the result in the context or response.
+      - [FetchStatsAction](./FetchStatsAction.md) `section`: An action used to compute inline aggregate statistics (e.g., count, min, max, sum) from a data object.
+      - [FetchParentAction](./FetchParentAction.md) `section`: Fetches selected properties from a parent object related to the current object in context.
+      - [SearchObjectAction](./SearchObjectAction.md) `section`: Searches one or more records from the main data object or a foreign or related data object and stores the result in the context as an id array.
+      - [FetchFromElasticAction](./FetchFromElasticAction.md) `section`: Fetches data object data from its elastic search index with a raw elastic search body, and stores a normalized ENVELOPE in the action's context property: `{ items, aggregations, total }`.
+      - [WriteToElasticLogAction](./WriteToElasticLogAction.md) `section`: BusinessApiAction that appends an object to a declared ElasticLog by name.
+      - [FetchFromElasticLogAction](./FetchFromElasticLogAction.md) `section`: BusinessApiAction that queries a declared ElasticLog by name with an Elasticsearch search body and writes the hits to the action context.
+      - [GraphQueryAction](./GraphQueryAction.md) `section`: Runs a parameterized graph traversal and writes mapped records to the action context.
+      - [CollateListsAction](./CollateListsAction.md) `section`: Use CollateListsAction to collate a list of objects to another list of objects like aggregating an adress list to a user list.
+      - [FunctionCallAction](./FunctionCallAction.md) `section`: Defines a reusable logic step that calls a library-defined function using MScript syntax.
+      - [ArrowFunctionAction](./ArrowFunctionAction.md) `section`: This action defines a reusable function and sets it to the context with the contextPropertyName name.
+      - [ListMapAction](./ListMapAction.md) `section`: This action creates a new list out of a current list by mapping its items with MScript.
+      - [InterserviceCallAction](./InterserviceCallAction.md) `section`: Calls another Business API defined in a different microservice.
+        - [InterserviceApplyField](./InterserviceApplyField.md) `subsection`: A guarded single-field update on another service's record, applied through that service's typed update API, where the field NAME is computed at runtime and whitelisted at design time.
+      - [InterProjectCallAction](./InterProjectCallAction.md) `section`: Calls a Business API in a linked sibling project in the same organization.
+      - [CreateCrudAction](./CreateCrudAction.md) `section`: Defines an embedded creation operation for a related data object—typically a child or associated entity—within a Business API.
+        - [ApiAggregateData](./ApiAggregateData.md) `subsection`: Defines a single property-value pair used to populate a related data object during an aggregated operation.
+      - [CreateBulkCrudAction](./CreateBulkCrudAction.md) `section`: Defines a bulk creation operation for multiple related data objects—typically child or associated entities—within a Business API.
+      - [UpsertBulkCrudAction](./UpsertBulkCrudAction.md) `section`: Writes an array of rows into a data object with insert-or-update semantics—the bulk import twin of CreateBulkCrudAction.
+        - [BulkColumnPolicy](./BulkColumnPolicy.md) `subsection`: The onExisting policy of one column when an UpsertBulkCrudAction updates a matched row.
+      - [DeleteCrudAction](./DeleteCrudAction.md) `section`: Defines an embedded delete operation to remove related records—typically child or connected entities—within a Business API.
+      - [UpdateCrudAction](./UpdateCrudAction.md) `section`: Defines an embedded update operation for related data objects—typically child or connected entities—within a Business API.
+      - [ApiCallAction](./ApiCallAction.md) `section`: Calls an external or internal HTTP API during Business API execution.
+        - [HTTPRequest](./HTTPRequest.md) `subsection`: Defines a reusable HTTP request configuration to interact with a remote service and retrieve a JSON response.
+          - [HTTPRequestParameters](./HTTPRequestParameters.md) `subsection`: Defines the parameters to be sent with an HTTP request.
+            - [WireTokenMapItem](./WireTokenMapItem.md) `subsection`: A key-value pair whose name is a WIRE-PROTOCOL token (HTTP header or cookie name).
+        - [WireKeyMapItem](./WireKeyMapItem.md) `subsection`: A key-value pair whose name is a WIRE key (URL query parameter name or JSON body key).
+      - [GrpcCallAction](./GrpcCallAction.md) `section`: Calls a FOREIGN (non-OpenAPPL) gRPC server during Business API execution (docs/ADR-grpc-interservice-and-grpccall.md, Part B).
+        - [GrpcCallRequest](./GrpcCallRequest.md) `subsection`: The request message for a `GrpcCallAction` — a list of proto-field-to-MScript mappings.
+      - [AiCallAction](./AiCallAction.md) `section`: Invokes an AI model such as OpenAI or Anthropic to perform text generation, refinement, classification, or summarization.
+        - [AIPromptTemplate](./AIPromptTemplate.md) `subsection`: Defines the structure of an AI prompt using a two-part design: a static system-level instruction and a dynamic user message populated via MScript from the current context.
+      - [DecisionAction](./DecisionAction.md) `section`: Asks a calibrated decision provider typed questions about a piece of state and writes the typed answers into the workflow context.
+        - [DecisionCacheSettings](./DecisionCacheSettings.md) `subsection`: Caching for a DecisionAction or a FuzzyDomainFilter - both use the ONE decision cache of the decision layer, stored in the service's Redis.
+      - [AgentCallAction](./AgentCallAction.md) `section`: Invokes an AI Agent from within a Business API workflow.
+      - [MembershipCheckAction](./MembershipCheckAction.md) `section`: Defines access control based on membership rules configured on a data object.
+      - [PermissionCheckAction](./PermissionCheckAction.md) `section`: Defines a global permission check that evaluates whether the user holds specific platform or service-level permissions.
+      - [ObjectPermissionCheckAction](./ObjectPermissionCheckAction.md) `section`: Performs a permission check scoped to a specific object instance.
+      - [ReadJwtTokenAction](./ReadJwtTokenAction.md) `section`: Defines a read jwt token operation from either context, session or request and write its payload to the context with the contextPropertyName after validating it.
+      - [ValidationAction](./ValidationAction.md) `section`: Defines a flexible business rule that performs a dynamic condition check during Business API execution.
+      - [AddToContextAction](./AddToContextAction.md) `section`: Adds one or more calculated values to the runtime context (`this`) at a specific point in the Business API flow.
+        - [ContextData](./ContextData.md) `subsection`: ContextData is a container object to represent any key-value pair to write or read to/from context.
+      - [AddToResponseAction](./AddToResponseAction.md) `section`: Adds one or more properties from the current context to the final response object after the main operation completes.
+      - [RemoveFromResponseAction](./RemoveFromResponseAction.md) `section`: Removes one or more properties from the final API response before it is returned to the client.
+      - [RenderDataAction](./RenderDataAction.md) `section`: Renders a literal string with flat ${key} substitutions from inputData on nodejs.
+      - [DataToFileAction](./DataToFileAction.md) `section`: Converts a given input into a downloadable file such as CSV, JSON, or XLSX.
+        - [TabularColumnMap](./TabularColumnMap.md) `subsection`: One column of a tabular import or export.
+        - [SheetLayout](./SheetLayout.md) `subsection`: The layout of an exported xlsx worksheet around the data table.
+          - [SheetTotal](./SheetTotal.md) `subsection`: One cell of the totals row written under the exported table.
+          - [SheetCell](./SheetCell.md) `subsection`: One free cell of an exported worksheet: any address, any MScript.
+        - [TabularTextOptions](./TabularTextOptions.md) `subsection`: Serializer options for the text formats of a ROWS mode export.
+      - [FileToDataAction](./FileToDataAction.md) `section`: Parses a tabular file into an array of row objects keyed by data-model property names, and stores `{ rows, rejected, total }` in the action's context property.
+      - [RenderPdfAction](./RenderPdfAction.md) `section`: Renders a PDF from a `PdfTemplate` + input data, or from pre-rendered HTML.
+      - [RedirectAction](./RedirectAction.md) `section`: Redirects the client to a new URL after the API execution.
+      - [CreateJWTTokenAction](./CreateJWTTokenAction.md) `section`: Generates a signed JWT token from a given payload.
+      - [SignDataWithProjectKeyAction](./SignDataWithProjectKeyAction.md) `section`: Signs an arbitrary value with the project's Ed25519 private key and stores a verifiable envelope on the workflow context.
+      - [CreateObjectAction](./CreateObjectAction.md) `section`: Constructs an in-memory JavaScript object from key-value pairs and writes it to the context.
+        - [ObjectData](./ObjectData.md) `subsection`: Represents a single property assignment used when constructing a new object via `CreateObjectAction`.
+      - [PublishEventAction](./PublishEventAction.md) `section`: Publishes a message to an event topic (such as a message bus, queue, or pub/sub channel) as part of the Business API flow.
+      - [ReadFromRedisAction](./ReadFromRedisAction.md) `section`: Reads a value from Redis using a dynamically computed key and writes the result into the context under a specified property name (contextPropertyName).
+      - [WriteToRedisAction](./WriteToRedisAction.md) `section`: Writes a value to Redis under a computed key.
+      - [SendMailAction](./SendMailAction.md) `section`: Sends an email using a configured email provider — or, when `mailAccount` is set, ON BEHALF OF a project MailAccount through the mcpbff mail bridge (docs/ADR-mail-account-family.md).
+      - [CheckMailboxAction](./CheckMailboxAction.md) `section`: Checks a MailAccount's mailbox on demand and stores the matching message summaries in the context.
+      - [ReadMailAction](./ReadMailAction.md) `section`: Fetches ONE full message from a MailAccount's mailbox by its RFC 5322 `messageId` — bodies (`text`/`html`) plus attachment content — and stores it in the context.
+      - [SendSmsAction](./SendSmsAction.md) `section`: Sends an SMS message using a configured SMS provider.
+      - [SendPushNotificationAction](./SendPushNotificationAction.md) `section`: Sends a push notification using a configured provider (e.g., Firebase, OneSignal).
+      - [SendWhatsAppAction](./SendWhatsAppAction.md) `section`: Sends a WhatsApp Business message using a configured WhatsApp provider — either Meta WhatsApp Cloud API (provider='whatsapp') or Twilio's WhatsApp channel (provider='twilio' with kind='whatsapp').
+      - [PaymentAction](./PaymentAction.md) `section`: Calls the proper native payment provider functions according to the current stage of payment lifecycle.
+      - [RefundAction](./RefundAction.md) `section`: Issues a refund against a prior captured payment via the bound PaymentProvider.
+      - [InvoiceAction](./InvoiceAction.md) `section`: Drives the accounts-receivable invoice lifecycle for an invoicing-enabled DataObject through the generated per-object InvoiceManager.
+      - [FiscalizeAction](./FiscalizeAction.md) `section`: Drives the regulatory fiscalization lifecycle for a fiscalization-enabled DataObject through the generated per-object FiscalizationManager.
+      - [PayoutAction](./PayoutAction.md) `section`: Triggers a marketplace payout to a connected sub-merchant account via the bound PaymentProvider.
+      - [SubscriptionAction](./SubscriptionAction.md) `section`: Creates, updates, cancels, or refreshes a recurring subscription against the bound PaymentProvider.
+      - [VerifyWebhookAction](./VerifyWebhookAction.md) `section`: Verifies a webhook call of a provider with its signature secret and reads the parameters and writes them to the context.
+      - [IntegrationAction](./IntegrationAction.md) `section`: Calls a third-party API integration from the platform integration catalog (e.g., AWS S3, Stripe, Google Maps).
+        - [IntegrationParameter](./IntegrationParameter.md) `subsection`: Defines a single named input to be passed to a native integration provider action.
+      - [LoopAction](./LoopAction.md) `section`: Defines a repeated execution block within a Business API workflow.
+      - [ParallelAction](./ParallelAction.md) `section`: Defines a non-blocking execution group in which multiple actions are executed in parallel.
+      - [CartValidationAction](./CartValidationAction.md) `section`: Validates a shopping cart before checkout.
+      - [CartCheckoutAction](./CartCheckoutAction.md) `section`: Processes shopping cart checkout.
+      - [CouponValidationAction](./CouponValidationAction.md) `section`: Validates a coupon code for eligibility against the active cart and optionally calculates the discount amount.
+      - [EmitSseEventAction](./EmitSseEventAction.md) `section`: Emits a custom SSE event during the workflow.
+      - [IteratorAction](./IteratorAction.md) `section`: A generic streaming action whose method returns an async iterable.
+      - [VideoRoomTokenAction](./VideoRoomTokenAction.md) `section`: Authorizes a room identity and mints its provider join token or broadcast playback grant.
+      - [VideoRoomControlAction](./VideoRoomControlAction.md) `section`: Performs a provider control-plane operation on a declared VideoRoom.
+      - [ContentTransitionAction](./ContentTransitionAction.md) `section`: BusinessApiAction that drives the publishing lifecycle of a declared ContentModel record from inside a composed workflow — publish, unpublish, schedule, unschedule, archive, restore.
+    - [BusinessWorkflow](./BusinessWorkflow.md) `chapter`: Defines the execution flow milestones of a Business API.
+      - [CreateBusinessWorkflow](./CreateBusinessWorkflow.md) `section`: Defines the standard execution milestones for a `create`-type Business API.
+      - [UpdateBusinessWorkflow](./UpdateBusinessWorkflow.md) `section`: Defines the execution milestones for an `update`-type Business API, used to modify an existing record.
+      - [DeleteBusinessWorkflow](./DeleteBusinessWorkflow.md) `section`: Defines the execution milestones for a `delete`-type Business API, which removes or soft-deletes a single record.
+      - [GetBusinessWorkflow](./GetBusinessWorkflow.md) `section`: Defines the execution milestones for a `get`-type Business API, which retrieves a single record.
+      - [ListBusinessWorkflow](./ListBusinessWorkflow.md) `section`: Defines the execution milestones for a `list`-type Business API, which returns a paginated set of records.
+  - [ServiceLibrary](./ServiceLibrary.md) `chapter`: Defines a custom service library for your OpenAPPL service.
+    - [LibModule](./LibModule.md) `section`: Defines a module file in the service library.
+      - [LibModuleBody](./LibModuleBody.md) `subsection`: Multi-language body of a `LibModule` — one optional body per language/format key.
+    - [NativeKernel](./NativeKernel.md) `section`: Defines a native compute kernel exposed to the service as a library function.
+      - [KernelParam](./KernelParam.md) `subsection`: A single parameter of a `NativeKernel`.
+      - [KernelSource](./KernelSource.md) `subsection`: A fetchable reference to one source file (or archive) of the existing native library a `NativeKernel` wraps.
+    - [WasmModule](./WasmModule.md) `section`: Defines a portable WebAssembly module exposed to the service as library functions.
+      - [WasmSource](./WasmSource.md) `subsection`: A fetchable reference to the `.wasm` binary (or `.wat` text) a `WasmModule` runs.
+      - [WasmExport](./WasmExport.md) `subsection`: One exported function of a `WasmModule`, surfaced to the service library as `LIB.<name>(...)`.
+        - [WasmParam](./WasmParam.md) `subsection`: A single parameter of a `WasmExport`.
+    - [Calculation](./Calculation.md) `section`: A compute *primitive* — the Tier-1 substrate of the compute layer (docs/ADR-calculation-layer.md §1/§5).
+      - [CalculationExecution](./CalculationExecution.md) `subsection`: Execution policy for a `Calculation` primitive (docs/ADR-calculation-layer.md §1/§8).
+    - [PdfTemplate](./PdfTemplate.md) `section`: Defines a PDF rendering template used by `RenderPdfAction` to produce styled PDFs (e.g., invoices, receipts, statements).
+      - [PaperMargin](./PaperMargin.md) `subsection`: Page margins for PDF rendering, in millimeters.
+      - [PdfMetadata](./PdfMetadata.md) `subsection`: Document-level metadata embedded in the generated PDF (visible in PDF readers' document-properties pane and used by some catalog/search systems).
+    - [ServiceHook](./ServiceHook.md) `section`: One lifecycle hook of the service library: runs the referenced library function (a `functions[]` entry of the SAME service) automatically when the service starts or gracefully stops.
+  - [EdgeController](./EdgeController.md) `chapter`: An edge controller defines a fully customized route handled by a developer-defined function.
+    - [EdgeControllerOptions](./EdgeControllerOptions.md) `section`: Options that define the execution behavior of the edge controller, including the function to call and login requirement.
+    - [EdgeRestSettings](./EdgeRestSettings.md) `section`: Defines the public REST endpoint for the edge controller.
+    - [EdgeKafkaSettings](./EdgeKafkaSettings.md) `section`: Defines Kafka consumer/producer settings for the edge controller.
+    - [EdgeCronSettings](./EdgeCronSettings.md) `section`: Reserved cron settings of an edge controller.
+  - [AIAgent](./AIAgent.md) `chapter`: Defines a standalone AI agent at the service level.
+    - [AgentBasics](./AgentBasics.md) `section`: Core identity, execution mode and service placement of the AI agent.
+    - [AgentModelSettings](./AgentModelSettings.md) `section`: AI provider and model configuration for the agent.
+      - [AgentContextSource](./AgentContextSource.md) `subsection`: Defines a dynamic data source that fetches context at runtime.
+    - [AgentInputSettings](./AgentInputSettings.md) `section`: Defines how incoming request data is transformed into the agent's prompt or input.
+    - [AgentOutputSettings](./AgentOutputSettings.md) `section`: Controls how the AI model's response is transformed before returning to the client.
+    - [AgentToolSettings](./AgentToolSettings.md) `section`: Configures which tools the agent can invoke during its execution loop.
+      - [AgentCustomTool](./AgentCustomTool.md) `subsection`: Defines a custom tool that the agent can invoke during its execution loop.
+      - [AgentIntegrationToolConfig](./AgentIntegrationToolConfig.md) `subsection`: Configures an integration provider as a tool source for the agent.
+    - [AgentChatSettings](./AgentChatSettings.md) `section`: Conversation history management for chat-mode agents.
+    - [AgentOrchestrationSettings](./AgentOrchestrationSettings.md) `section`: Multi-agent orchestration configuration for orchestrator-mode agents.
+      - [AgentOrchestrationStep](./AgentOrchestrationStep.md) `subsection`: Defines a single step in an orchestrator agent's workflow.
+    - [AgentImageSettings](./AgentImageSettings.md) `section`: Image generation parameters.
+    - [AgentAudioSettings](./AgentAudioSettings.md) `section`: Audio generation or transcription parameters.
+    - [AgentVideoSettings](./AgentVideoSettings.md) `section`: Video generation parameters.
+    - [AgentCustomEndpoint](./AgentCustomEndpoint.md) `section`: Custom provider endpoint configuration.
+    - [AgentEndpointSettings](./AgentEndpointSettings.md) `section`: Controls how the agent is exposed as an API endpoint.
+    - [AgentGuardrails](./AgentGuardrails.md) `section`: Safety limits and cost controls for the agent.
+      - [AgentDecisionGate](./AgentDecisionGate.md) `subsection`: A calibrated decision gate over an agent's tool calls.
+    - [AgentEvalSettings](./AgentEvalSettings.md) `section`: Declarable evaluation suite for the agent.
+      - [AgentEvalCase](./AgentEvalCase.md) `subsection`: One evaluation case: an input to run the agent with and what to assert about the answer.
+    - [AgentKafkaController](./AgentKafkaController.md) `section`: Defines a Kafka-triggered controller for the AI agent.
+  - [RealtimeHub](./RealtimeHub.md) `chapter`: Defines a bidirectional realtime communication hub powered by Socket.IO.
+    - [HubBasics](./HubBasics.md) `section`: Core identity of the realtime hub.
+    - [HubRoomSettings](./HubRoomSettings.md) `section`: Configures how rooms are managed and who can join them.
+      - [HubAuthSource](./HubAuthSource.md) `subsection`: A DataObject-based authorization source for hub room access.
+      - [HubAuthScript](./HubAuthScript.md) `subsection`: An MScript-based authorization source for hub room access.
+    - [HubRole](./HubRole.md) `section`: Defines a named permission set for hub users.
+    - [HubMessageSettings](./HubMessageSettings.md) `section`: Controls message structure and persistence.
+      - [HubCustomMessageType](./HubCustomMessageType.md) `subsection`: Defines a custom (app-specific) message type for the hub.
+        - [HubCustomField](./HubCustomField.md) `subsection`: Defines a single field in a custom message type's content schema.
+    - [HubEventSettings](./HubEventSettings.md) `section`: Configures standard events, auto-bridged DataObject events, custom events, and external Kafka events.
+      - [HubCustomEvent](./HubCustomEvent.md) `subsection`: Declares an app-specific event that clients emit within the hub, for signals like game actions, cursor positions or custom notifications.
+      - [HubKafkaEvent](./HubKafkaEvent.md) `subsection`: Bridges a Kafka topic message into the hub as a room-scoped event.
+    - [HubHistorySettings](./HubHistorySettings.md) `section`: Controls whether message history is sent to clients when they join a room.
+    - [HubGuardrails](./HubGuardrails.md) `section`: Safety limits, rate controls, moderation settings, and caching for the hub.
+    - [HubLogic](./HubLogic.md) `section`: Server-side logic hooks for the hub.
+      - [HubMessageHandler](./HubMessageHandler.md) `subsection`: Intercepts a specific custom message type and routes it through an MScript before broadcast.
+      - [HubScheduledAction](./HubScheduledAction.md) `subsection`: A recurring action that runs on an interval for each active room.
+  - [VideoRoom](./VideoRoom.md) `chapter`: Defines a video-conference / live-broadcast room surface for the service (docs/ADR-video-conference-pattern-family.md).
+    - [VideoRoomBasics](./VideoRoomBasics.md) `section`: Core identity of the video room.
+    - [VideoRoomSettings](./VideoRoomSettings.md) `section`: Binds the video room to an existing DataObject and configures who may join and with which roomRole.
+      - [VideoRoomAuthSource](./VideoRoomAuthSource.md) `subsection`: A DataObject-based authorization source for video room access.
+      - [VideoRoomAuthScript](./VideoRoomAuthScript.md) `subsection`: An MScript-based authorization source for video room access, evaluated with 'user' (session data) and 'room' (room record) as context variables.
+    - [VideoRoomRole](./VideoRoomRole.md) `section`: Defines a named media-capability set for video room users.
+    - [VideoRoomSessionSettings](./VideoRoomSessionSettings.md) `section`: Controls the auto-generated session persistence DataObjects.
+    - [VideoRoomRecordingSettings](./VideoRoomRecordingSettings.md) `section`: Recording configuration for the room.
+    - [VideoRoomBroadcastSettings](./VideoRoomBroadcastSettings.md) `section`: Live-broadcast delivery for webinar and broadcast room kinds.
+      - [VideoSimulcastTarget](./VideoSimulcastTarget.md) `subsection`: One external RTMP push target of a broadcast (e.g. a YouTube Live / Twitch / LinkedIn Live endpoint).
+    - [VideoRoomAiPipeline](./VideoRoomAiPipeline.md) `section`: The AI layer on top of the video room (docs/ADR-video-conference-pattern-family.md §8) — pure composition of existing OpenAPPL layers, no new provider system.
+      - [VideoTranscriptionSettings](./VideoTranscriptionSettings.md) `subsection`: Speech-to-text configuration for the room.
+      - [VideoLiveTranslationSettings](./VideoLiveTranslationSettings.md) `subsection`: Live caption translation for the room.
+      - [VideoMeetingAnalysisSettings](./VideoMeetingAnalysisSettings.md) `subsection`: LLM meeting-analysis passes over the room transcript (requires aiPipeline.transcription.enabled).
+        - [VideoCustomAnalysis](./VideoCustomAnalysis.md) `subsection`: One domain-specific LLM analysis pass over the room transcript.
+      - [VideoSmartSearchSettings](./VideoSmartSearchSettings.md) `subsection`: Search over the room's transcripts and insights.
+    - [VideoRoomEventSettings](./VideoRoomEventSettings.md) `section`: Kafka lifecycle event publication for the room.
+    - [VideoRoomGuardrails](./VideoRoomGuardrails.md) `section`: Safety limits for the room.
+    - [VideoMeetingAgent](./VideoMeetingAgent.md) `section`: An AI meeting/voice agent that joins the video room as a participant (docs/ADR-video-live-ai-layer.md §4).
+  - [ContentModel](./ContentModel.md) `chapter`: A declarative content model generates storage objects, editorial APIs, publishing transitions, and headless delivery.
+    - [ContentModelBasics](./ContentModelBasics.md) `section`: Core identity of the content model.
+    - [ContentField](./ContentField.md) `section`: One structured property of a content model (or of its child items).
+    - [ContentBodySettings](./ContentBodySettings.md) `section`: The rich-content body of a content model (or of its child items via childSettings.bodyFormat).
+      - [ContentRichTextAllowRule](./ContentRichTextAllowRule.md) `subsection`: One rule of bodySettings.richTextAllowlist: a tag the richText body may keep, with the extra attributes and the exact class names it may carry.
+        - [ContentRichTextAllowAttribute](./ContentRichTextAllowAttribute.md) `subsection`: One attribute a richTextAllowlist rule admits on its tag.
+    - [ContentChildSettings](./ContentChildSettings.md) `section`: The owned-children capability of a content model.
+    - [ContentMediaSettings](./ContentMediaSettings.md) `section`: Media fields hold bucket asset descriptors; upload through the existing service bucket routes, then attach the descriptor using the editorial update API.
+    - [ContentRoutingSettings](./ContentRoutingSettings.md) `section`: Public delivery routing generates a slug on first publish from slugSource; drafts are addressed by id in editorial APIs.
+    - [ContentLocalizationSettings](./ContentLocalizationSettings.md) `section`: The localization capability of a content model.
+    - [ContentPublishingSettings](./ContentPublishingSettings.md) `section`: The publishing-workflow capability.
+      - [ContentApprovalSettings](./ContentApprovalSettings.md) `subsection`: Editorial approval workflow of a content model (publishingSettings.approvalSettings).
+    - [ContentVersioningSettings](./ContentVersioningSettings.md) `section`: The revision-history capability of a content model.
+    - [ContentPermissionSettings](./ContentPermissionSettings.md) `section`: Editorial permissions of a content model, expressed over the project's user roles (session.roleId).
+    - [ContentSearchSettings](./ContentSearchSettings.md) `section`: The search capability of a content model.
+    - [ContentEventSettings](./ContentEventSettings.md) `section`: Content lifecycle events are published to the project Kafka bus for transitions and version capture.
+      - [ContentWebhook](./ContentWebhook.md) `subsection`: One outbound publishing webhook target of a content model (eventSettings.webhooks[]).
+    - [ObjectModeration](./ObjectModeration.md) `section`: Decision-moderated writes on a data object.
+  - [EventSubscription](./EventSubscription.md) `chapter`: Defines a client-facing Kafka event subscription channel.
+    - [EventSubBasics](./EventSubBasics.md) `section`: Core identity of the event subscription.
+    - [EventSubTopic](./EventSubTopic.md) `section`: A Kafka topic included in this subscription.
+    - [EventSubAuth](./EventSubAuth.md) `section`: Authorization configuration for this event subscription.
+  - [DbBucket](./DbBucket.md) `chapter`: A database-backed file storage bucket.
+    - [DbBucketBasics](./DbBucketBasics.md) `section`: Core settings for the database bucket including its name, description, size limits, allowed file types, and antivirus scanning.
+    - [DbBucketAuthorization](./DbBucketAuthorization.md) `section`: Authorization settings for read and write access to the bucket.
+    - [DbBucketOwnerConfig](./DbBucketOwnerConfig.md) `section`: Optional pairing with another data object.
+      - [DbBucketOwnerConfigSettings](./DbBucketOwnerConfigSettings.md) `subsection`: Configuration for the owner data object pairing.
+  - [RemoteBucket](./RemoteBucket.md) `chapter`: A cloud-storage-backed file bucket.
+    - [RemoteBucketBasics](./RemoteBucketBasics.md) `section`: Core settings for the remote bucket including its name, description, size limits, allowed file types, and antivirus scanning.
+      - [ImageVariant](./ImageVariant.md) `subsection`: One resized copy of every image a bucket stores (see RemoteBucketBasics.imageVariants).
+    - [RemoteBucketStorage](./RemoteBucketStorage.md) `section`: Storage configuration for the remote bucket.
+    - [RemoteBucketAuthorization](./RemoteBucketAuthorization.md) `section`: Authorization settings for read and write access to the remote bucket.
+    - [RemoteBucketOwnerConfig](./RemoteBucketOwnerConfig.md) `section`: Optional pairing with another data object.
+      - [RemoteBucketOwnerConfigSettings](./RemoteBucketOwnerConfigSettings.md) `subsection`: Configuration for the owner data object pairing.
+    - [RemoteBucketSettings](./RemoteBucketSettings.md) `section`: Extension settings of a RemoteBucket's auto-generated {name}RemoteFile metadata data object.
+  - [NativeBucket](./NativeBucket.md) `chapter`: A self-hosted object-storage bucket backed by a platform-PROVISIONED, SeaweedFS (S3-API-compatible) store (docs/ADR-native-bucket-pattern.md, docs/ADR-seaweedfs-nativebucket.md).
+    - [NativeBucketStorage](./NativeBucketStorage.md) `section`: Storage configuration for a NativeBucket.
+  - [ComputeJob](./ComputeJob.md) `chapter`: A compute *workload* — the primary, headline tier of the compute layer (docs/ADR-calculation-layer.md §2/§3).
+    - [ComputeJobBasics](./ComputeJobBasics.md) `section`: Defines a compute job's identity, workload type, execution mode and implementation mode.
+    - [ComputeJobSpec](./ComputeJobSpec.md) `section`: The discriminated type-specific payload of a ComputeJob, keyed by `ComputeJob.type` (§3).
+      - [AiInferenceSpec](./AiInferenceSpec.md) `subsection`: Type-specific spec for `ai-inference` ComputeJobs (docs/ADR-calculation-layer.md, Type-specific specs).
+        - [AiInferenceModel](./AiInferenceModel.md) `subsection`: Locates the model an AiInferenceSpec loads.
+      - [BatchTransformSpec](./BatchTransformSpec.md) `subsection`: Type-specific spec for `batch-transform` ComputeJobs (ETL, imports/exports, data cleaning, report precompute, analytics rebuilds, aggregation over millions of rows).
+        - [BatchAggregation](./BatchAggregation.md) `subsection`: Aggregation spec for a BatchTransformSpec — the group-by keys and the aggregate functions applied over each group before the result is written.
+      - [IndexingSpec](./IndexingSpec.md) `subsection`: Type-specific spec for `indexing` ComputeJobs — the AI-native-app workhorse: chunk → embed → write index.
+        - [IndexingChunking](./IndexingChunking.md) `subsection`: Chunking configuration for an IndexingSpec — how source documents are split into index units.
+      - [MediaProcessingSpec](./MediaProcessingSpec.md) `subsection`: Type-specific spec for `media-processing` ComputeJobs — image resize/thumbnails, PDF→image, OCR preprocessing, audio waveform, transcoding orchestration.
+      - [OptimizationSpec](./OptimizationSpec.md) `subsection`: Type-specific spec for `optimization` ComputeJobs — routing, scheduling, allocation, pricing, constraint solving.
+        - [OptimizationObjective](./OptimizationObjective.md) `subsection`: The objective of an OptimizationSpec — whether to minimize or maximize, and the expression being optimized.
+      - [SimulationSpec](./SimulationSpec.md) `subsection`: Type-specific spec for `simulation` ComputeJobs — Monte Carlo, agent/state-step, time-series simulation.
+      - [RiskCalculationSpec](./RiskCalculationSpec.md) `subsection`: Type-specific spec for `risk-calculation` ComputeJobs — portfolio risk, pricing models, credit scoring, forecasting, actuarial.
+      - [CryptoBatchSpec](./CryptoBatchSpec.md) `subsection`: Schema-only v1 specification for crypto-batch ComputeJobs, including proposed bulk hashing, verification and archive presets.
+      - [CustomSpec](./CustomSpec.md) `subsection`: Type-specific spec for `custom` ComputeJobs — the bring-your-own-code escape hatch (docs/ADR-calculation-layer.md §12).
+    - [ComputeJobInput](./ComputeJobInput.md) `section`: Declares a ComputeJob's input source.
+    - [ComputeJobResult](./ComputeJobResult.md) `section`: Declares a ComputeJob's result shape (§2).
+    - [ComputeJobGraphIO](./ComputeJobGraphIO.md) `section`: Graph I/O ends for a ComputeJob (docs/ADR-graph-database-layer.md §12).
+      - [GraphIORead](./GraphIORead.md) `subsection`: The graph INPUT of a ComputeJob.graphIO (docs/ADR-graph-database-layer.md §12) — names a declared GraphQuery whose result feeds the recipe.
+      - [GraphIOWrite](./GraphIOWrite.md) `subsection`: The computed-edge OUTPUT of a ComputeJob.graphIO (docs/ADR-graph-database-layer.md §12) — the projected relationship the job writes back into the graph after computing scores/clusters/embeddings.
+    - [ComputeRetryPolicy](./ComputeRetryPolicy.md) `section`: Retry policy for a ComputeJob in `job` mode (docs/ADR-calculation-layer.md §9).
+  - [EventStream](./EventStream.md) `chapter`: Declares a high-throughput event pipeline with ingestion, storage and read surfaces.
+    - [EventStreamBasics](./EventStreamBasics.md) `section`: The scalar identity + axes of an EventStream (the chapter's first section).
+      - [EventStreamEventField](./EventStreamEventField.md) `subsection`: One field of an EventStream's telemetry schema — a typed column the ingest API validates and the hot store persists.
+    - [IngestionSettings](./IngestionSettings.md) `section`: The write-path tuning for an EventStream (see the family's design record, §5).
+    - [HotStoreBinding](./HotStoreBinding.md) `section`: Binds an EventStream's hot store.
+    - [ColdSinkBinding](./ColdSinkBinding.md) `section`: [P4 DONE; s3Parquet=P5] Binds an EventStream's durable/archival sink for the full append-only history.
+    - [AnalyticsBinding](./AnalyticsBinding.md) `section`: [P4 DONE] Binds an EventStream's analytics store + declares rollups.
+      - [AnalyticsRollup](./AnalyticsRollup.md) `subsection`: [P4 DONE] One windowed aggregation materialized over an EventStream into the ClickHouse analytics store as a materialized-view→AggregatingMergeTree.
+    - [RetentionPolicy](./RetentionPolicy.md) `section`: [P4 DONE] An EventStream's retention/rollup/archival cadence.
+    - [EventStreamReadSurface](./EventStreamReadSurface.md) `section`: A generated read API over an EventStream's stores.
+      - [DecisionPageJudgement](./DecisionPageJudgement.md) `subsection`: Reranks or filters one bounded page of a read surface with a decision provider, in one provider request per page.
+    - [EtlPipelineBinding](./EtlPipelineBinding.md) `section`: [P5b, defined-but-deferred] The Spark-offloaded data-cleaning/ETL stage of an EventStream.
+      - [CleaningRule](./CleaningRule.md) `subsection`: [P5b, defined-but-deferred] One built-in cleanup rule lowered into the Spark ETL transform (see the family's design record, §4.1).
+        - [CleaningClassifySettings](./CleaningClassifySettings.md) `subsection`: A classify cleaning rule: judges the rule's `field` with a decision provider and writes a judged column plus `<targetColumn>Confidence` and `<targetColumn>DecidedBy` (the pinned model).
+  - [JobStream](./JobStream.md) `chapter`: An async-job-orchestration pattern (docs/ADR-async-job-orchestration-patterns.md).
+    - [JobStreamBasics](./JobStreamBasics.md) `section`: Defines a job stream's identity, work topic, partition key and enqueue input schema.
+      - [JobStreamInputField](./JobStreamInputField.md) `subsection`: One field of a JobStream's enqueue input schema: `name`, `type` and `required`.
+    - [JobStreamTargetBinding](./JobStreamTargetBinding.md) `section`: Binds a job stream to a processing BusinessApi in the same service.
+    - [JobStreamObservation](./JobStreamObservation.md) `section`: Configures reconnectable SSE observation and durable event replay for a job stream.
+    - [JobStreamState](./JobStreamState.md) `section`: Configures a job stream's durable status record and result link.
+    - [JobStreamAccess](./JobStreamAccess.md) `section`: The authorization config of a JobStream (section).
+  - [WaitingRoom](./WaitingRoom.md) `chapter`: A PULL-mode admission-control queue pattern (docs/ADR-async-job-orchestration-patterns.md, the WaitingRoom section) — the Taylor-Swift-ticketing turnstile.
+    - [WaitingRoomBasics](./WaitingRoomBasics.md) `section`: Defines a waiting room's identity, fairness policy and abandonment timeout.
+    - [WaitingRoomStages](./WaitingRoomStages.md) `section`: The staged admission gates of a WaitingRoom (section): the ordered `stages` list — room 0 (the entry room a join lands in) through the final room (final admission mints the QueToken).
+      - [WaitingRoomStage](./WaitingRoomStage.md) `subsection`: Defines one Redis admission stage with a rate ceiling, optional rate floor and capacity.
+    - [QueTokenSettings](./QueTokenSettings.md) `section`: The admission token config of a WaitingRoom (section): the one-shot, time-boxed `ttlSeconds` and Redis-backed `singleUse` semantics of the QueToken minted when a waiter reaches final admission.
+    - [WaitingRoomTargetBinding](./WaitingRoomTargetBinding.md) `section`: Binds the PUBLIC BusinessApi a WaitingRoom fronts (section): the target `api` name (a businessLogic[] BusinessApi in THIS service) + `action`.
+    - [WaitingRoomPositionChannel](./WaitingRoomPositionChannel.md) `section`: The room's own realtime/SSE position channel (section): the `channelName` clients subscribe to for live position (ZRANK) and admission updates, the `transport`, and `emitPositionEverySeconds`.
+  - [LoadShield](./LoadShield.md) `chapter`: The service's single in-process priority load shedder (docs/ADR-loadshield-priority-load-shedding.md) — an always-on guard for the WHOLE service against UNPLANNED overload, modeled on Uber's Cinnamon.
+    - [LoadShieldBasics](./LoadShieldBasics.md) `section`: Defines a load shield's identity, enabled flag and target queue latency.
+    - [LoadShieldTiers](./LoadShieldTiers.md) `section`: The shield's per-API/action shed-priority policy (section): the `assignments` list of `LoadShieldTierAssignment` entries.
+      - [LoadShieldTierAssignment](./LoadShieldTierAssignment.md) `subsection`: One explicit shed-priority assignment: `{name?, api, action?, tier}`.
+    - [LoadShieldExemptions](./LoadShieldExemptions.md) `section`: Names APIs that bypass the load shield entirely.
+  - [SeedData](./SeedData.md) `chapter`: A declarative seed-data record upserted into one of the service's DataObjects at service startup, after migrations run and after the kafka producer is wired.
+    - [SeedDataBasics](./SeedDataBasics.md) `section`: Identity and upsert policy of one seed record: the target DataObject, the matchBy idempotency key, and the value names that are seeded once and never refreshed.
+    - [DataMapItem](./DataMapItem.md) `section`: Represents a single key-value pair used in most context.
+  - [OAuthFlow](./OAuthFlow.md) `chapter`: A declarative OAuth redirect flow hosted by the service.
+    - [OAuthFlowBasics](./OAuthFlowBasics.md) `section`: Identity and transport of one OAuth flow: the provider it binds to, the requested scopes, the start/callback route shape, the completion Kafka topic, and whether an unknown identity may register.
+    - [OAuthIdentityGrant](./OAuthIdentityGrant.md) `section`: A single identity grant on an OAuthFlow: the provider VERIFIES `identity` (a user verification column) when `condition` (a JS expression over the normalized OAuth `profile`) is truthy.
+  - [GraphServiceLayer](./GraphServiceLayer.md) `chapter`: The service's graph-database surface, namespaced under `service.graphLayer` so the graph collections don't pollute the Service top level (docs/ADR-graph-database-layer.md §4c/§8/§9).
+    - [GraphEdge](./GraphEdge.md) `section`: A standalone, graph-only relationship hosted on a service (docs/ADR-graph-database-layer.md §4c).
+    - [GraphQuery](./GraphQuery.md) `section`: A declarative graph-traversal query archetype on a service (docs/ADR-graph-database-layer.md §8b).
+      - [GraphQuerySpec](./GraphQuerySpec.md) `subsection`: The discriminated type-specific payload of a GraphQuery, keyed by `GraphQuery.type` (docs/ADR-graph-database-layer.md §8b).
+        - [ReachableNodesSpec](./ReachableNodesSpec.md) `subsection`: Spec for `reachableNodes` — variable-length traversal from a source node over given edge types, filtered on the target's projected properties (docs/ADR-graph-database-layer.md §8b / Cypher map).
+        - [EffectivePermissionSpec](./EffectivePermissionSpec.md) `subsection`: Spec for `effectivePermission` — boolean path-existence from a subject to a resource over membership + grant + containment edges (docs/ADR-graph-database-layer.md §8b / Cypher map).
+        - [PermissionExplainSpec](./PermissionExplainSpec.md) `subsection`: Spec for `permissionExplain` — returns the matched PATH(S) from subject to resource, not just a boolean (docs/ADR-graph-database-layer.md §8b / Cypher map).
+        - [HierarchyTraversalSpec](./HierarchyTraversalSpec.md) `subsection`: Spec shared by `ancestors` and `descendants` — upward or downward traversal of a single hierarchy edge (docs/ADR-graph-database-layer.md §8b).
+        - [ShortestPathSpec](./ShortestPathSpec.md) `subsection`: Spec for `shortestPath` — `shortestPath((a)-[*]-(b))` between two nodes (docs/ADR-graph-database-layer.md §8b).
+        - [NeighborhoodSpec](./NeighborhoodSpec.md) `subsection`: Spec for `neighborhood` — N-hop expansion around a node (docs/ADR-graph-database-layer.md §8b).
+        - [RecommendationSpec](./RecommendationSpec.md) `subsection`: Spec for `recommendation` — a collaborative-filtering traversal: peers who share an edge with the subject, then THEIR other targets (docs/ADR-graph-database-layer.md §8b / §12).
+        - [CustomGraphQuerySpec](./CustomGraphQuerySpec.md) `subsection`: Spec for `custom` — the bring-your-own-Cypher escape hatch (docs/ADR-graph-database-layer.md §8b).
+        - [ScopedRolePermissionSpec](./ScopedRolePermissionSpec.md) `subsection`: Spec shared by `scopedRolePermission` and `scopedRoleExplain` — RBAC over ReBAC.
+          - [ScopedRoleScope](./ScopedRoleScope.md) `subsection`: One scope level of a ScopedRolePermissionSpec — where a role can be held (e.g. the project itself, or the workspace the project belongs to).
+          - [ScopedRoleCondition](./ScopedRoleCondition.md) `subsection`: An equality filter on the membership edge of a ScopedRolePermissionSpec (e.g. `status` equals `active`).
+          - [ScopedRoleGrant](./ScopedRoleGrant.md) `subsection`: How the role picked by a ScopedRolePermissionSpec becomes a decision.
+          - [ScopedRoleDeny](./ScopedRoleDeny.md) `subsection`: Explicit denies of a ScopedRolePermissionSpec.
+    - [HierarchicalResourceGraph](./HierarchicalResourceGraph.md) `section`: The flagship composite graph pattern (docs/ADR-graph-database-layer.md §9).
+      - [HierarchicalEdge](./HierarchicalEdge.md) `subsection`: One edge of a HierarchicalResourceGraph (docs/ADR-graph-database-layer.md §9).
+      - [PermissionInheritancePolicy](./PermissionInheritancePolicy.md) `subsection`: Declared inheritance policy for a HierarchicalResourceGraph.
+  - [ServiceFiles](./ServiceFiles.md) `chapter`: The service's design-time static files (`service.serviceFiles`): a chapter holding one `manifest` section that lists every file the service carries.
+    - [ServiceFileManifest](./ServiceFileManifest.md) `section`: The manifest of the service's files (section): the `files` list of `ServiceFile` entries.
+      - [ServiceFile](./ServiceFile.md) `subsection`: One design-time service file: `{path, visibility, contentType, size, sha256}`.
+  - [CronJob](./CronJob.md) `chapter`: A scheduled job of the service: a cron expression that calls one service library function directly (no Business API, no cron controller).
+    - [CronJobBasics](./CronJobBasics.md) `section`: The identity section of a CronJob (`jobBasics`): name, description, enabled flag, the `library.functions` module it calls and the timeout of one run.
+    - [CronJobScheduleSettings](./CronJobScheduleSettings.md) `section`: The schedule section of a CronJob (`scheduleSettings`): cron expression, time zone, run mode and the startup run.
+
+</details>
+
+## Outside the tree
+
+These patterns are not held by a property of another pattern: abstract bases (used through the patterns that extend them), value types such as expressions and references, and patterns kept for older blueprints.
+
+- [BusinessApiAction](./BusinessApiAction.md) `unclassified`: Abstract base class for all Business API actions.
+- [DataClauseSettings](./DataClauseSettings.md) `unclassified`: Defines additional data values to be used in create or update operations.
+- [DataObjectName](./DataObjectName.md) `unclassified`: Represents a reference to a data object within the project.
+- [LocalDataObjectName](./LocalDataObjectName.md) `unclassified`: Represents a reference to a data object within the same service.
+- [MScript](./MScript.md) `unclassified`: Represents an OpenAPPL expression used for logic, validation, or configuration.
+- [PropRefer](./PropRefer.md) `unclassified`: Represents a reference to a property of a data object, optionally renaming it in the current context.
+- [RemoteServiceAuthentication](./RemoteServiceAuthentication.md) `unclassified`: Not available: AuthBasics carries this type only as a disabled slot, so no blueprint can enable it and nothing is generated from it.
+- [RemoteServiceAuthenticationConfig](./RemoteServiceAuthenticationConfig.md) `unclassified`: Not available: reachable only through the disabled RemoteServiceAuthentication slot of AuthBasics, so nothing is generated from it.
+- [RemoteSession](./RemoteSession.md) `unclassified`: Not available: AuthBasics carries this type only as a disabled slot, so no blueprint can enable it and nothing is generated from it.
+- [RemoteSessionConfig](./RemoteSessionConfig.md) `unclassified`: Not available: reachable only through the disabled RemoteSession slot of AuthBasics, so nothing is generated from it.
+- [SimpleCheck](./SimpleCheck.md) `unclassified`: Defines a lightweight conditional validation.
+- [ViewLookup](./ViewLookup.md) `unclassified`: Defines a lookup operation in a DataView, typically used to enrich an object with a human-readable label or translated text from a dictionary index.

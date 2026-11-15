@@ -1,0 +1,532 @@
+{
+  "$comment": "The design document set: its order, its dependencies and the sections each document must have. Every document is the local file design/<docName>.md (fan-out documents design/<prefix><name>.md); the writer named by each entry is the procedure that writes it.",
+  "schemaVersion": 1,
+  "stages": [
+    "D0",
+    "D1",
+    "D2",
+    "D2'",
+    "D3",
+    "D3'",
+    "D4",
+    "D4'",
+    "D5",
+    "D5'",
+    "T1",
+    "T2"
+  ],
+  "platformFlags": [
+    {
+      "flag": "hasAuthentication",
+      "specDoc": "auth-spec",
+      "default": true
+    },
+    {
+      "flag": "hasNotifications",
+      "specDoc": "notification-definitions",
+      "default": true
+    },
+    {
+      "flag": "hasBff",
+      "specDoc": "bff-spec",
+      "default": true
+    },
+    {
+      "flag": "hasAgentHub",
+      "specDoc": "agent-hub-spec",
+      "default": false
+    }
+  ],
+  "requiredCoverageItems": [
+    "delivery-shape",
+    "domain",
+    "data",
+    "rules-processes",
+    "end-to-end-flows",
+    "integrations",
+    "auth",
+    "tenancy",
+    "roles",
+    "providers",
+    "frontend-structure",
+    "scale",
+    "reporting-surface",
+    "notification-moments",
+    "acceptance-expectations"
+  ],
+  "docs": [
+    {
+      "docName": "interview-record",
+      "class": "source",
+      "stage": "D0",
+      "inputDocs": [],
+      "extraInputs": [],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": false,
+      "gate": "Written in the main conversation, never in a subagent, incrementally during the interview. Closes with the Coverage Ledger and two explicit confirmations: the interview close, and the move to the requirement documents.",
+      "writer": "procedures/design/interview-record.md",
+      "requiredSections": [
+        "Status",
+        "Settled facts",
+        "Exchange log",
+        "Open items"
+      ],
+      "structure": {
+        "type": "interview-record",
+        "statusSection": "Status",
+        "statusValues": [
+          "in-progress",
+          "closed"
+        ],
+        "ledgerSection": "Coverage Ledger",
+        "ledgerRequiredWhenStatus": "closed",
+        "ledgerSources": [
+          "user",
+          "assumed"
+        ]
+      }
+    },
+    {
+      "docName": "project-description-report",
+      "class": "requirement",
+      "stage": "D1",
+      "inputDocs": [
+        "interview-record"
+      ],
+      "extraInputs": [],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": true,
+      "gate": "Written alone, after the interview is closed.",
+      "writer": "procedures/design/writers/project-description-report.md",
+      "requiredSections": []
+    },
+    {
+      "docName": "user-stories",
+      "class": "requirement",
+      "stage": "D2",
+      "inputDocs": [
+        "project-description-report"
+      ],
+      "extraInputs": [
+        {
+          "doc": "interview-record"
+        }
+      ],
+      "after": [],
+      "when": null,
+      "parallelGroup": "D2",
+      "inReadyVerdict": true,
+      "gate": "Parallel with prd and frontend-spec.",
+      "writer": "procedures/design/writers/user-stories.md",
+      "requiredSections": []
+    },
+    {
+      "docName": "prd",
+      "class": "requirement",
+      "stage": "D2",
+      "inputDocs": [
+        "project-description-report"
+      ],
+      "extraInputs": [
+        {
+          "doc": "interview-record"
+        }
+      ],
+      "after": [],
+      "when": null,
+      "parallelGroup": "D2",
+      "inReadyVerdict": true,
+      "gate": "Parallel with user-stories and frontend-spec.",
+      "writer": "procedures/design/writers/prd.md",
+      "requiredSections": [
+        "1. Product Overview",
+        "2. Functional Requirements",
+        "3. Non-Functional Requirements",
+        "4. Feature Specifications",
+        "5. Technical Requirements",
+        "6. Success Metrics",
+        "7. Open Questions & Risks"
+      ]
+    },
+    {
+      "docName": "frontend-spec",
+      "class": "requirement",
+      "stage": "D2",
+      "inputDocs": [
+        "project-description-report"
+      ],
+      "extraInputs": [
+        {
+          "doc": "interview-record"
+        }
+      ],
+      "after": [],
+      "when": {
+        "deliveryShape": "withFrontend"
+      },
+      "parallelGroup": "D2",
+      "inReadyVerdict": false,
+      "gate": "Only for deliveryShape 'withFrontend'; parallel with user-stories and prd. Never part of the ready verdict (today's behavior).",
+      "writer": "procedures/design/writers/frontend-spec.md",
+      "requiredSections": [
+        "Product & Audience",
+        "Users & Access",
+        "Navigation & Structure",
+        "Screen Wishes (per area/service)",
+        "Out of Scope / Explicit No's"
+      ]
+    },
+    {
+      "docName": "use-cases",
+      "class": "requirement",
+      "stage": "D2'",
+      "inputDocs": [
+        "project-description-report",
+        "user-stories",
+        "prd"
+      ],
+      "extraInputs": [
+        {
+          "doc": "interview-record"
+        }
+      ],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": true,
+      "gate": "After the D2 documents.",
+      "writer": "procedures/design/writers/use-cases.md",
+      "requiredSections": []
+    },
+    {
+      "docName": "project-basic-setup",
+      "class": "spec",
+      "stage": "D3",
+      "inputDocs": [
+        "project-description-report",
+        "prd",
+        "user-stories",
+        "use-cases"
+      ],
+      "extraInputs": [
+        {
+          "doc": "interview-record"
+        }
+      ],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": true,
+      "gate": "After use-cases. The provider decisions reach it through the report. project-setup runs as soon as it is published (ADR section 2.3 note 3).",
+      "writer": "procedures/design/writers/project-basic-setup.md",
+      "requiredSections": [
+        "Flags",
+        "Primary Roles",
+        "Providers",
+        "Organization Resources",
+        "Project Description",
+        "Decision Rationale"
+      ]
+    },
+    {
+      "docName": "microservice-definitions",
+      "class": "spec",
+      "stage": "D3'",
+      "inputDocs": [
+        "project-description-report",
+        "prd",
+        "use-cases",
+        "project-basic-setup"
+      ],
+      "extraInputs": [],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": true,
+      "gate": "Structural gate: a json-fenced array of { name } services and an Event Contracts table. After publishing, carry the service plan into projectSettings.servicePlan, only when no plan exists yet.",
+      "writer": "procedures/design/writers/microservice-definitions.md",
+      "requiredSections": [
+        "Overview",
+        "Traffic & Scalability",
+        "Services",
+        "Sagas",
+        "Event Contracts",
+        "AI Agents"
+      ],
+      "structure": {
+        "type": "service-roster",
+        "rosterFence": "json",
+        "rosterItemKey": "name",
+        "tableSection": "Event Contracts"
+      }
+    },
+    {
+      "docName": "auth-spec",
+      "class": "spec",
+      "stage": "D4",
+      "inputDocs": [
+        "project-basic-setup",
+        "prd",
+        "use-cases",
+        "user-stories",
+        "microservice-definitions"
+      ],
+      "extraInputs": [],
+      "after": [],
+      "when": {
+        "platformFlag": "hasAuthentication"
+      },
+      "parallelGroup": null,
+      "inReadyVerdict": true,
+      "gate": "Only when hasAuthentication is on; written before the domain service specs.",
+      "writer": "procedures/design/writers/auth-spec.md",
+      "requiredSections": [
+        "A. Multi-Tenancy",
+        "B. Login Identifier",
+        "C. User Name Type",
+        "D. Custom Roles",
+        "E. Social Logins",
+        "F. Email Verification",
+        "G. Mobile Verification",
+        "H. Super-Admin Credentials",
+        "I. Custom User Properties",
+        "J. Custom Tenant Properties",
+        "K. Custom Business APIs",
+        "Token & Session Policy",
+        "Verification Flows",
+        "Access Control",
+        "Auth Method Extensions",
+        "Notification Needs",
+        "BFF DataView Needs",
+        "Open Questions"
+      ]
+    },
+    {
+      "docName": "service-spec",
+      "class": "spec",
+      "stage": "D4'",
+      "fanOut": {
+        "docNamePrefix": "service-spec-",
+        "roster": "microservice-definitions",
+        "key": "serviceRosterKey"
+      },
+      "inputDocs": [
+        "prd",
+        "user-stories",
+        "use-cases",
+        "microservice-definitions",
+        "project-basic-setup"
+      ],
+      "extraInputs": [
+        {
+          "doc": "auth-spec"
+        }
+      ],
+      "after": [
+        "auth-spec"
+      ],
+      "when": null,
+      "parallelGroup": "D4'",
+      "inReadyVerdict": true,
+      "gate": "One document per service of the microservice-definitions roster, named service-spec-<serviceRosterKey(name)>; all of them in one parallel round, after auth-spec.",
+      "writer": "procedures/design/writers/service-spec.md",
+      "requiredSections": [
+        "Required Patterns",
+        "Data Objects",
+        "Business APIs",
+        "Depends On Services",
+        "Notification Needs",
+        "BFF DataView Needs",
+        "Side-effects & Integrity",
+        "AI Agent Needs",
+        "Service Settings",
+        "Pattern Arrangements",
+        "Events"
+      ]
+    },
+    {
+      "docName": "notification-definitions",
+      "class": "spec",
+      "stage": "D5",
+      "inputDocs": [
+        "project-basic-setup",
+        "prd",
+        "use-cases",
+        "microservice-definitions"
+      ],
+      "extraInputs": [
+        {
+          "doc": "service-spec"
+        },
+        {
+          "doc": "auth-spec"
+        }
+      ],
+      "after": [],
+      "when": {
+        "platformFlag": "hasNotifications"
+      },
+      "parallelGroup": "D5",
+      "inReadyVerdict": true,
+      "gate": "Only when hasNotifications is on; after every service spec; parallel with agent-hub-spec.",
+      "writer": "procedures/design/writers/notification-definitions.md",
+      "requiredSections": [
+        "Service Settings",
+        "Provider Matrix",
+        "Open Questions"
+      ]
+    },
+    {
+      "docName": "agent-hub-spec",
+      "class": "spec",
+      "stage": "D5",
+      "inputDocs": [
+        "project-basic-setup",
+        "prd",
+        "use-cases",
+        "microservice-definitions"
+      ],
+      "extraInputs": [
+        {
+          "doc": "service-spec"
+        }
+      ],
+      "after": [],
+      "when": {
+        "platformFlag": "hasAgentHub"
+      },
+      "parallelGroup": "D5",
+      "inReadyVerdict": true,
+      "gate": "Only when hasAgentHub is on; after every service spec; parallel with notification-definitions.",
+      "writer": "procedures/design/writers/agent-hub-spec.md",
+      "requiredSections": [
+        "Hub Settings",
+        "Notification Needs",
+        "BFF DataView Needs",
+        "Open Questions"
+      ]
+    },
+    {
+      "docName": "bff-spec",
+      "class": "spec",
+      "stage": "D5'",
+      "inputDocs": [
+        "microservice-definitions",
+        "notification-definitions"
+      ],
+      "extraInputs": [
+        {
+          "doc": "service-spec"
+        },
+        {
+          "doc": "auth-spec"
+        },
+        {
+          "doc": "agent-hub-spec"
+        }
+      ],
+      "after": [],
+      "when": {
+        "platformFlag": "hasBff"
+      },
+      "parallelGroup": null,
+      "inReadyVerdict": true,
+      "gate": "Only when hasBff is on; after notification-definitions when hasNotifications is on (an input that is not owed is dropped, not missing).",
+      "writer": "procedures/design/writers/bff-spec.md",
+      "requiredSections": [
+        "Summary",
+        "Open Questions"
+      ]
+    },
+    {
+      "docName": "test-plan",
+      "class": "test",
+      "stage": "T1",
+      "inputDocs": [
+        "use-cases",
+        "microservice-definitions"
+      ],
+      "extraInputs": [
+        {
+          "doc": "prd"
+        },
+        {
+          "doc": "user-stories"
+        },
+        {
+          "doc": "service-spec"
+        },
+        {
+          "doc": "auth-spec"
+        },
+        {
+          "doc": "notification-definitions"
+        },
+        {
+          "doc": "agent-hub-spec"
+        },
+        {
+          "doc": "bff-spec"
+        }
+      ],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": false,
+      "gate": "After the spec set is complete (design-complete). Written before any test script; it does not gate ready and never blocks the blueprint phases.",
+      "writer": "procedures/design/writers/test-plan.md",
+      "requiredSections": [
+        "Scope & Coverage Target",
+        "Actors & Roles",
+        "Service Flows",
+        "Cross-Service Flows",
+        "Failure & Edge Cases",
+        "Invariants",
+        "Transport-Only APIs",
+        "Environment & Data",
+        "Out of Scope",
+        "Open Questions"
+      ],
+      "structure": {
+        "type": "test-plan",
+        "targetSection": "Scope & Coverage Target",
+        "targetFence": "json",
+        "flowsSection": "Service Flows"
+      }
+    },
+    {
+      "docName": "test-report",
+      "class": "test",
+      "stage": "T2",
+      "inputDocs": [
+        "test-plan"
+      ],
+      "extraInputs": [],
+      "after": [],
+      "when": null,
+      "parallelGroup": null,
+      "inReadyVerdict": false,
+      "gate": "Rewritten after every FULL gated run (run-all + coverage gate) on a shipped test-repo revision. Generated by scripts/test-report.mjs, never hand-written.",
+      "writer": "procedures/design/writers/test-report.md",
+      "requiredSections": [
+        "Summary",
+        "Machine Block",
+        "Per-Service Results",
+        "Coverage Gate",
+        "Skip Ledger",
+        "Defects Filed",
+        "How To Re-Run"
+      ],
+      "structure": {
+        "type": "test-report",
+        "blockSection": "Machine Block",
+        "blockFence": "json",
+        "schema": "procedures/design/schemas/test-report.v1.json"
+      }
+    }
+  ]
+}
