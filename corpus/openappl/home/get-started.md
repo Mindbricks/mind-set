@@ -29,13 +29,33 @@ agent write them with you, or both.
 ### Working with an AI agent
 
 General-purpose coding agents can author blueprints directly; no special editor is
-needed. What helps them most:
+needed. Install [mind-set](agents.md) and your agent (Claude Code or Codex) gets skills for
+designing, writing and reviewing blueprints, a local copy of these documents and a
+validator:
+
+```bash
+npm install -g @mindbricks/mind-set
+mind-set install
+```
+
+Then start with a prompt such as:
+
+```text
+I want to build <your application>. Use the openappl-blueprint-design
+skill: interview me one question at a time and write the design
+documents under design/.
+```
+
+What helps any agent most, with or without mind-set:
 
 - Give the agent access to `openappl.json`, or to the per-pattern pages, so it can look up
   the exact patterns it is about to write instead of guessing.
 - Ask it to follow a simple loop: look up the patterns, draft a change, validate it,
   repair what the validator reports, and only then save the blueprint.
 - Review the blueprint diff, not the generated code. That is where the decisions are.
+
+[Use OpenAPPL with your agent](agents.md) has the install options, the four skills and more
+first prompts.
 
 ### Good habits
 
@@ -78,6 +98,7 @@ target you support.
 
 ## Where to go next
 
+- [Use OpenAPPL with your agent](agents.md) - mind-set, the skills and first prompts.
 - [Why OpenAPPL](why-openappl.md) - the problems the language is built to solve.
 - [Vision and mission](vision.md) - where the standard is heading.
 - [Policy](policy.md) - governance, versioning and licences.

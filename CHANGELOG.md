@@ -5,7 +5,7 @@ corpus (`openappl.version` in `package.json`).
 
 ## 0.1.0
 
-First release.
+First release, published as `@mindbricks/mind-set` (the command is `mind-set`).
 
 - `mind-set install | update | uninstall | doctor` for Claude Code (`~/.claude/skills`) and
   Codex (`~/.agents/skills`).

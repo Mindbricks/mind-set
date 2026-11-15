@@ -75,7 +75,7 @@ them), then the platform modules.
 
 After every edit:
 
-1. Run `mind-set validate <blueprint-file>`. It checks structure only: unknown
+1. Run `mind-set validate <blueprint-file>` (when `mind-set` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). It checks structure only: unknown
    properties, types, enum values, required fields and the root. See
    `{{CORPUS}}/guides/validate.md`.
 2. If the environment offers a semantic OpenAPPL validator (an OpenAPPL validator

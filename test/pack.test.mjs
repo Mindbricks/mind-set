@@ -67,7 +67,7 @@ describe('npm pack, installed from the tarball', { skip: PACKAGE ? false : 'no b
     fs.mkdirSync(project);
     fs.writeFileSync(path.join(project, 'package.json'), '{ "name": "probe", "private": true }\n');
     npm(['install', '--no-package-lock', path.join(work, info.filename)], project);
-    installed = path.join(project, 'node_modules', 'mind-set');
+    installed = path.join(project, 'node_modules', '@mindbricks', 'mind-set');
     assert.equal(readJson(path.join(installed, 'package.json')).version, info.version);
     if (process.platform !== 'win32') assert.ok(exists(path.join(project, 'node_modules', '.bin', 'mind-set')));
   });

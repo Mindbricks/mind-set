@@ -906,19 +906,23 @@ After the last asset:
 
    **Check the list for route collisions too** (an OpenAPPL validation
    tool may report them; otherwise check by hand). Each collision has a
-   `kind`, a winner `a`, a loser `b`, both routes, and `specificityOrdered`
-   (whether the build's specificity sort decides between them):
+   `kind`, the two sides `a` and `b`, both routes, and `specificityOrdered`
+   (whether the build's specificity sort decides between them). Treat `a`
+   and `b` as a proven winner and loser only when this flag is true;
+   otherwise read the ordering note:
    - `duplicate` — the same (METHOD, path) twice. `specificityOrdered: false`
-     and nothing can pick a winner: whichever registers second is dead. Always
-     a fix.
+     and no specificity-based winner: whichever registers first answers,
+     leaving the later registration unreachable. Always a fix.
    - `static-under-param` — a static route sits under a sibling's `:param` at
      the same depth (`GET /standings/me` under `GET /standings/:userId`).
      With `specificityOrdered: true` the build's specificity sort registers
      the static route first, so it wins those URLs: that is the intended
      `/me`-style specialization, and a defect only if the parameter was meant
      to carry that value (a user really named "me"). With
-     `specificityOrdered: false` the two sit in DIFFERENT routers and MOUNT
-     order decides — respell your route so it cannot be reached by the other.
+     `specificityOrdered: false`, either the pair spans different routers
+     and MOUNT order decides, or it is an authored edge pair whose declaration
+     order decides. A static edge has no automatic priority over a parametric
+     edge. Read the note and respell your route so it cannot be reached by the other.
    - `mutual-overlap` — each route covers URLs the other spells out; neither
      is more specific. Respell one.
 

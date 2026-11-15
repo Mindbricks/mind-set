@@ -98,6 +98,7 @@ Pattern rules:
 | `INCLUDE_SOFT_DELETED_WITHOUT_SOFT_DELETE` | warning | includeSoftDeleted… is set, but data object "…" has `useSoftDelete: false` — it has no `isActive` column, so its main-object archived-row filter is unchanged. |
 | `JOBSTREAM_HIDDEN_TARGET_PARAM_UNBINDABLE` | warning | Request parameter "…" declares httpLocation="…" on a JobStream-hidden target: this api's REST route is suppressed (it is a jobStreams[].targetApi without keepPublicRoute), so the only caller left is the stream's worker, … |
 | `LIST_SELECTBY_UNBINDABLE` | error | BusinessApi "…" list selectBy term "…" has no binding source, so every call is refused with 400. |
+| `MACHINE_ROUTE_OPEN_TO_USERS` | error | API "…" declares machine intent on route "…" but is reachable by …: requiredCallerKind is "any" and no runnable human authorization gate restricts it. |
 | `MISSING_DATA_CLAUSE_ITEM` | error | BusinessApi "…" (crudType create) targets data object "…" whose property "…" is required but has no value source — and "…" is a credential column (`basicSettings.…`, a secret-property-registry member). |
 | `OWNER_CLAUSE_SHADOWED_BY_SESSION` | error | BusinessApi "…" (crudType create) authors a `dataClauseItems` entry for "…", but that property is the owner field of data object "…" (`sessionSettings.isOwnerField`). |
 | `OWNER_PROVENANCE_PAYLOAD_WITH_REST_CREATE` | error | BusinessApi "…" is a caller-facing (…) create on data object "…", whose owner property "…" declares `sessionSettings.ownerProvenance: "payload"`. |

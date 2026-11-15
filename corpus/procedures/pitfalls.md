@@ -33,6 +33,7 @@ work against a LIVE running build of the project.
 
 ## 2. Seeding and exercising the live APIs
 
+- **Edge REST paths are relative to `/edge`** (overridden by deployed `EDGE_MOUNT_PATH`): `edgeRestSettings.path: "/cart/items"` serves `/edge/cart/items`; do not repeat `/edge` in the declared path. Inspect the complete compiled route inventory, including every page, before declaring a route missing.
 - **Anchor every date to the REAL today, never to a training-era year.**
   Business validations compare against server `now()`: a hardcoded
   "future-ish" literal (`"2025-06-15"`) lands in the past and 400s

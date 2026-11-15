@@ -4,8 +4,13 @@ Skills and documents that teach a coding agent (Claude Code, Codex) to design an
 OpenAPPL blueprint, plus a local structural validator. Zero dependencies, Node 18 or newer.
 
 ```bash
-npx mind-set@latest install
+npm install -g @mindbricks/mind-set
+mind-set install
 ```
+
+The global install puts the `mind-set` command on the `PATH`; the skills run `mind-set validate`
+after every change. Without a global install, use `npx @mindbricks/mind-set@latest <command>`
+wherever this README says `mind-set <command>`; the skills fall back to the same form.
 
 ## Commands
 

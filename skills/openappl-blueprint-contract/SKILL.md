@@ -63,7 +63,7 @@ before you derive anything.
 ## Validation
 
 - When you add or change library functions or edge controllers, the blueprint changed:
-  run `mind-set validate <blueprint-file>` (structural only, see
+  run `mind-set validate <blueprint-file>` (or `npx @mindbricks/mind-set validate <blueprint-file>`; structural only, see
   `{{CORPUS}}/guides/validate.md`) and, when the environment offers a semantic OpenAPPL
   validator (an OpenAPPL validator service, or the validation tool of a compiler or
   hosting platform), run it as well.

@@ -14,7 +14,7 @@ fully before you start.
 
 ## Steps
 
-1. **Structural pass.** Run `mind-set validate <blueprint-file>`. Report every error as a
+1. **Structural pass.** Run `mind-set validate <blueprint-file>` (when `mind-set` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). Report every error as a
    finding of its own. A blueprint with structural errors cannot be reviewed reliably:
    say so, review what you can, and mark the review incomplete.
 2. **Semantic pass.** If the environment offers a semantic OpenAPPL validator (an

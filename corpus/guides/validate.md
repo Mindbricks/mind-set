@@ -20,6 +20,9 @@ compile into a system that does the wrong thing. Treat a clean structural result
 mind-set validate <blueprint-file>
 ```
 
+When the `mind-set` command is not on the `PATH` (the package was run with npx and not
+installed globally), run `npx @mindbricks/mind-set validate <blueprint-file>` instead.
+
 It reads the file as JSON and walks it against `openappl.json`, the OpenAPPL schema that
 ships with the corpus (`../openappl.json`):
 

@@ -15,6 +15,9 @@ database. A **compiler** turns it into a running system.
 People and AI agents write the blueprint. Reviewers read the blueprint. Compilers do the
 rest.
 
+To write blueprints with Claude Code or Codex, install [mind-set](agents.md): skills, the
+documents and a validator for your agent, in one command.
+
 ## Why it exists
 
 AI can already write code from a prompt. What it cannot give you on its own is a
@@ -55,5 +58,6 @@ tools and agents can load the language directly.
 - [Read the specification](../spec/index.md) - the exact rules a valid blueprint follows.
 - [Write a compiler](../compiler/index.md) - build a conforming back end of your own.
 - [Download openappl.json](../../openappl.json) - the complete schema in one file.
+- [Use it with your agent](agents.md) - install mind-set and write blueprints with Claude Code or Codex.
 
 New to OpenAPPL? See [How it works](how-it-works.md) and [Get started](get-started.md).
