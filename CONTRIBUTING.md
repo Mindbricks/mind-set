@@ -7,6 +7,9 @@ OpenAPPL tooling and replaced on every release. A pull request here is still the
 to report a mistake or propose a change. A maintainer carries an accepted change into the
 source, and the next release brings it back here.
 
+Releases follow [RELEASING.md](RELEASING.md): the steps from the source repository to npm,
+for maintainers and for agents a maintainer asked to cut a release.
+
 - **A wrong or unclear instruction in a skill or a procedure?** Open an issue with the file,
   the sentence and what an agent did because of it, or a pull request with the fix.
 - **The validator accepts a broken blueprint, or rejects a valid one?** Open an issue with
