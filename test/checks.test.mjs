@@ -292,3 +292,19 @@ describe('secret-shaped literals', () => {
     assert.match(res.stdout, /0 errors, 1 warning/);
   });
 });
+
+describe('design-check: line ends', () => {
+  // A draft written on Windows (or checked out there with autocrlf) has CRLF line ends; the
+  // checker reads it exactly as the LF draft: same exit code, same verdict, same findings.
+  for (const c of cases) {
+    test(`${c.file} with CRLF line ends as ${c.docName}: exit ${c.exit}`, () => {
+      const lf = fs.readFileSync(path.join(DESIGN, c.file), 'utf8').replace(/\r\n?/g, '\n');
+      const dir = tempDir('mind-set-crlf-');
+      const crlf = path.join(dir, path.basename(c.file));
+      fs.writeFileSync(crlf, lf.replace(/\n/g, '\r\n'));
+      const res = cli(['design-check', c.docName, crlf, '--pipeline', PIPELINE, '--json']);
+      assert.equal(res.code, c.exit, res.stdout + res.stderr);
+      assert.deepEqual(res.json.server, c.verdict);
+    });
+  }
+});
