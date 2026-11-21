@@ -2,6 +2,8 @@
 
 Entries of this family are written with [`InvoiceProvider`](../InvoiceProvider.md); the keys below are what an entry's `configuration` takes, per `provider` brand.
 
+**Behaviour rules:** what every compiler must do for this family beyond the keys (webhook signatures, field rules, documented quirks) is in [invoiceProvider behaviour](../../guides/providers/invoice.md).
+
 NATIVE brands only. Bridge brands (sap, dynamics365, netsuite, logoTiger) deliberately have NO entry here — their credentials live ONCE on the enterpriseIntegration entry named by the provider's integrationName (ENTERPRISE_<NAME>_*), and the InvoiceProvider validator resolves that reference instead of reading configuration keys.
 
 ## Environment names

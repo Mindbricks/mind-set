@@ -257,8 +257,8 @@ promotes it (the marker is removed and the element becomes part of C1 and C2) or
   and **SHOULD** warn when one does. It **MUST** name the experimental elements it supports
   in its public description, apart from its conformance claim. The reference implementation
   supports every experimental element and warns with `EXPERIMENTAL_ELEMENT_IN_USE`.
-- Blueprint authors opt in. An authoring tool or agent **SHOULD NOT** add an experimental
-  element unless the user, or a skill written for that compiler, explicitly asks for it.
+- Blueprint authors opt in. An agent **MUST NOT** add an experimental element unless its
+  skill explicitly permits that element for the selected compiler.
 
 Rule example. A compiler that does not support an experimental property reports, for
 example (the message format is the compiler's own; the code and the content are required):

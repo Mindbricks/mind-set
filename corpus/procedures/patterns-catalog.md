@@ -51,8 +51,8 @@ platform's structure guide; verify names against the live ontology.
 | A conversational AI agent with tools | `agentHub` aiAgents (+ `AiCall`/`AgentCall` actions) | designed in the platform wave |
 | Read / reply from a real mailbox (the project's own inbox) | `mailAccount` family | the domain IS email, or mail-to-tasks |
 | Each user or tenant connects their OWN mailbox | `mailAccount` template, `ownerScope: user` / `tenant` | nodejs only; the how-to `howto-mail-to-tasks.md` |
-| Each user or tenant brings their OWN AI key (BYOK) | `AiProvider.credentialScopes` | nodejs only; never a key column or custom variable; `pitfalls.md` section 7 |
-| Each workspace (company, team) has its OWN AI key its admins set and its members use; users belong to several workspaces | `AiProvider.credentialScopes.resource` on the workspace data object (needs its membership) | nodejs only; never a tenant, never a key column; `pitfalls.md` section 7 |
+| Each user or tenant brings their OWN AI key (BYOK) | `AiProvider.credentialScopes` | nodejs, python, rust (user, tenant, workspace levels); dotnet, java, golang (user and tenant levels); never a key column or custom variable; `pitfalls.md` section 7 |
+| Each workspace (company, team) has its OWN AI key its admins set and its members use; users belong to several workspaces | `AiProvider.credentialScopes.resource` on the workspace data object (needs its membership) | the workspace object in a nodejs, python or rust service, called from nodejs, python or rust; never a tenant, never a key column; `pitfalls.md` section 7 |
 | Sandbox accounts in preview / stage, live in production, a mock where no sandbox exists | Sandbox / Live credential sets + `credentialMode` | the provider family's pattern page |
 | Social login flows per service | `oauthFlows` | project-level toggles cover the common case |
 | Cross-service read models, dashboards, search lists | BFF DataViews | platform wave, from `bff-spec` |

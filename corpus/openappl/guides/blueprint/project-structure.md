@@ -154,7 +154,8 @@ tenant or user stores (`credentialScopes`), and a mail account template
 `provider` picks the adapter and `name` is what the rest of the blueprint
 references (`AiCallAction.providerName`, an agent's
 `modelSettings.providerName`). An author never asks for credentials and
-writes only the `ENTER_CREDENTIAL` placeholder: the real value (here the
+writes only a reference: the `ENTER_CREDENTIAL` placeholder while no value exists, or
+`$ENV:NAME` when the deployment holds it (see [Secrets in a blueprint](secrets.md)). The real value (here the
 `apiKey` value) is supplied outside the blueprint, through the hosting
 platform, which stores it in the entry's `configuration`, and secret
 values reach the services as deploy secrets rather than in the generated

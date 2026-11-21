@@ -19,6 +19,8 @@ How a blueprint is laid out, the type system and the naming rules.
 - [Project structure](./blueprint/project-structure.md): the project root, its settings, authentication, notification and the list of services.
 - [Services](./blueprint/services.md): what a service declares and which services are system services.
 - [Dictionary](./blueprint/dictionary.md): the terms of the language, A to Z, and the preferred wording.
+- [Secrets in a blueprint](./blueprint/secrets.md): the two standard spellings of a credential, `$ENV:NAME` and `ENTER_CREDENTIAL`, and the seeded super-admin password.
+- [The service plan](./blueprint/service-plan.md): what `servicePlan` is and the one thing it changes.
 
 ## Data modelling
 
@@ -34,7 +36,15 @@ How a blueprint is laid out, the type system and the naming rules.
 ## Workflow and actions
 
 - [Overview](./workflow/overview.md), [Workflow context](./workflow/workflow-context.md), [Parallel and loops](./workflow/parallel-and-loops.md), [Race conditions](./workflow/race-conditions.md), [Error handling](./workflow/error-handling.md).
-- The individual actions are patterns: each has its own page in the [pattern reference](../spec/all-patterns.md).
+- [Actions](./actions/index.md): one page per action with its behaviour, limits and errors. Each action is also a pattern in the [pattern reference](../spec/all-patterns.md).
+
+## Cookbook
+
+Task recipes that combine patterns end to end: [AI agent](./cookbook/add-ai-agent.md), [cron job](./cookbook/add-cron-job.md), [payment checkout](./cookbook/add-payment-checkout.md), [realtime channel](./cookbook/add-realtime-channel.md), [file uploads](./cookbook/attach-file-uploads.md), [shopping cart](./cookbook/build-shopping-cart.md), [bulk import](./cookbook/bulk-import-excel-csv-file-upload.md), [notify on an event](./cookbook/notify-on-event.md), [the four ledger recipes](./cookbook/ledger-loyalty-points.md), [moderation](./cookbook/moderate-user-content.md), [share by link](./cookbook/share-a-record-by-link.md), [slugs](./cookbook/slugs-for-data-objects.md) and [a full worked example](./cookbook/worked-example-book-marketplace.md).
+
+## Provider behaviour
+
+What every compiler must do for a provider family, beyond the configuration keys: [notification](./providers/notification.md), [bucket](./providers/bucket.md), [payment](./providers/payment.md), [AI](./providers/ai.md), [fiscal](./providers/fiscal.md) [invoice](./providers/invoice.md), [decision](./providers/decision.md), [enterprise](./providers/enterprise.md), [mailbox](./providers/mailbox.md), [social login](./providers/social-login.md) and [video](./providers/video.md). Environment, console setup and go-live belong to the compiler's own operations material.
 
 ## MScript
 
@@ -58,7 +68,7 @@ How to combine several properties and actions to get a behaviour: [list options]
 
 ## Best practices
 
-[Service boundaries](./best-practices/service-boundaries.md), [API design](./best-practices/api-design.md), [Permissions strategy](./best-practices/permissions-strategy.md), [Data modeling tips](./best-practices/data-modeling-tips.md), [Action composition](./best-practices/action-composition.md), [Kafka topic naming](./best-practices/kafka-topic-naming.md), [Public SEO for a frontend](./best-practices/frontend-seo.md) and [Anti-patterns](./best-practices/anti-patterns.md).
+[Service boundaries](./best-practices/service-boundaries.md), [API design](./best-practices/api-design.md), [Permissions strategy](./best-practices/permissions-strategy.md), [Data modeling tips](./best-practices/data-modeling-tips.md), [Action composition](./best-practices/action-composition.md), [Kafka topic naming](./best-practices/kafka-topic-naming.md), [Rules the validator enforces](./best-practices/validator-rules.md), [Public SEO for a frontend](./best-practices/frontend-seo.md) and [Anti-patterns](./best-practices/anti-patterns.md).
 
 ## About the generated service
 

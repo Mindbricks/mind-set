@@ -11,8 +11,12 @@ openappl/      the OpenAPPL specification
   ontology/    Part 1: how the patterns fit together, one page per pattern
   spec/        Part 2: one reference page per pattern, value formats, the schema page
   guides/      Part 2 guides: data modeling, business APIs, MScript, workflows, ...
+    actions/   one page per action: behaviour, limits, errors
+    cookbook/  task recipes
+    providers/ what every compiler must do for a provider family
   compiler/    Part 3: what a compiler derives from a blueprint (routes, events, derived surface)
-guides/        contract.md, review.md, validate.md
+guides/        contract.md, review.md, validate.md, project-settings.md, delivery.md,
+               changing-a-blueprint.md
 openappl.json  the OpenAPPL schema this corpus was built for
 examples/      example blueprints that validate against openappl.json
 ```

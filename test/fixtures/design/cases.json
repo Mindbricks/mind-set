@@ -1,0 +1,20 @@
+{
+  "$comment": "design-check cases: the document, the name it is checked as, the exit code and the verdict (refused + the first refusal code, or accepted + the missing required headings). The same rules run in another harness; its copy of these fixtures gives the same answers.",
+  "cases": [
+    {"file":"msd-ok.md","docName":"microservice-definitions","exit":0,"verdict":{"outcome":"accepted","warnings":[]}},
+    {"file":"msd-prose-roster.md","docName":"microservice-definitions","exit":2,"verdict":{"outcome":"refused","code":"STRUCTURE_INVALID"}},
+    {"file":"msd-no-event-contracts.md","docName":"microservice-definitions","exit":2,"verdict":{"outcome":"refused","code":"STRUCTURE_INVALID"}},
+    {"file":"service-spec-ok.md","docName":"service-spec-orders","exit":0,"verdict":{"outcome":"accepted","warnings":[]}},
+    {"file":"service-spec-ok.md","docName":"service-spec-customer-profiles","exit":0,"verdict":{"outcome":"accepted","warnings":[]}},
+    {"file":"service-spec-missing-events.md","docName":"service-spec-orders","exit":2,"verdict":{"outcome":"accepted","warnings":["Events"]}},
+    {"file":"service-spec-heading-in-fence.md","docName":"service-spec-orders","exit":2,"verdict":{"outcome":"accepted","warnings":["Events"]}},
+    {"file":"prd-partial.md","docName":"prd","exit":2,"verdict":{"outcome":"accepted","warnings":["3. Non-Functional Requirements","4. Feature Specifications","5. Technical Requirements","6. Success Metrics"]}},
+    {"file":"interview-record-closed-ok.md","docName":"interview-record","exit":0,"verdict":{"outcome":"accepted","warnings":[]}},
+    {"file":"interview-record-in-progress.md","docName":"interview-record","exit":0,"verdict":{"outcome":"accepted","warnings":[]}},
+    {"file":"interview-record-bad-status.md","docName":"interview-record","exit":2,"verdict":{"outcome":"refused","code":"STRUCTURE_INVALID"}},
+    {"file":"interview-record-ledger-incomplete.md","docName":"interview-record","exit":2,"verdict":{"outcome":"refused","code":"LEDGER_INCOMPLETE"}},
+    {"file":"service-spec-ok.md","docName":"service-spec","exit":2,"verdict":{"outcome":"refused","code":"DOC_NAME_NOT_ALLOWED"}},
+    {"file":"service-spec-ok.md","docName":"service-spec-","exit":2,"verdict":{"outcome":"refused","code":"DOC_NAME_NOT_ALLOWED"}},
+    {"file":"prd-partial.md","docName":"meeting-notes","exit":2,"verdict":{"outcome":"refused","code":"DOC_NAME_NOT_ALLOWED"}}
+  ]
+}

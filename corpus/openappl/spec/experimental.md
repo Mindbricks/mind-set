@@ -3,7 +3,7 @@
 An experimental element is a pattern, or a single property of a stable pattern, that `openappl.json` marks as unstable: it carries an `experimental` meta key with the schema version that added it and a note on why it is experimental and what may change. It is a pre-release of a future stable element.
 
 - It may arrive in a minor release and may change or disappear before the next major release, which promotes it (the marker is removed) or drops it.
-- It is used only by blueprints that opt in. Authoring tools and agents do not add one unless the user, or a skill written for that compiler, asks for it.
+- It is used only by blueprints that opt in. An agent needs explicit permission in its skill to add the element for the selected compiler.
 - It is outside conformance: a compiler is conformant without it. A compiler that does not support it refuses the blueprint at compile time with `EXPERIMENTAL_NOT_SUPPORTED`, naming the pattern or the property ([compiler specification, section 1.5](../compiler/01-conformance-model.md#experimental-elements)).
 
 The marker in the schema:

@@ -1,6 +1,6 @@
 ---
 name: openappl-blueprint-contract
-description: Read an OpenAPPL blueprint as the contract of the system compiled from it (routes, request and response shapes, errors, events, derived APIs and library surface) to write code around that system, such as a frontend, a client SDK, an integration, tests, or the blueprint's own library functions and edge controllers. Do not use it to change the blueprint (openappl-blueprint-authoring), and never to hand-write the backend that the compiler generates.
+description: Read an OpenAPPL blueprint as the contract of the system compiled from it (routes, request and response shapes, errors, events, derived APIs and library surface) to write code around that system, such as a frontend, a client SDK, an integration, tests, or to draft code for a library function or edge controller the blueprint declares. Use openappl-blueprint-authoring for edits to blueprint JSON, and never to hand-write the backend that the compiler generates.
 ---
 
 # OpenAPPL blueprint as a contract
@@ -49,11 +49,16 @@ before you derive anything.
    the client code, with the blueprint path each entry came from. Code from that file.
 7. **Write the code.**
    - Frontend and client SDK: send exactly the declared parameters, read the documented
-     envelope, handle each error status by its `errorCode`.
+     envelope, handle each error status by its `errorCode`. Follow section 10 of
+     `contract.md`: never mock a backend response (a screen with no API is a contract gap),
+     never call the BFF service (read a DataView through the API that binds it), never make
+     a user type a tenant codename, and do not read a `(proposed)` exclusion as the user's
+     word.
    - Tests: assert the contract (status, envelope, error code, event), not the internals
      of one compiler's output. A test that holds for any conformant compiler is the goal.
    - Library functions and edge controllers: they are blueprint content
-     (`Service.library`, `Service.edgeControllers`). Use only the portable surface: `LIB`,
+     (`Service.library`, `Service.edgeControllers`). Draft the code here, then use
+   `openappl-blueprint-authoring` to apply it to the blueprint JSON. Use only the portable surface: `LIB`,
      `API` and the data-access operations of chapter 12.4. Read the spec pages
      `{{CORPUS}}/openappl/spec/ServiceLibrary.md` and
      `{{CORPUS}}/openappl/spec/EdgeController.md` before you write one.
@@ -62,8 +67,7 @@ before you derive anything.
 
 ## Validation
 
-- When you add or change library functions or edge controllers, the blueprint changed:
-  run `mind-set validate <blueprint-file>` (or `npx @mindbricks/mind-set validate <blueprint-file>`; structural only, see
+- After authoring applies a library function or edge controller to the blueprint, run `mind-set validate <blueprint-file>` (or `npx @mindbricks/mind-set validate <blueprint-file>`; structural only, see
   `{{CORPUS}}/guides/validate.md`) and, when the environment offers a semantic OpenAPPL
   validator (an OpenAPPL validator service, or the validation tool of a compiler or
   hosting platform), run it as well.

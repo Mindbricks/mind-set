@@ -2,6 +2,8 @@
 
 Entries of this family are written with [`FiscalProvider`](../FiscalProvider.md); the keys below are what an entry's `configuration` takes, per `provider` brand.
 
+**Behaviour rules:** what every compiler must do for this family beyond the keys (webhook signatures, field rules, documented quirks) is in [fiscalProvider behaviour](../../guides/providers/fiscal.md).
+
 Turkey-first roster (Faz 3a shape; Faz 3d adapters: wave 1 elogo/foriba/nilvera, wave 2 izibiz/uyumsoft). Key names were verified against the integrators' documented credential models when each adapter shipped, and every endpoint/field name lives in the adapter's VERIFY-marked constants block - a vendor-side rename is a catalog/adapter edit, not a schema break. All brands are NATIVE (no bridge family): fiscal integrators are SaaS APIs and carry their credentials here.
 
 ## Environment names

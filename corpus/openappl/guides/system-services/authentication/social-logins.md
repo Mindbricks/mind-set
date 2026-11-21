@@ -334,9 +334,12 @@ declarative `requireSocialLinkGrant` check refuses every link with
 After OAuth processing, the auth service redirects the browser back to the frontend's callback
 page. The redirect URL is resolved at runtime:
 
-1. If `SOCIAL_LOGIN_REDIRECT_URL` is explicitly set in the deployment environment, that value is
-   used as-is.
-2. Otherwise the auth service derives it from `FRONTEND_URL + /auth/callback`.
+1. If the start named a secondary `returnTo` listed in `SECONDARY_SOCIAL_LOGIN_RETURN_URLS` (the Node.js and Rust targets today, see
+   [More than one frontend](#more-than-one-frontend-returnto-and-secondary_social_login_return_urls)), that
+   URL is used.
+2. Otherwise, if `SOCIAL_LOGIN_REDIRECT_URL` is explicitly set in the deployment environment, that
+   value is used as-is.
+3. Otherwise the auth service derives it from `FRONTEND_URL + /auth/callback`.
 
 **`FRONTEND_URL`** is an environment variable set from the project's `frontendUrl` setting in
 the basic project settings ([`BasicProjectSettings`](../../../spec/BasicProjectSettings.md)
@@ -367,8 +370,8 @@ and signing key unavailable, also carry `errorCode`, `status` and `retryable: tr
 | The provider could not be reached for the code exchange | 502 | `BAD_GATEWAY` |
 
 The provider's own error text (`error_description`) and any upstream response text are never
-forwarded. The redirect target is always the configured one, never a value from the request.
-Without `SOCIAL_LOGIN_REDIRECT_URL` and `FRONTEND_URL` the same failures answer an
+forwarded. The redirect target is always the configured one, or the start's allow-listed
+`returnTo` carried in the signed state, never a value from the callback request. Without `SOCIAL_LOGIN_REDIRECT_URL` and `FRONTEND_URL` the same failures answer an
 `application/problem+json` body on the auth host (some target languages answer their JSON error
 body `{ "status": "ERR", "message": <key> }` there instead). A target whose exchange leg has no
 trusted 401 reports a provider that refused the code exchange as `502` / `BAD_GATEWAY`.
@@ -376,6 +379,80 @@ trusted 401 reports a provider that refused the code exchange as `502` / `BAD_GA
 In rare cases where a different callback path is needed, `SOCIAL_LOGIN_REDIRECT_URL` can be set
 explicitly (as a custom variable in the project settings or a deployment environment variable).
 Usually you do not need it: the `FRONTEND_URL`-derived default suffices.
+
+### More than one frontend: `returnTo` and `SECONDARY_SOCIAL_LOGIN_RETURN_URLS`
+
+`SOCIAL_LOGIN_REDIRECT_URL` and `FRONTEND_URL` name ONE callback page, the
+primary one. That is the whole configuration of a project with one frontend,
+and nothing below changes it.
+
+A project with more frontends (a portal next to the main app, an admin panel
+next to a storefront, a mobile web app next to the main site) lists their
+callback pages in the auth service's `SECONDARY_SOCIAL_LOGIN_RETURN_URLS`, a
+comma-separated list of absolute `http(s)` URLs, and each frontend names its
+own page on the start route (the Node.js and Rust targets today; the other targets follow):
+
+```
+SECONDARY_SOCIAL_LOGIN_RETURN_URLS=https://portal.example.com/auth/callback,https://admin.example.com/auth/callback
+```
+
+```
+GET <auth service>/auth/<brand>?returnTo=https://portal.example.com/auth/callback
+```
+
+The generator emits no line for this variable, so a rebuilt auth service has
+the env files it always had. Set it as a custom variable of that name on the
+auth service (Service Basics) or in Basic Project Settings, which carries it
+into every env file and keeps it across rebuilds, or as a deployment env var.
+
+- **Unset or blank: `returnTo` is ignored.** The start behaves exactly as it
+  did before the parameter meant anything, whatever `returnTo` a frontend
+  sends (a relative post-login path, say), and every sign-in returns to the
+  primary page.
+- **Set: `returnTo` is checked.** It must be the primary callback page (the
+  flow is then the default one) or equal one listed entry.
+- **Exact match after URL normalisation.** Both sides are parsed with the
+  WHATWG URL parser and compared as scheme + host + port + path. Normalisation
+  lowercases the scheme and host, drops a default port (`:443`, `:80`) and
+  resolves `.` / `..` segments; a bare origin gets the path `/`. Nothing else
+  is forgiven: `/auth/callback` and `/auth/callback/` are two different
+  entries, and another port, scheme or sub-domain does not match.
+- **No prefix and no origin match.** An allowlist by prefix or origin would let
+  any page under an allowed origin receive a `socialCode`, so an entry admits
+  only its own page.
+- **No userinfo, query or fragment.** An entry or a `returnTo` carrying
+  `user@`, `?...` or `#...` (even an empty `?` / `#`) is invalid; the auth
+  service appends its own `?provider=&socialCode=` / `?provider=&error=`. An
+  invalid entry admits nothing; a list of invalid entries only is still a set
+  list.
+
+With the list set, a start whose `returnTo` is neither the primary page nor
+listed (not listed, relative, `javascript:`, userinfo, a query or fragment,
+empty or repeated) answers `400 application/problem+json` with `errorCode`
+`errMsg_SocialLoginReturnUrlNotAllowed` before anything else happens: no
+provider redirect, no correlation cookie, no stored state. A start without
+`returnTo` behaves exactly as before.
+
+A listed `returnTo` rides inside the signed OAuth state (see
+[Browser-bound state](#browser-bound-state-and-pkce)), so it cannot be swapped
+between the start and the callback, and it survives the start-host move of a
+start made on a custom frontend domain. Once the callback has verified the
+state, the SPA redirect goes to `returnTo`: the success redirect
+`?provider=<brand>&socialCode=<code>` and every failure envelope raised after
+that point (a cancelled consent, a missing code, a failed exchange, a refused
+account). A `returnTo` makes the callback answer with the SPA redirect even on
+a deployment that has no `SOCIAL_LOGIN_REDIRECT_URL` / `FRONTEND_URL`.
+
+The list is checked again when the callback uses the state. A state whose
+`returnTo` is no longer listed (the entry was removed after the start) is
+refused with `errMsg_InvalidSocialLoginState` and is answered the way any
+invalid state is, on the primary page, never on that `returnTo`. Removing an
+entry therefore revokes every sign-in in flight towards it. A failure that
+happens before the state is proven (an invalid, replayed or foreign state)
+never goes to a `returnTo` either.
+
+The `socialCode` exchange (`POST /auth/social-login-result`) is unchanged and
+host-independent; the second frontend calls it from its own callback page.
 
 ### Browser-bound state and PKCE
 
@@ -570,7 +647,9 @@ follows the current default model.
 
 The generated callbacks use `SOCIAL_LOGIN_REDIRECT_URL`, or `FRONTEND_URL` plus `/auth/callback`,
 as the SPA failure target. With neither configured, failures keep their problem+json response. The
-target comes from deployment configuration. Callback request fields never select it.
+target comes from deployment configuration. Callback request fields never select it. On a target
+that supports `returnTo`, a failure raised after the state was verified goes to the start's secondary `returnTo` when it named one (see
+[More than one frontend](#more-than-one-frontend-returnto-and-secondary_social_login_return_urls)).
 
 State and tenant validation precede provider consent errors, code validation and code exchange (a
 callback without a state is itself refused: every start mints one, see [Browser-bound

@@ -45,7 +45,8 @@ The same providers are reachable from any business API via `SendMailAction` /
 backend (for example Twilio) serves multiple channels via separate entries
 (`(sms, twilio)` and `(whatsapp, twilio)`). `configuration` items are `{ name, value }`
 pairs, with an optional `secret` flag; a secret is never written into the blueprint
-(`ENTER_CREDENTIAL` is the placeholder and the owner supplies the value at deployment).
+(a secret is a reference: `$ENV:NAME`, or the `ENTER_CREDENTIAL` placeholder while the value
+is not provided yet; see [Secrets in a blueprint](../blueprint/secrets.md)).
 
 The exact required `configuration` keys per provider are listed on the
 [`NotificationProvider`](../../spec/NotificationProvider.md) page. Secrets are masked in API
@@ -683,7 +684,8 @@ POST /v1/notification-webhooks/whatsapp/<providerName>   (Twilio only)
 
 On the Twilio route a missing key answers 503 `WHATSAPP_STATUS_WEBHOOK_NOT_CONFIGURED`, a bad
 signature 403 `WHATSAPP_STATUS_WEBHOOK_UNVERIFIED`, an unknown (or Meta) provider name 404.
-Placeholder values (`ENTER_CREDENTIAL`, ...) count as missing.
+Placeholder values (`ENTER_CREDENTIAL`, ...) count as missing (see
+[Secrets in a blueprint](../blueprint/secrets.md)).
 
 What the event handlers send so the status comes back: a Twilio send carries a
 `statusCallback` of the service's public URL plus

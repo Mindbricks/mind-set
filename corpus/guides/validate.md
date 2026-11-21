@@ -39,6 +39,14 @@ Each finding names the JSON path and the rule, for example
 The exit code is non-zero when there is at least one error, so the command works in a
 script or a CI job.
 
+It also **warns** about secret-shaped literals: a string in a credential field (a key that
+ends in `password`, `secret`, `apiKey`, `privateKey`, `accessKey` or `token`) that is
+not `$ENV:<NAME>`, `ENTER_CREDENTIAL` or a placeholder, and any value shaped like a
+credential (a private-key block, a provider key with a well-known prefix, a JWT, a
+password inside a URL). A warning never fails the check, and it never repeats the value.
+It cannot tell a real password from a made-up one, so treat every such warning as a leak
+until you know otherwise (see section 6 of `review.md`).
+
 An unknown property is an error, not a warning. A misspelled key is not ignored by the
 compiler: either it refuses the blueprint, or, worse, it builds without the setting you
 meant to write. Fix it by looking the property up on its spec page
@@ -79,7 +87,56 @@ Use the first of these that your environment offers:
    blueprint by hand. Say plainly in your report that the semantic rules were checked by
    reading, not by a validator.
 
-## 4. Reading validator output
+## 4. Checking the design documents and their coverage
+
+Two more local checks work on the files the design and authoring skills write. Like
+`validate`, they need nothing but the corpus.
+
+```
+mind-set design-check <docName> [<draft.md>]
+mind-set spec-coverage [<blueprint.json>]
+```
+
+**`design-check`** checks one design document (default `design/<docName>.md`) against the
+design pipeline (`../procedures/design/pipeline.json`):
+
+| Rule | What it catches |
+|---|---|
+| Name | a document name that is neither a pipeline name nor `service-spec-<service>` |
+| Required sections | a `requiredSections` heading missing as an H2 (outside code fences) |
+| Service roster | `microservice-definitions` without a JSON roster of `{ "name" }` entries, or without a table under `## Event Contracts` |
+| Interview record | a `## Status` that is not `in-progress` or `closed`; a closed record whose Coverage Ledger misses an item, repeats one, leaves one unsettled or gives no source |
+| Test plan | a coverage target that is not `{ coverage: { designerApis, maxMissing }, services }`, a roster service the plan does not list, a service without its `### <service>` flow (the roster is `design/microservice-definitions.md`, or `--roster`) |
+
+It exits 0 with no finding and 2 with findings; a usage error also exits 2, and its
+`--json` report then has `error` and no `findings`. It warns about secret-shaped literals
+in the document, as `validate` does, without changing the exit code. It cannot check
+whether the content is right, the size limits of a document store, or a service-spec name
+against a published roster; the report lists what it did not check (`notChecked`).
+
+**`spec-coverage`** proves that every document in `design/` produced its artifact in the
+blueprint (default `blueprint.json`): `project-basic-setup` -> `projectSettings`,
+`auth-spec` -> `authentication`, `microservice-definitions` -> at least one service,
+`service-spec-<name>` -> that service, `bff-spec` -> `bffService.dataViews`,
+`notification-definitions` -> `notificationService.eventNotifications`, `agent-hub-spec` ->
+`agentHub.aiAgents`. Narrative documents (`prd`, `use-cases`, `user-stories`, the
+interview record, the test documents) produce no artifact by design. A document with no
+rule is a gap (`UNMAPPED`). An empty target is a gap (`EMPTY`) even when someone said it
+was being written. A gap is cleared only by a recorded decline:
+
+```
+mind-set spec-coverage --declare bff-spec --reason "the client reads one service" --by "designer"
+```
+
+The decline goes to `design/spec-ledger.json` with the reason, who decided and when, so a
+later session reads the decision instead of re-opening it. A chapter that has content but
+not the collection the rule reads is an `ERROR` (the rule cannot see the artifact; a
+decline does not clear it). The frontend document is `NOT_CHECKED`: the frontend is not
+part of the blueprint. Exit 0 = covered, 1 = a gap or an error, 2 = a usage error. It
+checks that each target exists, not that it says what the document asks for: that is the
+review.
+
+## 5. Reading validator output
 
 - **Errors** stop the compilation, or would make the generated system wrong. Fix all of
   them.

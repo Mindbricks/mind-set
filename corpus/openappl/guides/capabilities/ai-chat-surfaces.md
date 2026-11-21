@@ -134,7 +134,9 @@ and [Telegram sendChatAction](https://core.telegram.org/bots/api#sendchataction)
 > is the one that receives the provider's channel keys. The agent hub mounts no
 > webhook for it.
 >
-> **Env references.** A provider configuration value spelled `$ENV:NAME` names the
+> **Env references.** (The two standard spellings of a secret, `$ENV:NAME` and the
+> `ENTER_CREDENTIAL` placeholder, are compared in
+> [Secrets in a blueprint](../blueprint/secrets.md).) A provider configuration value spelled `$ENV:NAME` names the
 > environment variable that holds the credential at runtime instead of holding it.
 > The reference itself is carried as a plain value, it is never pushed as a deploy
 > secret, and every reader of a provider key (the notification adapters, the agent

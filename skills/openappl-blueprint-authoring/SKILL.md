@@ -1,6 +1,6 @@
 ---
 name: openappl-blueprint-authoring
-description: Write or change an OpenAPPL blueprint JSON file (project settings, authentication, services, data objects, properties, business APIs, workflows, library code) in small validated steps, or fix its validation errors. Do not use it for the requirements interview and design documents (openappl-blueprint-design), for an audit of a blueprint without editing it (openappl-blueprint-review), or for code that lives outside the blueprint (openappl-blueprint-contract).
+description: Write or change an OpenAPPL blueprint JSON file (project settings, authentication, services, data objects, properties, business APIs, workflows, library code) in small validated steps, or fix its validation errors. Do not use it for the requirements interview and design documents (openappl-blueprint-design), for an audit of a blueprint without editing it (openappl-blueprint-review), or for drafting contract-based client, test or extension code (openappl-blueprint-contract). Use authoring when applying that extension code to the blueprint JSON.
 ---
 
 # OpenAPPL blueprint authoring
@@ -19,7 +19,17 @@ The corpus is at `{{CORPUS}}`.
 2. Read `{{CORPUS}}/procedures/patterns-catalog.md` and `{{CORPUS}}/procedures/pitfalls.md`.
    When the catalog marks a pattern you need as architecture-first, read its guide before
    you design that part.
-3. Pick the procedure for the part you are writing (same folder):
+3. Read the guides that carry the lessons of earlier deliveries:
+   - `{{CORPUS}}/guides/project-settings.md` before you write `projectSettings`, the roles,
+     the tenancy or any provider (classify what is already there, the provider paths, the
+     hold rule);
+   - `{{CORPUS}}/guides/delivery.md` before you plan the lanes (the modules a delivery
+     loses, one writer per subtree, the whole-project checks, the coverage gate and the
+     warnings ledger);
+   - `{{CORPUS}}/guides/changing-a-blueprint.md` when the blueprint is already delivered;
+   - `{{CORPUS}}/openappl/guides/best-practices/validator-rules.md` before you write an
+     expression or a library body.
+4. Pick the procedure for the part you are writing (same folder):
    - a domain service: `blueprint-authoring.md`;
    - `authentication`: `auth-blueprint.md`;
    - `bffService`: `bff-blueprint.md`;
@@ -27,10 +37,10 @@ The corpus is at `{{CORPUS}}`.
    - `agentHub`: `agent-hub-blueprint.md`;
    - a service that takes payments: `howto-payment-flow.md`; recurring plans:
      `howto-subscription.md`; editorial content and mail to tasks: the other `howto-*.md`.
-4. Collect the inputs: `design/blueprint-plan.md` and the `design/service-spec-*.md` files
+5. Collect the inputs: `design/blueprint-plan.md` and the `design/service-spec-*.md` files
    when the design skill wrote them, otherwise the user's request. When the request leaves
    a product decision open, ask; do not decide it silently.
-5. Find the blueprint file. For a new project, start from the closest example in
+6. Find the blueprint file. For a new project, start from the closest example in
    `{{CORPUS}}/examples/` (`todo.json`, `blog.json`, `shop.json`) and keep only what the
    design needs.
 
@@ -64,8 +74,25 @@ them), then the platform modules.
   static join, a default, or a sequence. See section 6 of `blueprint-authoring.md`.
 - **Ownership comes from the session.** Mark the owner property with
   `sessionSettings.isOwnerField`; never write the owner from a request value.
-- **Secrets are references.** Every credential value is an environment reference such as
-  `"$ENV:STRIPE_SECRET_KEY"`, never a literal. Never write a key the user pasted.
+- **Secrets are references.** Every credential value is a reference, never a literal:
+  `"$ENV:STRIPE_SECRET_KEY"` when the deployment holds the value (recommended in a
+  committed blueprint), or `"ENTER_CREDENTIAL"` with `"secret": true` while it is not
+  provided yet. Never write a key the user pasted, never a realistic fake, and never
+  `ENTER_CREDENTIAL` into a key that is not a secret (ask for that value). The two forms
+  and how they relate: `{{CORPUS}}/openappl/guides/blueprint/secrets.md`.
+- **Never a real password.** The seeded super-admin password is readable by everyone who
+  reads the blueprint: write `"$ENV:SUPERADMIN_PASSWORD"`, or a placeholder the
+  administrator changes on first login (`"change-me-on-first-login"`). Never the user's
+  own password, never the default. A `secret-literal` warning from `mind-set validate`
+  is a leak until you have replaced the value.
+- **Providers come first.** Do not start a service until every provider its design needs
+  exists in `projectSettings` (the hold rule of `project-settings.md`). Classify what is
+  already there (absent, present and matching, present and diverging) before you write a
+  family; never write over a diverging one.
+- **Modules are not services.** `bffService`, the notification wiring and `agentHub` have
+  no completeness gate of their own and are the parts a delivery loses. Give each one that
+  the design turns on a durable work item, and wire `dataViewName` in the same pass as the
+  DataView (`delivery.md`).
 - **MScript values are descriptors**: `{ "js": "..." }`, one expression.
 - **Do not hand-edit generated output.** The compiler owns the backend code; behaviour
   you need goes into the blueprint (a workflow action, a library function, an edge
@@ -86,10 +113,21 @@ After every edit:
 3. Without a semantic validator, say so in your report, and walk the checklist in
    `{{CORPUS}}/guides/review.md` over what you wrote before you call the blueprint done.
 
+4. When the design documents exist (`design/`), run `mind-set spec-coverage <blueprint-file>`
+   before you call the blueprint done. Every document must have produced its artifact; a
+   gap is either written now or declined on purpose with
+   `mind-set spec-coverage --declare <doc> --reason "<why>" --by "<who>"`. It checks that
+   each target exists, not that it is complete: that is still your completeness check.
+
+5. After the last write of a delivery, keep the warnings ledger of `delivery.md` section 5:
+   every warning code is fixed or has a recorded decision pinned to its count. Sweep a defect
+   class with the validator, not with a text search.
+
 ## Done when
 
-- `mind-set validate` reports no errors, and the semantic validator (when there is one)
-  reports no errors;
+- `mind-set validate` reports no errors and no `secret-literal` warning, and the semantic
+  validator (when there is one) reports no errors;
+- `mind-set spec-coverage` is OK when there are design documents;
 - every data object, API and setting in the design inputs is in the blueprint (the
   completeness check of `blueprint-authoring.md` section 9);
 - your report lists what you wrote, the warnings that remain and why, and every open

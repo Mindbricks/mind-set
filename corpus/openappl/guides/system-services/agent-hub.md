@@ -142,8 +142,8 @@ declare multiple entries of the same provider type (for example two OpenAI accou
 different orgs). Each entry produces `AI_PROVIDER_<NAME>_<KEY>` environment values for the
 generated service. Agents bind to a provider by `modelSettings.providerName`.
 `configuration` items are `{ name, value }` pairs; a secret is never written into the
-blueprint (`ENTER_CREDENTIAL` is the placeholder, the owner enters the key in the project
-settings). Provider names must be unique (`UNIQUE_AI_PROVIDER_NAME`). Required
+blueprint (it is a reference: `$ENV:NAME`, or the `ENTER_CREDENTIAL` placeholder while the
+value is not provided yet; see [Secrets in a blueprint](../blueprint/secrets.md)). Provider names must be unique (`UNIQUE_AI_PROVIDER_NAME`). Required
 `configuration` keys per provider are listed on the [`AiProvider`](../../spec/AiProvider.md)
 page.
 

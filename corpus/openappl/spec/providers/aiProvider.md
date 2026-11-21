@@ -2,6 +2,8 @@
 
 Entries of this family are written with [`AiProvider`](../AiProvider.md); the keys below are what an entry's `configuration` takes, per `provider` brand.
 
+**Behaviour rules:** what every compiler must do for this family beyond the keys (webhook signatures, field rules, documented quirks) is in [aiProvider behaviour](../../guides/providers/ai.md).
+
 ## Environment names
 
 | Prefix | Key style |

@@ -391,3 +391,42 @@ request (see item 9 of `review.md`).
   conformant compiler, not the internals of one compiler's output.
 - A missing capability is raised as a blueprint change, never patched into generated
   code.
+
+## 10. Rules for a frontend
+
+A frontend is the most common code around the system. Besides the checklist above, these
+rules came from frontends that were built against a screen they imagined instead of the
+contract.
+
+- **Never mock, stub or fake a backend response.** A screen whose API exists in the
+  blueprint calls the live backend. A screen with **no** API is a **contract gap**: report
+  it as a blueprint change request; do not paper over it with invented data or an invented
+  shape. Every shape in the code is traced to a blueprint path or a running system's API
+  description.
+- **Never call the BFF service.** The BFF (`bffService`) is a mirror and repair surface; it
+  mounts **no public read route** for a DataView, by design. A screen that needs a
+  DataView's shape reads it through the **consuming service's** get or list API that binds
+  it with `apiOptions.dataViewName` (section 5). Call that endpoint, never a BFF route or an
+  invented `/<bff>/<view>` path. If an API description appears to offer a direct BFF read
+  route, that is a defect to report, not a contract to build against.
+- **Tenancy is a screen question, not only a header.** In a multi-tenant project, read how
+  the tenant is addressed (the tenant header or route prefix, the public tenant list, the
+  selection flow) before you design login or navigation. **Never ship a screen that asks a
+  user to type a tenant codename.** A reachable tenant-list endpoint tells you what you can
+  fetch, not what screen to build: a tenant is chosen from a list the user recognises, and
+  is carried by the route or the session afterwards.
+- **A `(proposed)` exclusion in `frontend-spec` is not the user's word.** The design phase
+  marks anything the interview did not settle with `(proposed)`. A proposed **addition** is
+  safe to build. A proposed **exclusion** ("that area sits outside this product's
+  surfaces (proposed)", "deferred to a later version (proposed)") narrows the delivery on
+  nobody's authority. Only `## Out of Scope / Explicit No's` carries real exclusions, and
+  only its unmarked lines. Build a proposed exclusion's subject unless the user excluded it
+  themselves; when it is expensive, ask instead of inheriting the guess. Record either way
+  in the deviation list.
+- **Routes are copied, never composed.** Take each route from the API description of the
+  running system or from the blueprint's derived surface; do not stitch one from a
+  `routePath` or from REST convention (authentication routes have their own shapes, and
+  custom APIs mount under their own version prefix).
+- **Prompts and specs are inputs, the blueprint and the compiled system are the
+  contract.** When they disagree, the contract wins, and the difference is a deviation you
+  record.

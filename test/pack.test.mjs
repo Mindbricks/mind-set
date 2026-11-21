@@ -99,6 +99,23 @@ describe('npm pack, installed from the tarball', { skip: PACKAGE ? false : 'no b
       const v = run(installed, home, ['validate', path.join(examples, f)]);
       assert.equal(v.code, 0, `${f}: ${v.stdout}${v.stderr}`);
     }
+    // The design checks read the installed corpus pipeline (no --pipeline).
+    const design = path.join(FIXTURES, 'design');
+    const clean = run(installed, home, ['design-check', 'microservice-definitions', path.join(design, 'msd-ok.md')]);
+    assert.equal(clean.code, 0, clean.stdout + clean.stderr);
+    const partial = run(installed, home, ['design-check', 'prd', path.join(design, 'prd-partial.md')]);
+    assert.equal(partial.code, 2, partial.stdout + partial.stderr);
+    const todo = JSON.parse(fs.readFileSync(path.join(examples, 'todo.json'), 'utf8'));
+    const designDir = path.join(tempDir('mind-set-pack-design-'), 'design');
+    fs.mkdirSync(designDir);
+    const docs = ['prd', 'auth-spec', 'microservice-definitions', ...todo.services.map((s) => `service-spec-${s.serviceSettings.serviceBasics.name}`)];
+    for (const d of docs) fs.writeFileSync(path.join(designDir, `${d}.md`), `# ${d}\n`);
+    const covered = run(installed, home, ['spec-coverage', path.join(examples, 'todo.json'), '--dir', designDir]);
+    assert.equal(covered.code, 0, covered.stdout + covered.stderr);
+    fs.writeFileSync(path.join(designDir, 'bff-spec.md'), '# bff\n');
+    const gap = run(installed, home, ['spec-coverage', path.join(examples, 'todo.json'), '--dir', designDir]);
+    assert.equal(gap.code, 1, gap.stdout + gap.stderr);
+
     const broken = path.join(FIXTURES, 'invalid', 'bad-enum.json');
     const bad = run(installed, home, ['validate', broken]);
     assert.equal(bad.code, 1, bad.stdout + bad.stderr);

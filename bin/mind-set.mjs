@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// mind-set: install the OpenAPPL blueprint skills for coding agents, and check
-// a blueprint against openappl.json. Zero dependencies, Node >= 18.
+// mind-set: install the OpenAPPL blueprint skills for coding agents, check a
+// blueprint against openappl.json, check the design documents and their
+// coverage in the blueprint. Zero dependencies, Node >= 18.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,6 +16,8 @@ import {
   uninstall,
   update,
 } from '../lib/install.mjs';
+import { PIPELINE_IN_CORPUS, runDesignCheck, runSpecCoverage } from '../lib/checks-cli.mjs';
+import { blueprintSecretWarnings } from '../lib/secrets.mjs';
 import { SEMANTIC_NOTE, formatProblem, loadSchema, validateBlueprint } from '../lib/validate.mjs';
 
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -30,6 +33,9 @@ Usage:
   mind-set update [--claude] [--codex] [--force] [--dry-run]
   mind-set uninstall [--dry-run]
   mind-set validate <blueprint.json>... [--schema <openappl.json>] [--root <Class>] [--json]
+  mind-set design-check <docName> [<draft.md>] [--dir <design>] [--roster <file>] [--pipeline <file>] [--json]
+  mind-set spec-coverage [<blueprint.json>] [--dir <design>] [--ledger <file>] [--json]
+  mind-set spec-coverage --declare <docName> --reason "<why>" --by "<who>"
   mind-set doctor
   mind-set --version | --help
 
@@ -45,7 +51,23 @@ uninstall  removes only what install recorded in ~/.mind-set/installed.json.
 validate   structural check of a blueprint against openappl.json (the installed
            corpus copy, this package's copy, or --schema). Prints one line per
            problem, "ERROR <json.path> <rule> <message>", and exits 1 on errors.
-           --root validates a fragment (for example --root Service).
+           --root validates a fragment (for example --root Service). A string
+           in a credential field that is not "$ENV:<NAME>" or a placeholder,
+           and any credential-shaped value, is a warning (never an error).
+design-check
+           structural check of one design document (default design/<docName>.md)
+           against the design pipeline of the corpus: the document name, the
+           required sections, the microservice-definitions roster and event
+           table, the interview Status and Coverage Ledger, the test-plan
+           target. Prints "ERROR|WARN <rule> <code> <message>" per finding and
+           exits 2 on any finding (0 = none); secret-shaped literals are warned
+           about and never change the exit code.
+spec-coverage
+           every document in design/ must have produced its artifact in the
+           blueprint (default blueprint.json), or carry a recorded decline in
+           design/spec-ledger.json (--declare writes one). Exits 1 on a gap,
+           0 when covered. The frontend document is reported NOT_CHECKED: the
+           frontend is not part of the blueprint.
 doctor     lists the detected agents, the installed skills, the corpus version
            and its OpenAPPL version.
 
@@ -54,7 +76,7 @@ Environment: HOME is where the agents live; MIND_SET_HOME moves ~/.mind-set.`;
 function parseArgs(argv) {
   const flags = {};
   const positional = [];
-  const valued = new Set(['schema', 'root']);
+  const valued = new Set(['schema', 'root', 'dir', 'roster', 'pipeline', 'ledger', 'declare', 'reason', 'by']);
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--') {
@@ -83,20 +105,31 @@ const KNOWN_FLAGS = {
   update: ['claude', 'codex', 'force', 'dryRun'],
   uninstall: ['dryRun'],
   validate: ['schema', 'root', 'json'],
+  'design-check': ['dir', 'roster', 'pipeline', 'json'],
+  'spec-coverage': ['dir', 'ledger', 'declare', 'reason', 'by', 'json'],
   doctor: [],
 };
 
+/** The corpus folders to look in: the installed one, ~/.mind-set/current, this package's. */
+function corpusDirs(ctx) {
+  const manifest = readManifest(ctx);
+  return [manifest?.corpus, path.join(ctx.dataDir, 'current'), path.join(pkgRoot, 'corpus')].filter(Boolean);
+}
+
 function findSchema(ctx, flags) {
   if (flags.schema) return path.resolve(String(flags.schema));
-  const manifest = readManifest(ctx);
-  const candidates = [
-    manifest?.corpus,
-    path.join(ctx.dataDir, 'current'),
-    path.join(pkgRoot, 'corpus'),
-  ].filter(Boolean);
-  for (const dir of candidates) {
+  for (const dir of corpusDirs(ctx)) {
     const p = corpusSchemaPath(dir);
     if (p) return p;
+  }
+  return null;
+}
+
+function findPipeline(ctx, flags) {
+  if (flags.pipeline) return path.resolve(String(flags.pipeline));
+  for (const dir of corpusDirs(ctx)) {
+    const p = path.join(dir, PIPELINE_IN_CORPUS);
+    if (fs.existsSync(p)) return p;
   }
   return null;
 }
@@ -129,7 +162,7 @@ function runValidate(ctx, files, flags) {
       const rule = e.code ? 'file' : 'json-parse';
       problems = [{ level: 'error', path: '$', rule, message: e.message }];
     }
-    if (!problems) problems = validateBlueprint(schema, blueprint, root).problems;
+    if (!problems) problems = [...validateBlueprint(schema, blueprint, root).problems, ...blueprintSecretWarnings(blueprint)];
     results.push({
       file,
       errors: problems.filter((p) => p.level === 'error').length,
@@ -166,7 +199,7 @@ function runValidate(ctx, files, flags) {
   return failed ? 1 : 0;
 }
 
-function main(argv) {
+async function main(argv) {
   let parsed;
   try {
     parsed = parseArgs(argv);
@@ -207,9 +240,21 @@ function main(argv) {
       return doctor(ctx);
     case 'validate':
       return runValidate(ctx, positional.slice(1), flags);
+    case 'design-check':
+      return runDesignCheck({ out, err }, positional.slice(1), flags, findPipeline(ctx, flags));
+    case 'spec-coverage':
+      return runSpecCoverage({ out, err }, positional.slice(1), flags);
     default:
       return 2;
   }
 }
 
-process.exitCode = main(process.argv.slice(2));
+main(process.argv.slice(2)).then(
+  (code) => {
+    process.exitCode = code;
+  },
+  (e) => {
+    err(`error: ${e && e.stack ? e.stack : String(e)}`);
+    process.exitCode = 2;
+  },
+);

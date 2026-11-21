@@ -130,7 +130,7 @@ working around it.
 
 ## How the agent works
 
-Every skill follows the same loop, and you can hold the agent to it:
+When the agent writes or changes a blueprint, it follows this loop:
 
 1. **Look up.** Before it writes a pattern, the agent reads that pattern's page in the
    local copy of [the language specification](../spec/index.md). Property names, types and

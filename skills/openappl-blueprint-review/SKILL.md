@@ -17,19 +17,34 @@ fully before you start.
 1. **Structural pass.** Run `mind-set validate <blueprint-file>` (when `mind-set` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). Report every error as a
    finding of its own. A blueprint with structural errors cannot be reviewed reliably:
    say so, review what you can, and mark the review incomplete.
+   Every `secret-literal` warning of `mind-set validate` is a finding of its own
+   (severity `error` for a credential, and for a super-admin password that is not an
+   `$ENV:` reference or a change-on-first-login placeholder). A credential that is a
+   reference (`$ENV:NAME`, or `ENTER_CREDENTIAL` with `secret: true`) is not a finding; see
+   `{{CORPUS}}/openappl/guides/blueprint/secrets.md`.
 2. **Semantic pass.** If the environment offers a semantic OpenAPPL validator (an
    OpenAPPL validator service, or the validation tool of a compiler or hosting platform
    you are connected to), run it and collect its errors and warnings with their codes.
    Without one, say in the report that the semantic rules were checked by reading only.
-3. **Map the blueprint.** List the services, their data objects (owner field, tenant
+3. **Coverage pass.** When the design documents exist (`design/`), run
+   `mind-set spec-coverage <blueprint-file>`. Every `EMPTY` or `UNMAPPED` row is a
+   finding (a designed part that never reached the blueprint), an `ERROR` row is a finding
+   about the rule, and a `DECLINED` row is a note that quotes the recorded reason. It only
+   proves that each target exists; whether it says what the document asks for is the
+   checklist's job. It cannot see the frontend (`NOT_CHECKED`). When the command is not
+   available, compare `design/` with the blueprint by hand and say so.
+4. **Map the blueprint.** List the services, their data objects (owner field, tenant
    scope, soft delete, relations) and their business APIs (`crudType`, `loginRequired`,
    `ownershipCheck`, roles, where and data clauses, select clause). Note every high-level
    pattern and read what it lowers to in
    `{{CORPUS}}/openappl/compiler/12-derived-surface.md`.
-4. **Walk the checklist.** Apply every item of `review.md` to every element it concerns.
+5. **Walk the checklist.** Apply every item of `review.md` to every element it concerns.
    For each property or option you are unsure of, read its spec page
    `{{CORPUS}}/openappl/spec/<Pattern>.md`; never judge from the name alone.
-5. **Write the report.**
+6. **Whole-project pass.** Items 11 and 12 of `review.md`: consumed topics have producers,
+   every DataView has a consuming API, the modules the design turns on are present, and the
+   warnings are all read (`{{CORPUS}}/guides/delivery.md`).
+7. **Write the report.**
 
 ## The report
 
@@ -45,7 +60,7 @@ conversation when the user asks for that). One entry per finding:
 | Fix | the concrete change |
 
 Order by severity. End with a short summary: counts per severity, which passes ran
-(structural, semantic, reading), and what was not reviewed.
+(structural, semantic, coverage, reading), and what was not reviewed.
 
 ## Rules
 

@@ -171,12 +171,18 @@ deletes a `:id` path parameter or a `selectBy`.
 **Check.**
 
 - Every credential value in the blueprint (provider keys, client secrets, webhook
-  secrets, tokens, passwords of external systems) is an environment reference such as
-  `"$ENV:STRIPE_SECRET_KEY"`. The fields that hold credentials are marked `"secret": true`
-  in the provider catalogue of `openappl.json`.
+  secrets, tokens, passwords of external systems) is a **reference**, never the value: an
+  environment reference such as `"$ENV:STRIPE_SECRET_KEY"` (recommended in a committed
+  blueprint) or the `"ENTER_CREDENTIAL"` placeholder with `"secret": true` while the value
+  is not provided yet. The two forms and how they relate are in
+  [Secrets in a blueprint](../openappl/guides/blueprint/secrets.md). The fields that hold
+  credentials are marked `"secret": true` in the provider catalogue of `openappl.json`.
 - A custom variable with a secret-shaped name is not marked as plain.
 - Library code does not read secret environment variables directly.
-- The seeded super-admin password is not the well-known default.
+- The seeded super-admin password is not a real password. It is readable by everyone who
+  reads the blueprint, so it is either an environment reference (`"$ENV:SUPERADMIN_PASSWORD"`)
+  or a placeholder that the administrator changes on first login
+  (`"change-me-on-first-login"`), and never the well-known default.
 - Properties that hold secrets are marked `basicSettings.hashed` or `isSecret`, and are
   not added back to responses, joins or filters.
 
@@ -185,13 +191,14 @@ is a leaked secret. The compiler keeps secrets out of generated code and makes e
 configurable through the environment (Part 3, chapter 10), but only an environment
 reference keeps it out of the blueprint itself.
 
-**Fix.** Replace each literal with `$ENV:<NAME>` and set the variable in the deployment.
+**Fix.** Replace each literal with `$ENV:<NAME>` and set the variable in the deployment (or
+with `ENTER_CREDENTIAL` while no value exists).
 Rotate any secret that was ever committed. Read secrets in library code through the
 generated configuration, not `process.env.SECRET*`.
 
 | Code | Severity | Rule |
 |---|---|---|
-| (none) | manual | a literal credential where an `$ENV:` reference belongs |
+| (none) | manual | a literal credential where a reference (`$ENV:` or `ENTER_CREDENTIAL`) belongs (`mind-set validate` and `mind-set spec-coverage` warn with `secret-literal` on a credential field or a credential-shaped value) |
 | `CUSTOM_VARIABLE_SECRET_SHAPED_PLAIN` | warning | a secret-shaped custom variable marked `secret: false` |
 | `PROCESS_ENV_SECRET_FORBIDDEN` | error | library code reads `process.env.SECRET*` |
 | `SUPERADMIN_PASSWORD_IS_DEFAULT` | warning | the super-admin seed password is the default |
@@ -293,6 +300,72 @@ the intended announcements.
 | `GEO_PUBLIC_SURFACE_UNFILTERED` | warning | see item 5 |
 | `DB_EVENTS_SWITCH_CONSUMED` | error | `publishDbEvents: false` on an object something in the project consumes |
 | `TOPIC_NO_CONSUMER` | warning | a published topic that no service consumes (often intended, such as the login announcement) |
+
+## 11. Whole-project checks
+
+**Check.** These cross service boundaries, so no single-service validation finds them. Run
+them after the last service is written ([delivery](delivery.md) sections 1 and 3):
+
+- every topic a Kafka-triggered API or event subscription **consumes** has a producer (an
+  API that raises it, an explicit publish action, or a data-change event of a stored
+  object). The mirror rule of item 10 checks the other direction: every published topic has
+  a consumer or an intended announcement;
+- every DataView has at least one consuming API, with `dataViewName` **wired** on a get or
+  list API, not merely defined;
+- every cross-service reference names a service and object that exist (or a service of the
+  `servicePlan`, which downgrades the finding to a warning until it is written);
+- every module the design turns on (`bffService`, notification wiring, `agentHub`) holds
+  its artifact (`mind-set spec-coverage`);
+- every provider a pattern names exists in `projectSettings`
+  ([project settings](project-settings.md));
+- the findings are all **read**: each warning code is fixed or has a recorded decision
+  pinned to its count ([the warnings ledger](delivery.md) section 5).
+
+**Why.** A consumer of a topic nobody raises never runs and nothing reports it. A DataView
+nothing consumes is dead weight and the sign that the BFF was authored but never wired. A
+validation that is keyed on severity passes a delivery whose 43 warnings were never read.
+
+**Fix.** Author the missing producer, consumer or wiring; or remove the dead element
+deliberately; or record the decision in the ledger.
+
+| Code | Severity | Rule |
+|---|---|---|
+| (none) | manual | a consumed topic without a producer; a DataView without a consuming API |
+| `FETCH_SCALAR_CONSUMED_AS_LIST`, `MSCRIPT_ASYNC_LIB_NOT_AWAITED`, `OPTIONAL_FETCH_RESULT_READ_UNGUARDED`, `SECONDARY_KEY_NOT_DISCOVERABLE`, `LIB_UNDECLARED_IDENTIFIER` | error / warning | the authoring rules of [Rules the validator enforces](../openappl/guides/best-practices/validator-rules.md) |
+
+## 12. Shapes a compiler refuses to build
+
+**Check.** A compiler may refuse some insecure shapes even when the author asks to skip
+validation. A blueprint with one of them cannot be delivered, so find them by reading too:
+
+- a cart-related action, agent tool or DataView that reaches a cart which is not
+  operator-only (`CART_*` codes);
+- an unenforced gate: `PUBLIC_API_WITH_ROLE_GATE`, `ABSOLUTE_ROLES_WITHOUT_GATE`,
+  `ABSOLUTE_ROLES_ONLY_ON_PUBLIC_WRITE`, `OWNERSHIP_CHECK_WITHOUT_OWNER_FIELD`,
+  `PARENT_OWNERSHIP_CHECK_INCOMPLETE`;
+- `INTERNAL_API_OWNERSHIP_UNENFORCEABLE`: an `ownershipCheck` on an API with an internal
+  call controller. An internal call runs as the system on any row, so the check can never
+  hold;
+- `OWNER_PROVENANCE_PAYLOAD_WITH_REST_CREATE`, `JOBSTREAM_ENQUEUE_ACCESS_WEAKENS_TARGET`,
+  `PRE_AUTH_MACHINE_AUTHORITY_ACTION`;
+- `AUTH_USER_ROLE_WRITE_UNGUARDED`: a custom authentication API or action that writes the
+  user's `roleId` outside the guarded role doors. Use the role-update and create-user doors
+  the authentication service provides, model an earned label ("verified seller") as a
+  **badge object** that holds the label, and keep a real role change in a
+  machine-to-machine-only authentication API;
+- a read that returns withheld data: `DATAVIEW_PUBLIC_PROJECTION_LEAK`,
+  `CROSS_TENANT_READ_DECLARATION_MISMATCH`, `LIST_ROW_REDACTION_ON_NON_LIST`,
+  `LIST_ROW_REDACTION_WRONG_STAGE`.
+
+**Why.** Each of these is a blueprint that looks complete and is open to someone it was
+meant to exclude.
+
+**Fix.** Change the blueprint. Do not retry with validation skipped: a compiler that
+refuses the shape refuses it again.
+
+| Code | Severity | Rule |
+|---|---|---|
+| (the codes above) | error | the shapes a compiler does not build; their rules are in items 1, 2, 5 and 9 |
 
 ## Reporting
 
