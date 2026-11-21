@@ -1,6 +1,6 @@
 # mind-set corpus
 
-The documents the mind-set skills read. `mind-set install` copies this folder to
+The documents the mind-set skills read. `mindset install` copies this folder to
 `~/.mind-set/<version>/` and links it as `~/.mind-set/current`; every skill names its files
 by their absolute path in that copy.
 
@@ -22,7 +22,7 @@ examples/      example blueprints that validate against openappl.json
 ```
 
 The OpenAPPL version of the corpus is `__patternsVersion` in `openappl.json`; the mind-set
-package version is the folder name. Do not edit the files here: a new `mind-set update`
+package version is the folder name. Do not edit the files here: a new `mindset update`
 replaces them.
 
 Design documents and the blueprint live in your working folder (`design/<docName>.md`,

@@ -4,7 +4,7 @@ There are two kinds of validation, and they answer different questions:
 
 - **Structural**: is this document shaped like an OpenAPPL blueprint? Every key is a
   property the schema knows, every value has the right type, every enum value is allowed,
-  every required field is there. `mind-set validate` answers this.
+  every required field is there. `mindset validate` answers this.
 - **Semantic**: does this blueprint mean something a compiler can build, and is it safe?
   An ownership check needs an owner field; a required column needs a value on create; a
   public API should not carry a role gate it switches off. Only a validator that knows the
@@ -14,13 +14,13 @@ A blueprint that passes the structural check can still be refused by a compiler,
 compile into a system that does the wrong thing. Treat a clean structural result as
 "ready for the semantic check", never as "correct".
 
-## 1. What `mind-set validate` checks
+## 1. What `mindset validate` checks
 
 ```
-mind-set validate <blueprint-file>
+mindset validate <blueprint-file>
 ```
 
-When the `mind-set` command is not on the `PATH` (the package was run with npx and not
+When the `mindset` command is not on the `PATH` (the package was run with npx and not
 installed globally), run `npx @mindbricks/mind-set validate <blueprint-file>` instead.
 
 It reads the file as JSON and walks it against `openappl.json`, the OpenAPPL schema that
@@ -83,7 +83,7 @@ Use the first of these that your environment offers:
    section 2 with their codes. A blueprint it accepts is one its compiler builds.
 2. **A compiler run**: compile the blueprint with an OpenAPPL compiler. The compiler
    validates before it generates; read its errors and warnings.
-3. **Neither available**: run `mind-set validate`, then walk `review.md` over the
+3. **Neither available**: run `mindset validate`, then walk `review.md` over the
    blueprint by hand. Say plainly in your report that the semantic rules were checked by
    reading, not by a validator.
 
@@ -93,8 +93,8 @@ Two more local checks work on the files the design and authoring skills write. L
 `validate`, they need nothing but the corpus.
 
 ```
-mind-set design-check <docName> [<draft.md>]
-mind-set spec-coverage [<blueprint.json>]
+mindset design-check <docName> [<draft.md>]
+mindset spec-coverage [<blueprint.json>]
 ```
 
 **`design-check`** checks one design document (default `design/<docName>.md`) against the
@@ -125,7 +125,7 @@ rule is a gap (`UNMAPPED`). An empty target is a gap (`EMPTY`) even when someone
 was being written. A gap is cleared only by a recorded decline:
 
 ```
-mind-set spec-coverage --declare bff-spec --reason "the client reads one service" --by "designer"
+mindset spec-coverage --declare bff-spec --reason "the client reads one service" --by "designer"
 ```
 
 The decline goes to `design/spec-ledger.json` with the reason, who decided and when, so a

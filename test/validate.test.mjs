@@ -249,7 +249,7 @@ describe('validator rules on a small schema', () => {
   });
 });
 
-describe('mind-set validate (command line)', { skip }, () => {
+describe('mindset validate (command line)', { skip }, () => {
   const pkg = makePackage('0.1.0');
   const home = makeHome();
 

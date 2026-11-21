@@ -83,7 +83,7 @@ them), then the platform modules.
 - **Never a real password.** The seeded super-admin password is readable by everyone who
   reads the blueprint: write `"$ENV:SUPERADMIN_PASSWORD"`, or a placeholder the
   administrator changes on first login (`"change-me-on-first-login"`). Never the user's
-  own password, never the default. A `secret-literal` warning from `mind-set validate`
+  own password, never the default. A `secret-literal` warning from `mindset validate`
   is a leak until you have replaced the value.
 - **Providers come first.** Do not start a service until every provider its design needs
   exists in `projectSettings` (the hold rule of `project-settings.md`). Classify what is
@@ -102,7 +102,7 @@ them), then the platform modules.
 
 After every edit:
 
-1. Run `mind-set validate <blueprint-file>` (when `mind-set` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). It checks structure only: unknown
+1. Run `mindset validate <blueprint-file>` (when `mindset` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). It checks structure only: unknown
    properties, types, enum values, required fields and the root. See
    `{{CORPUS}}/guides/validate.md`.
 2. If the environment offers a semantic OpenAPPL validator (an OpenAPPL validator
@@ -113,10 +113,10 @@ After every edit:
 3. Without a semantic validator, say so in your report, and walk the checklist in
    `{{CORPUS}}/guides/review.md` over what you wrote before you call the blueprint done.
 
-4. When the design documents exist (`design/`), run `mind-set spec-coverage <blueprint-file>`
+4. When the design documents exist (`design/`), run `mindset spec-coverage <blueprint-file>`
    before you call the blueprint done. Every document must have produced its artifact; a
    gap is either written now or declined on purpose with
-   `mind-set spec-coverage --declare <doc> --reason "<why>" --by "<who>"`. It checks that
+   `mindset spec-coverage --declare <doc> --reason "<why>" --by "<who>"`. It checks that
    each target exists, not that it is complete: that is still your completeness check.
 
 5. After the last write of a delivery, keep the warnings ledger of `delivery.md` section 5:
@@ -125,9 +125,9 @@ After every edit:
 
 ## Done when
 
-- `mind-set validate` reports no errors and no `secret-literal` warning, and the semantic
+- `mindset validate` reports no errors and no `secret-literal` warning, and the semantic
   validator (when there is one) reports no errors;
-- `mind-set spec-coverage` is OK when there are design documents;
+- `mindset spec-coverage` is OK when there are design documents;
 - every data object, API and setting in the design inputs is in the blueprint (the
   completeness check of `blueprint-authoring.md` section 9);
 - your report lists what you wrote, the warnings that remain and why, and every open

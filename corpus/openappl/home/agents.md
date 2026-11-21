@@ -19,10 +19,10 @@ You need Node.js 18 or newer. Install the package, then let it set up your agent
 
 ```bash
 npm install -g @mindbricks/mind-set
-mind-set install
+mindset install
 ```
 
-The global install puts the `mind-set` command on your `PATH`; the skills call it to
+The global install puts the `mindset` command on your `PATH`; the skills call it to
 validate. To try it without a global install, run it through npx. The agent then runs the
 validator the same way:
 
@@ -47,14 +47,14 @@ Use `--claude` or `--codex` to pick the agents yourself, and `--dry-run` to see 
 written. The documents go to `~/.mind-set/current/`. Check the result with:
 
 ```bash
-mind-set doctor
+mindset doctor
 ```
 
 It lists the agents it found, the installed skills and the OpenAPPL version of the corpus.
 Start a new agent session afterwards, so the agent loads the skills.
 
-The commands on this page are written as `mind-set <command>`. Without a global install,
-write `npx @mindbricks/mind-set@latest` in place of `mind-set`.
+The commands on this page are written as `mindset <command>`. Without a global install,
+write `npx @mindbricks/mind-set@latest` in place of `mindset`.
 
 ## The four skills
 
@@ -88,7 +88,7 @@ JSON yet.
 ```text
 Write the OpenAPPL blueprint for the design in design/ to
 blueprint.json with the openappl-blueprint-authoring skill. Work one
-element at a time, run "mind-set validate blueprint.json" after each
+element at a time, run "mindset validate blueprint.json" after each
 change and fix every error before you go on.
 ```
 
@@ -137,7 +137,7 @@ When the agent writes or changes a blueprint, it follows this loop:
    allowed values come from there, not from memory.
 2. **Draft one element.** A setting, a data object, a property or an API at a time, so each
    step stays small and easy to review.
-3. **Validate.** It runs `mind-set validate` on the file.
+3. **Validate.** It runs `mindset validate` on the file.
 4. **Repair.** Every error is fixed before the next element. Errors come back with the JSON
    path of the problem:
 
@@ -153,7 +153,7 @@ decisions are.
 You can run the same check outside the agent, in a terminal or in your CI:
 
 ```bash
-mind-set validate blueprint.json
+mindset validate blueprint.json
 ```
 
 The exit code is 1 when there is an error. The check is structural: property names, types,
@@ -192,14 +192,14 @@ the language directly.
 ## Update and remove
 
 ```bash
-mind-set update
+mindset update
 ```
 
 installs the current version for every agent you installed before and deletes older copies
 of the documents.
 
 ```bash
-mind-set uninstall
+mindset uninstall
 ```
 
 removes exactly what `install` wrote and nothing else. A skill folder that mind-set did not

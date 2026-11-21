@@ -10,7 +10,7 @@ source, and the next release brings it back here.
 - **A wrong or unclear instruction in a skill or a procedure?** Open an issue with the file,
   the sentence and what an agent did because of it, or a pull request with the fix.
 - **The validator accepts a broken blueprint, or rejects a valid one?** Open an issue with
-  the smallest blueprint that shows it and the `mind-set validate` output.
+  the smallest blueprint that shows it and the `mindset validate` output.
 - **A change to the OpenAPPL language itself** (patterns, properties, rules) belongs to the
   OpenAPPL repository and its RFC process, not here.
 

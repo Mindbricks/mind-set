@@ -134,7 +134,7 @@ of the event, not a scheduler. A revoked token answers
 
 ## 5. Validate the blueprint
 
-1. `mind-set validate blueprint.json` is clean, then the semantic validation
+1. `mindset validate blueprint.json` is clean, then the semantic validation
    of an OpenAPPL validation tool or compiler, when one is available, is
    green (the template has no address and its own listen topic; every mail
    action on it carries `mailbox`).

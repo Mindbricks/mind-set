@@ -3,7 +3,18 @@
 The package follows semantic versioning. Each release names the OpenAPPL version of its
 corpus (`openappl.version` in `package.json`).
 
-## Unreleased
+## 0.2.0
+
+- The command is `mindset`; `mind-set` still works as an alias (and keeps
+  `npx @mindbricks/mind-set ...` working). Every message, skill and guide names `mindset`.
+- `mindset design-check` reads a draft with CRLF line ends (written on Windows, or checked out
+  there) exactly like an LF draft; before, a closed interview record read as an empty
+  Coverage Ledger.
+
+## 0.1.0 (on npm since 2026-11-21)
+
+The npm release of 0.1.0 also carries everything below its first GitHub release:
+
 
 - `mind-set design-check <docName>`: structural check of a design document (name, required
   sections, service roster and event table, interview Status and Coverage Ledger, test-plan
@@ -31,9 +42,9 @@ corpus (`openappl.version` in `package.json`).
 - The build refuses a vendor or product name anywhere in the package outside the pages that
   exist to name them.
 
-## 0.1.0
+### First GitHub release (2026-11-14)
 
-First release, published as `@mindbricks/mind-set` (the command is `mind-set`).
+Published as `@mindbricks/mind-set` (the command was `mind-set`).
 
 - `mind-set install | update | uninstall | doctor` for Claude Code (`~/.claude/skills`) and
   Codex (`~/.agents/skills`).

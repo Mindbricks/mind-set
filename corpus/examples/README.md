@@ -3,7 +3,7 @@
 Each file is a complete OpenAPPL blueprint. Only the choices that matter for the example
 are written; every other property takes its documented default. All three validate with
 no errors against the reference compiler for the schema version this corpus ships
-([`../openappl.json`](../openappl.json)), and `mind-set validate` accepts them.
+([`../openappl.json`](../openappl.json)), and `mindset validate` accepts them.
 
 The one informational warning each of them reports
 (`TOPIC_NO_CONSUMER` on `...-auth-service-user-logged-in`) comes from the authentication

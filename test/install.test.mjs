@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { after, describe, test } from 'node:test';
 import {
+  PKG_DIR,
   addCodexBinary,
   cleanup,
   exists,
@@ -330,8 +331,14 @@ describe('command line', () => {
     const res = run(makePackage('0.1.0'), makeHome(), ['--help']);
     assert.equal(res.code, 0);
     for (const c of ['install', 'update', 'uninstall', 'validate', 'doctor']) {
-      assert.match(res.stdout, new RegExp(`mind-set ${c}`));
+      assert.match(res.stdout, new RegExp(`mindset ${c}`));
     }
+  });
+
+  test('the command is mindset; mind-set stays an alias of the same CLI', () => {
+    const { bin } = JSON.parse(fs.readFileSync(path.join(PKG_DIR, 'package.json'), 'utf8'));
+    assert.deepEqual(Object.keys(bin).sort(), ['mind-set', 'mindset']);
+    assert.equal(bin.mindset, bin['mind-set']);
   });
 
   test('an unknown command or option exits 2', () => {

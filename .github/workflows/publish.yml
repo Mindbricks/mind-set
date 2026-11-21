@@ -2,6 +2,11 @@ name: publish
 
 # A release is a tag v<version> whose version equals package.json. The tests run
 # first; the package goes to npm with provenance.
+#
+# npm trusted publishing: this workflow proves itself to npm with GitHub's OIDC
+# token (id-token: write); no npm token is stored anywhere. The package's npm
+# settings name this repository and publish.yml as its Trusted Publisher. npm
+# holds a new version as staged until a maintainer approves it on npmjs.com.
 on:
   push:
     tags: ['v*']
@@ -19,9 +24,9 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - name: an npm CLI with trusted publishing (11.5.1 or newer)
+        run: npm install -g npm@^11.5.1 && npm --version
       - name: tag matches package.json
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
       - run: npm test
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

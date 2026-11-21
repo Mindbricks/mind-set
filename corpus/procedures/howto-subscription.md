@@ -235,7 +235,7 @@ hooks fire the same way.
 
 ## 8. Validate
 
-Validate the blueprint after every module you touched: `mind-set validate
+Validate the blueprint after every module you touched: `mindset validate
 blueprint.json` for the structure, then the semantic validation of an
 OpenAPPL validation tool or compiler when one is available (it reports
 `INTERNAL_API_NOT_FOUND` / `INTERNAL_API_NO_CONTROLLER` for a hook whose

@@ -198,7 +198,7 @@ generated configuration, not `process.env.SECRET*`.
 
 | Code | Severity | Rule |
 |---|---|---|
-| (none) | manual | a literal credential where a reference (`$ENV:` or `ENTER_CREDENTIAL`) belongs (`mind-set validate` and `mind-set spec-coverage` warn with `secret-literal` on a credential field or a credential-shaped value) |
+| (none) | manual | a literal credential where a reference (`$ENV:` or `ENTER_CREDENTIAL`) belongs (`mindset validate` and `mindset spec-coverage` warn with `secret-literal` on a credential field or a credential-shaped value) |
 | `CUSTOM_VARIABLE_SECRET_SHAPED_PLAIN` | warning | a secret-shaped custom variable marked `secret: false` |
 | `PROCESS_ENV_SECRET_FORBIDDEN` | error | library code reads `process.env.SECRET*` |
 | `SUPERADMIN_PASSWORD_IS_DEFAULT` | warning | the super-admin seed password is the default |
@@ -315,7 +315,7 @@ them after the last service is written ([delivery](delivery.md) sections 1 and 3
 - every cross-service reference names a service and object that exist (or a service of the
   `servicePlan`, which downgrades the finding to a warning until it is written);
 - every module the design turns on (`bffService`, notification wiring, `agentHub`) holds
-  its artifact (`mind-set spec-coverage`);
+  its artifact (`mindset spec-coverage`);
 - every provider a pattern names exists in `projectSettings`
   ([project settings](project-settings.md));
 - the findings are all **read**: each warning code is fixed or has a recorded decision

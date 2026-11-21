@@ -67,7 +67,7 @@ before you derive anything.
 
 ## Validation
 
-- After authoring applies a library function or edge controller to the blueprint, run `mind-set validate <blueprint-file>` (or `npx @mindbricks/mind-set validate <blueprint-file>`; structural only, see
+- After authoring applies a library function or edge controller to the blueprint, run `mindset validate <blueprint-file>` (or `npx @mindbricks/mind-set validate <blueprint-file>`; structural only, see
   `{{CORPUS}}/guides/validate.md`) and, when the environment offers a semantic OpenAPPL
   validator (an OpenAPPL validator service, or the validation tool of a compiler or
   hosting platform), run it as well.

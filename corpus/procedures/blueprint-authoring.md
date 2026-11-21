@@ -207,7 +207,7 @@ Rules for every edit:
 - **Rename in place**; never simulate a rename with delete+recreate of a
   populated item, and update every reference to the old name in the same
   edit.
-- **Validate after every non-trivial edit:** `mind-set validate
+- **Validate after every non-trivial edit:** `mindset validate
   blueprint.json` (structural), then the semantic validation of an OpenAPPL
   validation tool or compiler when one is available. An edit that leaves an
   error is not done: clear every error at the path it names before calling
@@ -883,7 +883,7 @@ For each asset in the §4 order:
 
 1. Draft the payload from the spec + ontology.
 2. Apply it to `blueprint.json` as one edit at the asset's path.
-3. Run `mind-set validate blueprint.json`.
+3. Run `mindset validate blueprint.json`.
 4. Fix every error it names, at the path it names, before moving on.
 
 After the last asset:

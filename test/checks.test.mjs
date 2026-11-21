@@ -1,4 +1,4 @@
-// `mind-set design-check` and `mind-set spec-coverage` over local files, and
+// `mindset design-check` and `mindset spec-coverage` over local files, and
 // the secret-shaped literal warnings they (and `validate`) give.
 //
 // The design fixtures run against fixtures/design/pipeline.json, the design
@@ -201,7 +201,7 @@ describe('spec-coverage', { skip: EXAMPLES ? false : 'no example blueprints' }, 
     const gap = cli(['spec-coverage'], { cwd });
     assert.equal(gap.code, 1);
     assert.match(gap.stdout, /SPEC COVERAGE GAP — 1 document\(s\) produced no artifact:\n {2}bff-spec -> bffService\.dataViews is empty/);
-    assert.match(gap.stdout, /mind-set spec-coverage --declare bff-spec --reason/);
+    assert.match(gap.stdout, /mindset spec-coverage --declare bff-spec --reason/);
 
     const noReason = cli(['spec-coverage', '--declare', 'bff-spec', '--by', 'me'], { cwd });
     assert.equal(noReason.code, 2);

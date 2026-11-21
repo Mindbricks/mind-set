@@ -185,7 +185,7 @@ invent.
 Scaffold-then-fill: derive the inventory from the spec first (hub basics,
 one toolSources entry per exposed service, the agent list with each
 agent's sections), then author one named item at a time. Run
-`mind-set validate blueprint.json` after each write and resolve every
+`mindset validate blueprint.json` after each write and resolve every
 error before moving on.
 
 1. **`agentHub/hubSettings/hubBasics`**: merge in `description`,
@@ -214,7 +214,7 @@ users author new agents.
 
 ## 6. Validate, build, gate
 
-1. Validate the module (`mind-set validate blueprint.json`, then an OpenAPPL
+1. Validate the module (`mindset validate blueprint.json`, then an OpenAPPL
    validation tool or compiler when one is available) and drive `agentHub` to zero errors.
 2. Building the system service **`agentHub`** and checking its health
    happen on the hosting platform, outside this procedure.

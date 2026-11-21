@@ -67,7 +67,7 @@ the design documents in `design/` are what carries the work between them:
 | "Re-scope the product / add a whole new capability area / redo the requirements" | The design phase (Phase D), run here | Re-scope through the design procedures: amend the interview record (`interview.md`), rewrite the affected requirement doc, then every downstream document that is now stale (`requirements.md`, `specs.md`); then work the design state out again. |
 | "Change a detail that contradicts a spec" / the spec itself is wrong | Yours (design authority) | **The spec is a SOURCE, not law.** Blueprint authoring is the real design work: when the spec is erroneous, contradictory or impossible, design what is right and record the deviation (what the spec said, what you did, why) in the handoff and the completion report. A blueprint-level deviation does not rewrite the spec DOCS; a genuine re-scoping of the product goes through the design procedures (the row above). |
 | "Why is the backend designed this way?" | Both | Explain from the spec (`design/`) plus the blueprint (`blueprint.json`): specs carry the intent, the blueprint carries the realization. |
-| "Write / change the blueprint" | Yours | `blueprint-authoring.md` and the module guides; validate with `mind-set validate blueprint.json`. |
+| "Write / change the blueprint" | Yours | `blueprint-authoring.md` and the module guides; validate with `mindset validate blueprint.json`. |
 | "Build / deploy / test / run the application" | The compiler and the hosting platform | Not this procedure: the validated blueprint goes to an OpenAPPL compiler. |
 | "Where are these documents kept?" | The working folder | In `design/`, one markdown file per document; the blueprint is `blueprint.json`. |
 | "Set up / change payment, storage, AI providers" | Yours (the provider entries of the blueprint) + user (credentials) | The blueprint names the providers; CREDENTIALS are entered by the user in the settings of the hosting platform, never through you, never into the blueprint. |
@@ -169,7 +169,7 @@ documents with `blueprint-authoring.md` and the module guides
 (`auth-blueprint.md`, then the domain services, then `bff-blueprint.md`,
 `notifications-blueprint.md` and `agent-hub-blueprint.md` as the flags of
 `project-basic-setup` say), and validated with
-`mind-set validate blueprint.json` plus an OpenAPPL validation tool or
+`mindset validate blueprint.json` plus an OpenAPPL validation tool or
 compiler when one is available. The blueprint is then ready to be compiled
 by an OpenAPPL compiler; building, running and hosting the result are the
 work of that compiler and the hosting platform, outside this procedure.

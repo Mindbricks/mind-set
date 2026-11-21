@@ -156,7 +156,7 @@ Scaffold-then-fill: derive the view inventory from the spec first (views,
 their aggregates, their stats — with the `lookups`→aggregate conversion
 applied and duplicates collapsed), then author one view at a time. Before
 each write: check the payload against the pattern pages; after each
-write run `mind-set validate blueprint.json` and resolve every error before moving on
+write run `mindset validate blueprint.json` and resolve every error before moving on
 (`blueprint-authoring.md` sections 3 and 9).
 
 1. **Each DataView: ONE complete edit at the named-item path**
@@ -184,7 +184,7 @@ field lives in the `documentation` section.
 
 ## 5. Validate, build, gate
 
-1. Validate the module (`mind-set validate blueprint.json`, then an OpenAPPL
+1. Validate the module (`mindset validate blueprint.json`, then an OpenAPPL
    validation tool or compiler when one is available) and drive `bffService` to zero errors.
 2. The notifications module authoring starts only after
    the DataViews exist (its `dataViewName` references are checked against

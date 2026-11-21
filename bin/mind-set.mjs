@@ -26,18 +26,18 @@ const pkg = JSON.parse(fs.readFileSync(path.join(pkgRoot, 'package.json'), 'utf8
 const out = (line) => process.stdout.write(`${line}\n`);
 const err = (line) => process.stderr.write(`${line}\n`);
 
-const HELP = `mind-set ${pkg.version}: OpenAPPL blueprint skills for coding agents
+const HELP = `mindset ${pkg.version}: OpenAPPL blueprint skills for coding agents (mind-set is an alias)
 
 Usage:
-  mind-set install [--claude] [--codex] [--force] [--dry-run]
-  mind-set update [--claude] [--codex] [--force] [--dry-run]
-  mind-set uninstall [--dry-run]
-  mind-set validate <blueprint.json>... [--schema <openappl.json>] [--root <Class>] [--json]
-  mind-set design-check <docName> [<draft.md>] [--dir <design>] [--roster <file>] [--pipeline <file>] [--json]
-  mind-set spec-coverage [<blueprint.json>] [--dir <design>] [--ledger <file>] [--json]
-  mind-set spec-coverage --declare <docName> --reason "<why>" --by "<who>"
-  mind-set doctor
-  mind-set --version | --help
+  mindset install [--claude] [--codex] [--force] [--dry-run]
+  mindset update [--claude] [--codex] [--force] [--dry-run]
+  mindset uninstall [--dry-run]
+  mindset validate <blueprint.json>... [--schema <openappl.json>] [--root <Class>] [--json]
+  mindset design-check <docName> [<draft.md>] [--dir <design>] [--roster <file>] [--pipeline <file>] [--json]
+  mindset spec-coverage [<blueprint.json>] [--dir <design>] [--ledger <file>] [--json]
+  mindset spec-coverage --declare <docName> --reason "<why>" --by "<who>"
+  mindset doctor
+  mindset --version | --help
 
 install    copies the document corpus to ~/.mind-set/<version>/ (linked as
            ~/.mind-set/current) and writes the skills to every detected agent:
@@ -141,7 +141,7 @@ function runValidate(ctx, files, flags) {
   }
   const schemaPath = findSchema(ctx, flags);
   if (!schemaPath) {
-    err('error: no openappl.json found; run "mind-set install" or pass --schema <path>');
+    err('error: no openappl.json found; run "mindset install" or pass --schema <path>');
     return 2;
   }
   let schema;
@@ -218,7 +218,7 @@ async function main(argv) {
     return command || flags.help ? 0 : 2;
   }
   if (!KNOWN_FLAGS[command]) {
-    err(`error: unknown command "${command}" (see mind-set --help)`);
+    err(`error: unknown command "${command}" (see mindset --help)`);
     return 2;
   }
   const unknown = Object.keys(flags).filter((f) => !KNOWN_FLAGS[command].includes(f));

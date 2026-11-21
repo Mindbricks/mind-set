@@ -28,7 +28,7 @@ not all at once.
 
 All documents go to `design/<docName>.md` in the working folder (a service spec is
 `design/service-spec-<service-name>.md`). Write a document completely, then check it
-before you move on: run `mind-set design-check <docName>` (when `mind-set` is not on the
+before you move on: run `mindset design-check <docName>` (when `mindset` is not on the
 `PATH`: `npx @mindbricks/mind-set design-check <docName>`). Exit 0 is clean. Exit 2 with
 `findings` means the document is not done: fix each finding (a missing section, a broken
 roster, an incomplete Coverage Ledger) and run it again. Exit 2 with an `error` and no
@@ -119,13 +119,13 @@ service specs.
 
 ## Validation
 
-This skill writes no blueprint, so there is nothing to validate with `mind-set validate`
-yet. `mind-set design-check <docName>` checks each document's structure: its name, its
+This skill writes no blueprint, so there is nothing to validate with `mindset validate`
+yet. `mindset design-check <docName>` checks each document's structure: its name, its
 required sections, the service roster and event table, the interview Status and Coverage
 Ledger, and the test-plan target (see `{{CORPUS}}/guides/validate.md`, section 4). It also
 warns about a secret-shaped literal; remove the value, never just the warning. It cannot
 check whether the content is right or complete: that is the writer guide's checklist and
 the user's approval. Pattern and property names in the specs are checked when the
-blueprint is written: authoring runs `mind-set validate <file>` (structural only),
-`mind-set spec-coverage` (every document produced its artifact) and, when the environment
+blueprint is written: authoring runs `mindset validate <file>` (structural only),
+`mindset spec-coverage` (every document produced its artifact) and, when the environment
 offers one, a semantic OpenAPPL validator.

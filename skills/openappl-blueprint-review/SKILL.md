@@ -14,10 +14,10 @@ fully before you start.
 
 ## Steps
 
-1. **Structural pass.** Run `mind-set validate <blueprint-file>` (when `mind-set` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). Report every error as a
+1. **Structural pass.** Run `mindset validate <blueprint-file>` (when `mindset` is not on the `PATH`: `npx @mindbricks/mind-set validate <blueprint-file>`). Report every error as a
    finding of its own. A blueprint with structural errors cannot be reviewed reliably:
    say so, review what you can, and mark the review incomplete.
-   Every `secret-literal` warning of `mind-set validate` is a finding of its own
+   Every `secret-literal` warning of `mindset validate` is a finding of its own
    (severity `error` for a credential, and for a super-admin password that is not an
    `$ENV:` reference or a change-on-first-login placeholder). A credential that is a
    reference (`$ENV:NAME`, or `ENTER_CREDENTIAL` with `secret: true`) is not a finding; see
@@ -27,7 +27,7 @@ fully before you start.
    you are connected to), run it and collect its errors and warnings with their codes.
    Without one, say in the report that the semantic rules were checked by reading only.
 3. **Coverage pass.** When the design documents exist (`design/`), run
-   `mind-set spec-coverage <blueprint-file>`. Every `EMPTY` or `UNMAPPED` row is a
+   `mindset spec-coverage <blueprint-file>`. Every `EMPTY` or `UNMAPPED` row is a
    finding (a designed part that never reached the blueprint), an `ERROR` row is a finding
    about the rule, and a `DECLINED` row is a note that quotes the recorded reason. It only
    proves that each target exists; whether it says what the document asks for is the

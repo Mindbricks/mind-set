@@ -211,7 +211,7 @@ it in the report, do not fabricate a path.
 
 Scaffold-then-fill: derive the full inventory first (per definition ×
 channel: topic, view binding, template fields, targets), then author one
-notification at a time. Run `mind-set validate blueprint.json` after each
+notification at a time. Run `mindset validate blueprint.json` after each
 write and resolve every error before moving on.
 
 1. **`notificationService/serviceSettings/serviceOptions`**: merge in
@@ -230,7 +230,7 @@ the fix loop and change requests only.
 
 ## 4. Validate, build, gate
 
-1. Validate the module (`mind-set validate blueprint.json`, then an OpenAPPL
+1. Validate the module (`mindset validate blueprint.json`, then an OpenAPPL
    validation tool or compiler when one is available) and drive `notificationService` to zero errors.
 2. Building the system service **`notification`** and checking its health
    happen on the hosting platform, outside this procedure.

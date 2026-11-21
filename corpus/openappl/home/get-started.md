@@ -35,7 +35,7 @@ validator:
 
 ```bash
 npm install -g @mindbricks/mind-set
-mind-set install
+mindset install
 ```
 
 Then start with a prompt such as:

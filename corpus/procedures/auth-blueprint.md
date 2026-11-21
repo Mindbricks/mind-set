@@ -180,7 +180,7 @@ the standard shape: `department`, `bio`, `country`, `ccEmail`, ...
 ## 3. Write order (sharded — one section per write)
 
 Scaffold-then-fill: derive the write list from your decisions first, then
-execute it. After every write run `mind-set validate blueprint.json` and
+execute it. After every write run `mindset validate blueprint.json` and
 resolve every error (`blueprint-authoring.md` section 3). Sections whose
 current value already matches the spec need no write: plan against the
 actual state (read `authentication` in `blueprint.json` once; the module
@@ -351,7 +351,7 @@ or mutate its database to make a test login work.
 
 ## 5. Validate, build, gate
 
-1. Validate the module (`mind-set validate blueprint.json`, then an OpenAPPL
+1. Validate the module (`mindset validate blueprint.json`, then an OpenAPPL
    validation tool or compiler when one is available) and drive
    `authentication` to zero errors; judge warnings deliberately.
 2. Phase 3 must not start before the `authentication` module validates

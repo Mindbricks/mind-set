@@ -90,14 +90,14 @@ the running system, and the rule is the same as for every other credential:
 - Write an `$ENV:NAME` reference (`"$ENV:SUPERADMIN_PASSWORD"`), or a placeholder that the
   administrator **changes on first login** (`"change-me-on-first-login"`).
 - A blueprint that is committed, exported or published must pass this rule before it
-  leaves the working folder. `mind-set validate` and `mind-set spec-coverage` warn
+  leaves the working folder. `mindset validate` and `mindset spec-coverage` warn
   (`secret-literal`) when a credential field or a credential-shaped value holds a literal.
 
 ## Checks
 
 | Code | Severity | Rule |
 |---|---|---|
-| (none) | manual | a literal credential where a reference belongs (reported as `secret-literal` by `mind-set validate`) |
+| (none) | manual | a literal credential where a reference belongs (reported as `secret-literal` by `mindset validate`) |
 | `CUSTOM_VARIABLE_SECRET_SHAPED_PLAIN` | warning | a secret-shaped custom variable marked `secret: false` |
 | `PROCESS_ENV_SECRET_FORBIDDEN` | error | library code reads `process.env.SECRET*` |
 | `SUPERADMIN_PASSWORD_IS_DEFAULT` | warning | the super-admin seed password is the default |

@@ -5,10 +5,10 @@ OpenAPPL blueprint, plus a local structural validator. Zero dependencies, Node 1
 
 ```bash
 npm install -g @mindbricks/mind-set
-mind-set install
+mindset install
 ```
 
-The global install puts the `mind-set` command on the `PATH`; the skills run `mind-set validate`
+The global install puts the `mindset` command on the `PATH` (`mind-set` still works as an alias); the skills run `mindset validate`
 after every change. Without a global install, use `npx @mindbricks/mind-set@latest <command>`
 wherever this README says `mind-set <command>`; the skills fall back to the same form.
 
@@ -21,26 +21,26 @@ wherever this README says `mind-set <command>`; the skills fall back to the same
   has accepted the workspace trust prompt for that folder; an untrusted headless run
   (`claude -p`) ignores them and asks, or refuses, on every call.
 - **Headless runs cannot install.** They are refused writes under `.claude/`; run
-  `mind-set install` yourself in a terminal, then start the headless run.
-- **Run each command on its own.** The skills run `mind-set validate`, `design-check` and
+  `mindset install` yourself in a terminal, then start the headless run.
+- **Run each command on its own.** The skills run `mindset validate`, `design-check` and
   `spec-coverage` as one command each: an agent whose permissions approve the command still
   refuses it when it is chained (`; echo $?`, a pipe, `&&`). Read the exit code from the
   command, not from a wrapper.
 - **Sandboxed Node.** In an agent sandbox that sends traffic through a proxy, Node's
   built-in `fetch` ignores the proxy unless `NODE_USE_ENV_PROXY=1` is set (Node 22.21 or 24.5
-  and newer); `mind-set` itself needs no network after install.
+  and newer); `mindset` itself needs no network after install.
 
 ## Commands
 
 | Command | What it does |
 |---|---|
-| `mind-set install [--claude] [--codex] [--force] [--dry-run]` | Copies the corpus to `~/.mind-set/<version>/` (linked as `~/.mind-set/current`) and writes each skill to Claude Code (`~/.claude/skills/<skill>/`) and Codex (`~/.agents/skills/<skill>/`). |
-| `mind-set update [...]` | Installs this version for every agent installed before (and every detected one), then deletes older corpus versions. |
-| `mind-set uninstall [--dry-run]` | Removes only what `install` recorded in `~/.mind-set/installed.json`. |
-| `mind-set validate <file>... [--schema <path>] [--root <Class>] [--json]` | Structural check of a blueprint against `openappl.json`. |
-| `mind-set design-check <docName> [<draft.md>] [--dir <design>] [--roster <file>] [--pipeline <file>] [--json]` | Structural check of one design document (default `design/<docName>.md`) against the design pipeline of the corpus. |
-| `mind-set spec-coverage [<blueprint.json>] [--dir <design>] [--ledger <file>] [--json]` | Every document in `design/` produced its artifact in the blueprint, or carries a recorded decline (`--declare <doc> --reason "<why>" --by "<who>"`). |
-| `mind-set doctor` | Detected agents, installed skills, corpus version and its OpenAPPL version. |
+| `mindset install [--claude] [--codex] [--force] [--dry-run]` | Copies the corpus to `~/.mind-set/<version>/` (linked as `~/.mind-set/current`) and writes each skill to Claude Code (`~/.claude/skills/<skill>/`) and Codex (`~/.agents/skills/<skill>/`). |
+| `mindset update [...]` | Installs this version for every agent installed before (and every detected one), then deletes older corpus versions. |
+| `mindset uninstall [--dry-run]` | Removes only what `install` recorded in `~/.mind-set/installed.json`. |
+| `mindset validate <file>... [--schema <path>] [--root <Class>] [--json]` | Structural check of a blueprint against `openappl.json`. |
+| `mindset design-check <docName> [<draft.md>] [--dir <design>] [--roster <file>] [--pipeline <file>] [--json]` | Structural check of one design document (default `design/<docName>.md`) against the design pipeline of the corpus. |
+| `mindset spec-coverage [<blueprint.json>] [--dir <design>] [--ledger <file>] [--json]` | Every document in `design/` produced its artifact in the blueprint, or carries a recorded decline (`--declare <doc> --reason "<why>" --by "<who>"`). |
+| `mindset doctor` | Detected agents, installed skills, corpus version and its OpenAPPL version. |
 
 ### Agents
 

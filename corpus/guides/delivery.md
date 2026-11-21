@@ -88,7 +88,7 @@ Run it **before the report, not after**. It maps every design document to the bl
 artifact that proves it was implemented, and reads the blueprint to do it:
 
 ```bash
-mind-set spec-coverage blueprint.json
+mindset spec-coverage blueprint.json
 ```
 
 A plan, a todo list and the session's own recollection are all inadmissible: the whole
@@ -112,7 +112,7 @@ document, adding a coverage rule), or, when no artifact is the right answer, by
 **recording the decision**:
 
 ```bash
-mind-set spec-coverage blueprint.json \
+mindset spec-coverage blueprint.json \
   --declare agent-hub-spec --reason "<why no artifact is correct>" --by "<who decided>"
 ```
 
@@ -158,7 +158,7 @@ How to keep it (a plain file in the working folder, for example `design/warnings
    declined gap rows of the coverage gate by name and reason.
 
 Without a semantic validator, say so in the report and walk [the review](review.md) over
-the blueprint instead. `mind-set validate` is structural only and cannot stand in.
+the blueprint instead. `mindset validate` is structural only and cannot stand in.
 
 ## 6. Waiting and background work
 

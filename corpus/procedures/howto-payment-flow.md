@@ -627,7 +627,7 @@ mail on `order-expired` (spec ruling) — a topic with no listener is fine.
 
 ## 9. Validate
 
-**Design-time gate.** `mind-set validate blueprint.json` for the structure,
+**Design-time gate.** `mindset validate blueprint.json` for the structure,
 then the semantic validation of an OpenAPPL validation tool or compiler when
 one is available, at zero errors (say plainly when only the structural check
 ran); expected warnings on the pilot: `PAYMENT_LIFECYCLE_HOOK_NOT_LOWERED` x3
