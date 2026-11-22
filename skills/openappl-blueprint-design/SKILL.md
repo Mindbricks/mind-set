@@ -115,7 +115,11 @@ the blueprint plan.
 
 ## Step 4. The blueprint plan
 
-Write `design/blueprint-plan.md`, the hand-over to authoring. It contains:
+Write `design/blueprint-plan.md`, the hand-over to authoring: a short index of what no single
+document holds, so an author in a new session (or one author per service) starts from the plan
+and one spec instead of rereading the whole design. Keep it short: it never restates what a
+spec says. A service's data objects, owner fields, tenant scope, relations and APIs stay in its
+`service-spec-<service-name>.md`, the one source for that service. It contains:
 
 1. **Root and project settings**: the codename, the providers by name (no credentials),
    how the super-admin password is set (`$ENV:<NAME>` or a placeholder changed on first
@@ -125,10 +129,9 @@ Write `design/blueprint-plan.md`, the hand-over to authoring. It contains:
 2. **Sections in authoring order**: `projectSettings`, `authentication`, each domain
    service, then `notificationService`, `bffService` and `agentHub` when the specs ask for
    them.
-3. **Per service**: the data objects with their owner field, tenant scope and relations
-   (with the delete action), the business APIs with their `crudType` and access, and the
-   high-level patterns used (checkout, subscription, moderation, buckets, ...) with the
-   spec page of each.
+3. **One line per service**: its spec file and the high-level patterns it uses (checkout,
+   subscription, moderation, buckets, ...) with the spec page of each. Nothing else about
+   the service.
 4. **The derived surface you expect**: for each high-level pattern, what the compiler
    adds (see `{{CORPUS}}/openappl/compiler/12-derived-surface.md`), so that nobody declares
    it a second time.

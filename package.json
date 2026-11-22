@@ -1,6 +1,6 @@
 {
   "name": "@mindbricks/mind-set",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "OpenAPPL blueprint skills for coding agents (Claude Code, Codex): design, authoring, contract and review, with a local structural validator.",
   "license": "Apache-2.0",
   "repository": {

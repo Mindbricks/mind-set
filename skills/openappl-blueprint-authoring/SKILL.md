@@ -40,6 +40,14 @@ The corpus is at `{{CORPUS}}`.
 5. Collect the inputs: `design/blueprint-plan.md` and the `design/service-spec-*.md` files
    when the design skill wrote them, otherwise the user's request. When the request leaves
    a product decision open, ask; do not decide it silently.
+   - **One service at a time.** Write the project settings and authentication from the plan
+     and their specs, then each service from the plan plus that service's spec only (and the
+     specs of the services it relates to, for the related names). Do not load every spec
+     at once.
+   - **A fresh context per service** where the agent can give one: a subagent per service, or
+     a new session, that gets the plan, the service's spec and the blueprint file. Its
+     context stays small, and so does the cost. Services that depend on another (a relation,
+     an event it consumes) come after it.
    - **Without design documents** (the user asked to skip the design, which OpenAPPL allows),
      the user's request is the whole input. Ask the decisions the documents would have
      settled as you reach them: roles, ownership, tenancy, required values, notifications.

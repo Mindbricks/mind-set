@@ -3,6 +3,15 @@
 The package follows semantic versioning. Each release names the OpenAPPL version of its
 corpus (`openappl.version` in `package.json`).
 
+## 0.2.2
+
+- The blueprint plan (`design/blueprint-plan.md`) is a short hand-over index: root and project
+  settings, the authoring order, one line per service (its spec and patterns), the derived
+  surface and the open items. It no longer restates the service specs, which stay the one
+  source for a service.
+- Blueprint authoring writes one service at a time from the plan and that service's spec,
+  in a fresh context per service (a subagent or a new session) where the agent can give one.
+
 ## 0.2.1
 
 - The design flow is stated for what it is: strongly recommended for the quality of the
