@@ -12,6 +12,24 @@ writes blueprint JSON.
 The corpus is at `{{CORPUS}}`. Read the files named in each step when you reach that step,
 not all at once.
 
+## A strong recommendation, not part of the standard
+
+OpenAPPL requires only the blueprint. This design flow is spec-driven design: it settles the
+requirements in documents first, so the blueprint can be written around the business logic
+instead of guesses. It is strongly recommended because it gives better blueprints, but it is a
+method of mind-set, not a rule of the OpenAPPL standard.
+
+- **Say so once, at the start,** in one sentence ("I will start with a short requirements
+  interview and design documents; they are not required by OpenAPPL, but they give a much
+  better blueprint"). Then run the design.
+- **Skip it only on an explicit request.** When the user asks to skip the design documents (now
+  or part-way through), say once that the blueprint will then rest on unsettled requirements
+  and is usually weaker, then stop this skill and continue with openappl-blueprint-authoring
+  from the user's request. Keep what was already decided: an interview record or a document
+  already written stays and is an input of the blueprint.
+- **Never present skipping as an equal option** in your own offer, and never say the
+  documents are required by OpenAPPL.
+
 ## Before you start
 
 1. Read `{{CORPUS}}/procedures/project-lifecycle.md`, the design part (Phase D). It gives
@@ -53,9 +71,14 @@ Follow `{{CORPUS}}/procedures/interview.md`, with
   it for enumerable questions: 1 to 4 questions per call (batch only related ones), 2 to 4
   options each, a short label (at most 12 characters) as the header, the recommendation
   first and suffixed `(Recommended)`, and never your own "Other" option (the free-text
-  answer is added for you). A list longer than four shows the recommended option plus the
-  two or three most likely. Open-ended questions stay plain text, and so does every
+  answer is added for you). Open-ended questions stay plain text, and so does every
   question when the choice UI is unavailable (numbered options, recommendation marked).
+- **Every supported option is named, even past four buttons.** When the list is longer than
+  the buttons the UI allows (provider brands, storage brands, AI providers), write every
+  supported option in the question text ("Supported: sendgrid (recommended), smtp, resend,
+  amazonses, mailgun, postmark"), make the buttons the recommended option plus the three
+  most likely, and accept any other listed option from the free-text answer. Never drop a
+  supported option from a question: the designer must see the whole list to choose.
 - **Machinery stays out of the reply.** Never tell the designer about files, versions,
   write results or checks ("the record is at v1.0.2" opened a real reply); say what was
   decided and what is next.

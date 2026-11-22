@@ -3,6 +3,17 @@
 The package follows semantic versioning. Each release names the OpenAPPL version of its
 corpus (`openappl.version` in `package.json`).
 
+## 0.2.1
+
+- The design flow is stated for what it is: strongly recommended for the quality of the
+  blueprint, not part of the OpenAPPL standard (which requires only the blueprint). The design
+  skill says so once and starts the design; on an explicit request to skip it, it names the
+  quality risk once and hands over to blueprint authoring, which then works from the request.
+  The README says the same.
+- The design skill names every supported option of a choice question in its text (every
+  shipped provider brand, for example), not only the four the choice UI shows as buttons; the
+  others are taken from the free-text answer.
+
 ## 0.2.0
 
 - The command is `mindset`; `mind-set` still works as an alias (and keeps

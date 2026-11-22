@@ -10,7 +10,19 @@ mindset install
 
 The global install puts the `mindset` command on the `PATH` (`mind-set` still works as an alias); the skills run `mindset validate`
 after every change. Without a global install, use `npx @mindbricks/mind-set@latest <command>`
-wherever this README says `mind-set <command>`; the skills fall back to the same form.
+wherever this README says `mindset <command>`; the skills fall back to the same form.
+
+## The design flow is a strong recommendation
+
+OpenAPPL requires only the blueprint. The design flow the skills run first is spec-driven
+design: a requirements interview and design documents under `design/`, from the project
+description to one spec per service. It settles the requirements before the blueprint is
+written and gives clearly better blueprints, so the skills strongly recommend it and start
+with it.
+
+It is a method of mind-set, not part of the OpenAPPL standard. Tell the agent to skip the
+design documents and it writes the blueprint directly from your request (the review's
+`spec-coverage` pass only runs when design documents exist).
 
 ## After installing
 

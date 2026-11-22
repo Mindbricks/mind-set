@@ -104,7 +104,7 @@ The decision pattern family: a decision provider (a System One model, configured
 
 ### Design document
 
-One of the named documents an author writes while designing a project, each stage approved by the people involved before the next one starts: the interview record; the requirement documents (project description report, user stories, PRD, frontend spec, use cases); the specs (project basic setup, microservice definitions, auth spec, one service spec per service, and the platform specs for notification, BFF and agent hub); and, after the build, the test plan and the test report. The names are a convention of the design flow, not part of the blueprint schema.
+One of the named documents an author writes while designing a project, each stage approved by the people involved before the next one starts: the interview record; the requirement documents (project description report, user stories, PRD, frontend spec, use cases); the specs (project basic setup, microservice definitions, auth spec, one service spec per service, and the platform specs for notification, BFF and agent hub); and, after the build, the test plan and the test report. The names are a convention of the design flow, not part of the blueprint schema: the design flow is a recommended method (spec-driven design, which gives better blueprints), and OpenAPPL itself requires only the blueprint.
 **See:** "Spec document", "Architect doc".
 
 ### Edge controller

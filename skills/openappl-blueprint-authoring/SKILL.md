@@ -40,6 +40,10 @@ The corpus is at `{{CORPUS}}`.
 5. Collect the inputs: `design/blueprint-plan.md` and the `design/service-spec-*.md` files
    when the design skill wrote them, otherwise the user's request. When the request leaves
    a product decision open, ask; do not decide it silently.
+   - **Without design documents** (the user asked to skip the design, which OpenAPPL allows),
+     the user's request is the whole input. Ask the decisions the documents would have
+     settled as you reach them: roles, ownership, tenancy, required values, notifications.
+   - Do not start the design flow unasked once the user chose to skip it.
 6. Find the blueprint file. For a new project, start from the closest example in
    `{{CORPUS}}/examples/` (`todo.json`, `blog.json`, `shop.json`) and keep only what the
    design needs.
