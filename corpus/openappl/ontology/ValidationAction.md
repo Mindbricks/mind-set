@@ -1,6 +1,6 @@
 # ValidationAction
 
-**Level:** `section` · **Family:** [BusinessApiActionStore](./families.md#businessapiactionstore) (domain `BusinessApi`)
+**Level:** `section` · **Family:** [BuiltInApiCheck](./families.md#builtinapicheck) (domain `ProjectAuthentication`)
 
 **Specification:** [ValidationAction in Part 2](../spec/ValidationAction.md)
 
@@ -10,11 +10,13 @@ Defines a flexible business rule that performs a dynamic condition check during 
 
 ## Contained in
 
+- [BuiltInApiCheck](./BuiltInApiCheck.md) as `validation`
 - [BusinessApiActionStore](./BusinessApiActionStore.md) as `validationActions` (a list)
 
 Blueprint paths:
 
 - `authentication.businessLogic.actions.validationActions`
+- `authentication.builtInApiChecks.validation`
 - `services.businessLogic.actions.validationActions`
 
 ## Contains

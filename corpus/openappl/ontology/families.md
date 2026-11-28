@@ -536,6 +536,11 @@ Patterns grouped by domain and family. A **domain** is the root, a service, a mo
 - [SSOAuthConfig](./SSOAuthConfig.md): Retained external identity provider settings for the unavailable SSO feature.
 - [SSOServerSettings](./SSOServerSettings.md): Retained endpoint and credential settings for the unavailable SSO feature.
 
+### BuiltInApiCheck
+
+- [BuiltInApiCheck](./BuiltInApiCheck.md): One validation check attached to a built-in auth API at one step of its workflow (see `authentication.builtInApiChecks`).
+- [ValidationAction](./ValidationAction.md): Defines a flexible business rule that performs a dynamic condition check during Business API execution.
+
 ### ForeignPermissionProvider
 
 - [ForeignPermissionProvider](./ForeignPermissionProvider.md): Project-wide foreign permission server configuration (one foreign server, one transport).
@@ -669,7 +674,6 @@ Patterns grouped by domain and family. A **domain** is the root, a service, a mo
 - [TabularTextOptions](./TabularTextOptions.md): Serializer options for the text formats of a ROWS mode export.
 - [UpdateCrudAction](./UpdateCrudAction.md): Defines an embedded update operation for related data objects—typically child or connected entities—within a Business API.
 - [UpsertBulkCrudAction](./UpsertBulkCrudAction.md): Writes an array of rows into a data object with insert-or-update semantics—the bulk import twin of CreateBulkCrudAction.
-- [ValidationAction](./ValidationAction.md): Defines a flexible business rule that performs a dynamic condition check during Business API execution.
 - [VerifyWebhookAction](./VerifyWebhookAction.md): Verifies a webhook call of a provider with its signature secret and reads the parameters and writes them to the context.
 - [VideoRoomControlAction](./VideoRoomControlAction.md): Performs a provider control-plane operation on a declared VideoRoom.
 - [VideoRoomTokenAction](./VideoRoomTokenAction.md): Authorizes a room identity and mints its provider join token or broadcast playback grant.

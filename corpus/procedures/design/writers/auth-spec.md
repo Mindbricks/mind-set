@@ -178,6 +178,14 @@ shape of the relation; `isRequired` defaults to true and `setNull` on a
 required foreign key is rejected at build time. "(none)" when the standard
 shape suffices.
 
+**Required for some rows only.** A property that must hold a value only in some
+rows (a `clinicId` that a clinic manager or a receptionist must have and every
+other role leaves empty) is `required: no` with the condition in the notes as
+`required when <condition>` (`required when roleId in [clinicManager,
+receptionist]`). It becomes the property's `requirementCheck`, which holds on
+every API that writes the user, the built-in ones included. Never record such a
+rule as something the built-in user APIs cannot apply.
+
 **A value balance is never a user property.** Points, credits, wallet or
 earnings balances live in a domain service on a `ledgerSettings`-decorated
 owner object keyed by the user id; a balance column on the auth user
@@ -220,6 +228,18 @@ custom API, the service-spec flow plan:
   notification target reading the stamped key resolves nothing.
 
 Write "(none)" when the built-in flows cover everything (the common case).
+
+**A rule on a built-in user API is a check, not a custom API.** A business rule
+that one built-in user API must apply (`createUser` refuses a field an admin may
+not set, `updateProfile` refuses a value combination) is never a custom API of
+the same name (refused as a shadow) and never an open limitation. Record it under
+this section as a built-in check: `built-in API | workflow step | rule | error
+status and code` (for example `createUser | afterCheckParameters |
+staffProvisioningPending is not true | 400 staffProvisioningPendingNotWritable`).
+It becomes an `authentication.builtInApiChecks` entry. Use 400 or 422: a 401 /
+403 check is skipped for the API's absolute roles. A rule that must hold on every
+path that writes the user is a `requirementCheck` on the property instead
+(section I).
 
 ### Token & Session Policy
 

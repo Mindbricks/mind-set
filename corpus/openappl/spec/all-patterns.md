@@ -94,6 +94,7 @@ The specification page of every pattern, alphabetically. Each page has the full 
 - [BucketProvider](./BucketProvider.md)
 - [BucketProviderConfig](./BucketProviderConfig.md)
 - [BucketProvidersSettings](./BucketProvidersSettings.md)
+- [BuiltInApiCheck](./BuiltInApiCheck.md)
 - [BulkColumnPolicy](./BulkColumnPolicy.md)
 - [BusinessApi](./BusinessApi.md)
 - [BusinessApiAction](./BusinessApiAction.md)

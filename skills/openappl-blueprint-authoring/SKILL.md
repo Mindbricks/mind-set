@@ -83,7 +83,10 @@ them), then the platform modules.
   open item. An unknown key is not ignored: it is an error.
 - **One value source per stored value.** Every required property must get its value on
   create from exactly one place: a data clause item, the session (`sessionSettings`), a
-  static join, a default, or a sequence. See section 6 of `blueprint-authoring.md`.
+  static join, a default, or a sequence. See section 6 of `blueprint-authoring.md`. A
+  property required only while a condition holds keeps `isRequired: false` and takes a
+  `basicSettings.requirementCheck`; a rule on a built-in auth user API is an
+  `authentication.builtInApiChecks` entry, never a custom API of the same name.
 - **Ownership comes from the session.** Mark the owner property with
   `sessionSettings.isOwnerField`; never write the owner from a request value.
 - **Secrets are references.** Every credential value is a reference, never a literal:

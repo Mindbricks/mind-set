@@ -84,7 +84,7 @@ Open a branch to see what it contains.
 
 </details>
 
-<details><summary>ProjectAuthentication (61)</summary>
+<details><summary>ProjectAuthentication (63)</summary>
 
 - [ProjectAuthentication](./ProjectAuthentication.md) `module`: Defines the authentication and authorization configuration for the entire project.
   - [AuthBasics](./AuthBasics.md) `chapter`: Defines the fundamental authentication configuration for the project.
@@ -147,6 +147,8 @@ Open a branch to see what it contains.
     - [GrpcClientMetadataItem](./GrpcClientMetadataItem.md) `section`: A single STATIC gRPC metadata header sent on every call to a foreign gRPC server (see GrpcClientConfig.metadata).
     - [ForeignPermissionSessionBinding](./ForeignPermissionSessionBinding.md) `section`: One session-field → request-PLACEMENT binding.
   - [ProfileSettings](./ProfileSettings.md) `section`: The project's declaration of a readable user profile — the sanctioned way to show WHO a record belongs to.
+  - [BuiltInApiCheck](./BuiltInApiCheck.md) `chapter`: One validation check attached to a built-in auth API at one step of its workflow (see `authentication.builtInApiChecks`).
+    - [ValidationAction](./ValidationAction.md) `section`: Defines a flexible business rule that performs a dynamic condition check during Business API execution.
 
 </details>
 
@@ -212,7 +214,7 @@ Open a branch to see what it contains.
 
 </details>
 
-<details><summary>Service (447)</summary>
+<details><summary>Service (446)</summary>
 
 - [Service](./Service.md) `service`: Defines the overall structure and configuration for a microservice within the project.
   - [ServiceSettings](./ServiceSettings.md) `chapter`: Defines the foundational settings of the service module, including basic metadata and authentication configurations.
@@ -405,7 +407,6 @@ Open a branch to see what it contains.
       - [PermissionCheckAction](./PermissionCheckAction.md) `section`: Defines a global permission check that evaluates whether the user holds specific platform or service-level permissions.
       - [ObjectPermissionCheckAction](./ObjectPermissionCheckAction.md) `section`: Performs a permission check scoped to a specific object instance.
       - [ReadJwtTokenAction](./ReadJwtTokenAction.md) `section`: Defines a read jwt token operation from either context, session or request and write its payload to the context with the contextPropertyName after validating it.
-      - [ValidationAction](./ValidationAction.md) `section`: Defines a flexible business rule that performs a dynamic condition check during Business API execution.
       - [AddToContextAction](./AddToContextAction.md) `section`: Adds one or more calculated values to the runtime context (`this`) at a specific point in the Business API flow.
         - [ContextData](./ContextData.md) `subsection`: ContextData is a container object to represent any key-value pair to write or read to/from context.
       - [AddToResponseAction](./AddToResponseAction.md) `section`: Adds one or more properties from the current context to the final response object after the main operation completes.

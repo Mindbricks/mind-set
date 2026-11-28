@@ -27,6 +27,7 @@ Blueprint paths:
 - `userProperties`: [DataProperty](./DataProperty.md), a list
 - `tenantProperties`: [DataProperty](./DataProperty.md), a list
 - `businessLogic`: [BusinessApi](./BusinessApi.md), a list
+- `builtInApiChecks`: [BuiltInApiCheck](./BuiltInApiCheck.md), a list
 - `dataObjects`: [DataObject](./DataObject.md), a list
 
 ## References

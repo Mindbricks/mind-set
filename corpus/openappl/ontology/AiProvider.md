@@ -22,7 +22,7 @@ Expected configuration keys per provider:
 - custom: apiKey (optional), baseUrl, apiFormat ('openai'|'anthropic'|'raw'), extraHeaders (optional JSON string)
 
 Secret keys (apiKey, awsAccessKeyId, awsSecretAccessKey, serviceAccountJson) are masked in API responses and emitted to AI_PROVIDER_<NAME>_<KEY> env vars at codegen time. The apiKey listed for a brand is the application owner's (saas) key: when `credentialScopes` makes a tenant or user level `required` the entry may leave it out, because each tenant or user stores their own key through the auth service (nodejs services; see AiProviderCredentialScopes).
-- mock: seed (optional, defaults to `mindbricks`). Keyless offline text completions, declared explicitly, never a credential fallback. Node.js and Rust; other deployment languages refuse the brand until ported. [[mock-ai reply=<text or JSON>]] steers test responses only with explicit matching dev/preview/staging deployment signals; production and unknown signals refuse directives.
+- mock: seed (optional, defaults to `mindbricks`). Keyless offline text completions, declared explicitly, never a credential fallback. Node.js, Rust and Python; other deployment languages refuse the brand until ported. [[mock-ai reply=<text or JSON>]] steers test responses only with explicit matching dev/preview/staging deployment signals; production and unknown signals refuse directives.
 
 ## Contained in
 

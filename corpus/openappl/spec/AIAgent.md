@@ -81,7 +81,7 @@ Pattern rules:
 | --- | --- | --- |
 | `AGENT_API_TOOL_NOT_ON_HOST_SERVICE` | warning | … of … apiTools target BusinessApis outside this agent's host service, …, with no REST controller: …. |
 | `AGENT_APPROVAL_EXPIRY_INVALID` | error | approvalExpiryDays must be null/unset or a positive safe integer number of days. |
-| `AGENT_APPROVAL_EXPIRY_LANGUAGE_NOT_SUPPORTED` | error | approvalExpiryDays is implemented for … only for now: … (…) generates for …, which does not emit the approval expiry sweep. |
+| `AGENT_APPROVAL_EXPIRY_LANGUAGE_NOT_SUPPORTED` | error | approvalExpiryDays is implemented for … and … only for now: … (…) generates for …, which does not emit the approval expiry sweep. |
 | `AGENT_CALLBACK_NOT_INSTRUCTED` | warning | Agent "…" is kafka-triggered (fire-and-forget — no caller receives its output) and declares custom tool… … as its effect channel, but the prompt text mentions none of them — the model is never instructed to invoke the … |
 | `AGENT_CHAT_MANY_API_TOOLS_NO_DELEGATION` | warning | Chat agent declares … apiTools and no toolSettings.agentTools. |
 | `AGENT_COMPLETION_CONDITION_INEFFECTIVE` | warning | completionCondition with strategy 'parallel' only evaluates AFTER the single all-steps group settles — it cannot stop steps early. |

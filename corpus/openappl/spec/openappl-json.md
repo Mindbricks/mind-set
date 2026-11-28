@@ -5,7 +5,7 @@ pattern, its properties, their types, defaults and allowed values. The ontology 
 specification pages of this corpus are generated from it, so the file and the pages
 always describe the same language version.
 
-**Version of this corpus:** `1.103.0` (the corpus copy: [openappl.json](../../openappl.json)).
+**Version of this corpus:** `1.104.0` (the corpus copy: [openappl.json](../../openappl.json)).
 
 - A blueprint is a JSON document whose shape follows the patterns defined in
   `openappl.json`. `mindset validate` and compilers read the file to know which

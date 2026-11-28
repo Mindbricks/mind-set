@@ -1242,8 +1242,10 @@ window can never be reconciled upstream.
 payment to captured without a browser: it records a synthetic `payment.captured`
 event, so the lifecycle hooks, the settlement accrual and the invoice bridge run as
 after a real capture. It answers only to a platform operator (`superAdmin`,
-`admin`, `saasAdmin`) on a non-production deployment whose provider credentials read
-as test mode (`404` otherwise), and only for a provider that is **in mock mode**. A
+`admin`, `saasAdmin`) on a non-production deployment, and only for a provider that
+is **in mock mode** (`mock: true` in `GET /v1/payments/mock-status`, whatever the
+reason: blank keys included). Live provider credentials answer `404` whatever the
+mock says, and so does a production deployment. A
 provider on real sandbox credentials (`mock: false` in
 `GET /v1/payments/mock-status`) is answered `409 SIMULATE_CAPTURE_REAL_PROVIDER` and
 nothing is written: the real sandbox never captured that sale, and a simulated

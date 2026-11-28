@@ -89,6 +89,13 @@ the running system, and the rule is the same as for every other credential:
 - Never write a real password there: not the user's own, and not the well-known default.
 - Write an `$ENV:NAME` reference (`"$ENV:SUPERADMIN_PASSWORD"`), or a placeholder that the
   administrator **changes on first login** (`"change-me-on-first-login"`).
+- The super-admin login identifier (`superAdminIdentifier`) takes the same reference
+  (`"$ENV:SUPERADMIN_EMAIL"`). A compiler whose runtime resolves references carries it to
+  the deployment as the reference, so the deployment's variable supplies the identifier;
+  when that variable is unset the seed uses the default identifier of the primary login
+  identifier (`admin@admin.com`, or `+10000000000` when mobile is primary). The variable
+  must hold a value of the primary identifier's shape. A reference is never judged as an
+  email or a mobile number at validation time.
 - A blueprint that is committed, exported or published must pass this rule before it
   leaves the working folder. `mindset validate` and `mindset spec-coverage` warn
   (`secret-literal`) when a credential field or a credential-shaped value holds a literal.

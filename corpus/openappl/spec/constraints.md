@@ -14,14 +14,14 @@ Stated from the property metadata of each pattern, the same metadata the validat
 
 ## Pattern rules
 
-The checks written for a pattern of its own: 174 patterns carry 1073 attributed check sites. A rule is listed with its code, its severity and the first sentence of its message.
+The checks written for a pattern of its own: 174 patterns carry 1083 attributed check sites. A rule is listed with its code, its severity and the first sentence of its message.
 
 ## Not covered yet
 
-Of 1860 check sites, 787 are not attributed to a pattern:
+Of 1886 check sites, 803 are not attributed to a pattern:
 
-- 624 sites in 105 shared checks that run on behalf of several patterns (event topics, payment providers, carts, expression slots and others).
-- 163 sites in 37 patterns whose code comes from a code table rather than being written at the call.
+- 630 sites in 107 shared checks that run on behalf of several patterns (event topics, payment providers, carts, expression slots and others).
+- 173 sites in 37 patterns whose code comes from a code table rather than being written at the call.
 - Checks across the whole blueprint (references between services, expression analysis).
 
 A blueprint that satisfies every listed rule can still be refused by one of these. They are added to the pages as they are attributed.

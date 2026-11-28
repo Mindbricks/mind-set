@@ -129,6 +129,19 @@ action. Set `isRequired` on every property.
 | `REQUIRED_PARAM_NOT_STORED` | warning | a required parameter matches a property no data clause writes |
 | `IS_REQUIRED_UNSPECIFIED` | warning | a property does not say whether it is required |
 
+**Required in some rows only.** When the design says a property is required only under a
+condition ("a clinic manager has a clinic"), the property is `isRequired: false` with a
+`basicSettings.requirementCheck` over `this.<property>` of the same object (on an auth user
+property, `this.roleId` is the role). A missing check, or the rule left to one API's
+validation while other APIs write the same object, is a finding: the other paths store the
+empty value. See [Conditional requiredness](../openappl/guides/data-modeling/property-types.md#conditional-requiredness-requirementcheck).
+
+| Code | Severity | Rule |
+|---|---|---|
+| `REQUIREMENT_CHECK_UNKNOWN_FIELD` | error | the condition reads a column the object does not have |
+| `REQUIREMENT_CHECK_NOT_PURE` | error | the condition reads `session`, `LIB`, the request, or assigns or awaits |
+| `REQUIREMENT_CHECK_ON_REQUIRED` | warning | the property is already `isRequired: true` |
+
 ## 5. Public APIs and their where clauses
 
 **Check.** For every API with `authOptions.loginRequired: false`:
@@ -266,6 +279,20 @@ function.
 | Code | Severity | Rule |
 |---|---|---|
 | (none) | manual | a money, status or identity value written from a request parameter |
+
+**The built-in user APIs.** The auth service's own user APIs (`createUser`, `updateUser`,
+`register`, `updateProfile`, ...) write every custom user property they receive. When the
+design says a user field is set only by one flow (a provisioning mark, an approval flag),
+or a value combination is not allowed, the blueprint needs an
+`authentication.builtInApiChecks` entry on each built-in API that could write it, with
+status 400 or 422 (a 401 / 403 check is skipped for the API's absolute roles). Without it,
+an admin call stores the value. See
+[Rules on the built-in user APIs](../openappl/guides/system-services/authentication/users.md#rules-on-the-built-in-user-apis-builtinapichecks).
+
+| Code | Severity | Rule |
+|---|---|---|
+| (none) | manual | a design rule on a user field that no `builtInApiChecks` entry or `requirementCheck` enforces |
+| `BUILTIN_API_CHECK_SKIPPED_FOR_ABSOLUTE_ROLES` | warning | a 401 / 403 check that the admin roles skip |
 
 ## 10. Derived surface surprises
 

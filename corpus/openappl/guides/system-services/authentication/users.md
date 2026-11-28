@@ -584,6 +584,66 @@ Registration can be public or restricted:
 - `userRegisterIsPublic: false`: no self-registration route is emitted; users are created by an
   admin through `createUser` (`POST /users`), which always requires an admin-level session.
 
+## Rules on the built-in user APIs (`builtInApiChecks`)
+
+The auth service generates the user APIs itself (`createUser`, `updateUser`, `updateUserRole`, `register`,
+`updateProfile`, `deleteUser` and the others). Their action set is fixed, and a custom API of the same name is
+refused (`AUTH_API_NAME_SHADOWED`). To add a business rule to one of them, attach a `ValidationAction` to it
+through `authentication.builtInApiChecks`. Each entry names the built-in API, one step of its workflow and the
+validation. The validation runs after the built-in actions of that step:
+
+```json
+{
+  "authentication": {
+    "userProperties": [
+      { "basicSettings": { "name": "staffProvisioningPending", "type": "Boolean", "isRequired": true,
+                           "defaultValue": false } }
+    ],
+    "builtInApiChecks": [
+      {
+        "apiName": "createUser",
+        "workflowStep": "afterCheckParameters",
+        "validation": {
+          "name": "refuseProvisioningMarkOnCreate",
+          "description": "Only the provisioning flow sets the mark; an admin create never does.",
+          "validationScript": { "js": "this.staffProvisioningPending !== true" },
+          "shouldBeTrue": true,
+          "errorMessage": "staffProvisioningPendingNotWritable",
+          "errorStatus": "400"
+        }
+      }
+    ]
+  }
+}
+```
+
+With this entry an admin who sends `{ "staffProvisioningPending": true }` to `POST /users` gets
+`400 staffProvisioningPendingNotWritable`.
+
+- **Status.** A check whose `errorStatus` is `401` or `403` is skipped for the `absoluteRoles` of the API (the admin
+  roles on `createUser`), like any 401/403 validation. Any other status (`400`, `409`, `422`) refuses those callers
+  too, including a `superAdmin`. Validation warns on a 401/403 check
+  (`BUILTIN_API_CHECK_SKIPPED_FOR_ABSOLUTE_ROLES`).
+- **What the script reads.** The script runs inside the built-in API, so `this.<name>` reads what that API binds:
+  its request parameters (on `createUser` the user fields, the custom `userProperties` included), the context its
+  actions publish, `this.session`, and on an update API the stored row once it is fetched (`this.user` from
+  `afterFetchInstance` on). A name the API does not bind is refused (`BUILTIN_API_CHECK_UNKNOWN_REFERENCE`); on
+  `updateUser` `roleId` is not a parameter (`updateUserRole` writes it), so read `this.user.roleId` there.
+- **Validation.** An `apiName` the auth service does not build under the current settings is
+  `BUILTIN_API_UNKNOWN` (for example `register` while `userRegisterIsPublic` is false); a `workflowStep` that is not
+  a step of the API's crud type is `BUILTIN_API_CHECK_STEP_INVALID`; a `validation.name` that is already an action
+  of the API, or of an earlier check on it, is `BUILTIN_API_CHECK_NAME_COLLISION`.
+- **Alias twins.** A check on `register` also lands on its legacy alias `registerUser` (and the same for the other
+  alias pairs): the two are one API under two names.
+- **One API per check.** A check attaches to the API it names. A rule that must hold on EVERY path that writes the
+  user (`createUser`, `updateUser`, `updateUserRole`, the tenant user creation of a multi-tenant project, custom auth
+  APIs) is a property rule instead: a "required for these roles" rule is a
+  [`requirementCheck`](../../data-modeling/property-types.md#conditional-requiredness-requirementcheck) on the
+  property, which holds on every create and update.
+
+Only the built-in auth APIs take a check: a custom auth API declares its validations in its own
+`actions.validationActions`.
+
 ## Self-archive (`archiveProfile`)
 
 The auth service ships a self-delete door, `archiveProfile` (`DELETE /archiveprofile/:userId`):

@@ -28,8 +28,10 @@ repeat them.
 - When `bucketStorage.remoteBucketName` is omitted (or `null`) the provider's `defaultBucketName`
   applies. A bucket whose effective name is empty is the error `REMOTE_BUCKET_NAME_EMPTY`.
 - The physical bucket (container) must already exist. A compiler never creates it.
-- Bucket configuration values are taken literally: they are not `$ENV:`-dereferenced. Secret
-  fields are left blank in the blueprint and supplied by the deployment.
+- A secret field holds a reference, never the key itself ([Secrets in a blueprint](../blueprint/secrets.md)):
+  `$ENV:NAME` when the deployment holds the value (it is carried as written, never treated as a
+  secret value of its own, and every reader reads the variable `NAME`), or `ENTER_CREDENTIAL`
+  while nobody has it.
 - Missing credentials never block a build. A generated service answers
   `GET /v1/buckets/mock-status` to report its bucket providers' fallback state; where a provider's
   credentials are missing the service falls back to the native store (see the GCS rules below).

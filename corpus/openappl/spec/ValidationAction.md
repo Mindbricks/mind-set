@@ -1,6 +1,6 @@
 # ValidationAction
 
-**Level:** `section` · **Family:** [BusinessApiActionStore](../ontology/families.md#businessapiactionstore) (domain `BusinessApi`)
+**Level:** `section` · **Family:** [BuiltInApiCheck](../ontology/families.md#builtinapicheck) (domain `ProjectAuthentication`)
 
 **Ontology:** [ValidationAction in Part 1](../ontology/ValidationAction.md)
 

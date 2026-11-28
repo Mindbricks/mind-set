@@ -186,6 +186,7 @@ All set on `basicSettings`:
 | Flag | Effect |
 |------|--------|
 | `isRequired` | NOT NULL at the column or field level: the persisted row may not hold null here. It does *not* decide whether the caller must supply the value; that is a per-API `requestParameters[].required` decision. A value may reach the column from a request binding, a session inject, a static join, or a `defaultValue`. The schema default is `false` (nullable); state it explicitly on every property, because validation reports `IS_REQUIRED_UNSPECIFIED` while the key is missing. |
+| `requirementCheck` | Conditional requiredness: an MScript condition over the record; while it holds, an empty value of this property is refused with `400 PROPERTY_REQUIRED_BY_CONDITION`. The column stays nullable. See [Conditional requiredness](#conditional-requiredness-requirementcheck). |
 | `isArray` | Stores a typed array: a native PostgreSQL array (`type[]`) or a native MongoDB array. Honoured on most scalar types and, as a list of geometries, on the geo types (see [Geography](geography.md#geo-property-types)); not on `Blob`. See [Array properties](#array-properties). |
 | `allowUpdate` | `true` (default): freely updatable. `false`: immutable after create; the update path drops the column from its write set, and an update `dataClauseItems` entry naming it is refused at design time (`DATA_CLAUSE_ITEM_NOT_EMITTED`). `'untilSet'`: **write-once**. The write is guarded with `WHERE <column> IS NULL`, so the first write after create wins atomically at the database and a later one is refused with a typed `WRITE_ONCE_ALREADY_SET` (409) instead of silently doing nothing. The guard applies to every update helper (by id, by id list, and by query, which is the one every `updateCrudAction` uses): a bulk or query-scoped write that matches a row already holding the value is refused whole, and each loser of a concurrent first write gets the same 409. A create that lands on an existing row (the upsert of an `onDuplicate: doUpdate` index, or a bulk create over an id that exists) never overwrites a set write-once column: a replay carrying the same value is an idempotent no-op on it, a different value (null included) is refused with the same `WRITE_ONCE_ALREADY_SET` (409) before anything is written (a bulk create refuses the whole batch), and a column that is still null is filled. Use `'untilSet'` for a value computable only after the row exists and never afterwards changeable: a capture-time commission snapshot, a settlement reference, an issued document number. It is accepted only on a **nullable** column (`isRequired: false`): the guard is `IS NULL`, so on a NOT NULL column it would refuse every update including the first (`WRITE_ONCE_REQUIRES_NULLABLE`). |
 | `autoIncrement` | A database sequence numbers the column. Honoured on a scalar `Integer` or `Short` property (dropped on any other type, never on an array). On a PostgreSQL service whose compiler supports it the column is a `SERIAL`: an insert that does not carry a value gets the next number, so a required autoIncrement column needs no `dataClauseItems` entry. The column gets no fabricated `0` default, and an authored `defaultValue` beside the flag is dropped from the generated model (`AUTOINCREMENT_DEFAULT_IGNORED` warning): a default would be written on every insert and the sequence would never run. On MongoDB, or where a compiler emits no sequence, the flag has no effect and the column needs a value source like any other. |
@@ -194,6 +195,54 @@ All set on `basicSettings`:
 | `isSecret` | Cleartext storage; scrubbed from outgoing responses, events and streamed chunks. A Business API may expose an eligible column in its own response with `apiOptions.exposeSecrets`; events stay scrubbed. |
 | `defaultName` | Marks this property as the human-readable label for the row in UIs and relation dropdowns. Only one per object. |
 | `isFilterParameter` | Exposes the property as a query-string filter on list APIs. |
+
+## Conditional requiredness (`requirementCheck`)
+
+`isRequired` makes a column NOT NULL for every row. A property that is required only in some rows takes a
+`requirementCheck` instead: an MScript condition over the record. For example, `clinicId` is required when `roleId`
+is `clinicManager` or `receptionist`, and optional for every other role. While the condition holds, an **empty**
+value of the property is refused with `400` and the error code `PROPERTY_REQUIRED_BY_CONDITION`, naming the
+property. Empty is `null`, a missing value, `''` and `[]`; `0` and `false` are values. The column stays nullable.
+
+```json
+{
+  "basicSettings": {
+    "name": "clinicId",
+    "type": "ID",
+    "isRequired": false,
+    "requirementCheck": { "js": "['clinicManager', 'receptionist'].includes(this.roleId)" }
+  }
+}
+```
+
+The same works on an auth `userProperties` entry, where `this.roleId` is the user's role (the example above), so a
+rule like "a clinic manager belongs to a clinic" holds on the built-in user APIs too.
+
+- **Every write path.** The rule belongs to the data object, not to an API: it holds on built-in and custom create
+  and update APIs, on create, update and bulk-create CRUD actions, on library functions and edge controllers that
+  write through the data layer, and on seed data. A bulk create is refused whole before its first write.
+- **What `this` is.** The record as it will be stored. On a create, the payload over the declared `defaultValue` of
+  the columns the condition reads (a create that omits `roleId` is judged with its default). On an update, the
+  stored row overlaid with the patch, so an update that changes only the condition field (`roleId` to
+  `clinicManager`) is refused while `clinicId` is still empty, and so is an update that empties `clinicId` while the
+  condition holds.
+- **When an update is judged.** Only when the write carries the property itself or a column the condition reads.
+  An update of other columns cannot change the answer, so it is not judged (a row stored before the condition was
+  added stays writable).
+- **Concurrent writes.** An update by id is applied compare-and-set: the stored values of the columns the condition
+  read join the update's condition, so a concurrent writer that changed one of them first makes the update re-read
+  the row and judge it again (after three lost races the update answers `409 REQUIREMENT_CHECK_CONFLICT`). Updates
+  by id list or by query judge every matched row before their one statement.
+- **What the condition may read.** Only `this.<property>` of the same data object, as a pure expression: no `LIB`,
+  `API`, `session`, request or api context, no `await`, no assignment, no computed `this[...]`. It runs where those
+  do not exist (a seed or an event-driven update has no request). Validation refuses an unknown column
+  (`REQUIREMENT_CHECK_UNKNOWN_FIELD`) and an impure expression (`REQUIREMENT_CHECK_NOT_PURE`), and warns when the
+  property is already `isRequired: true` (`REQUIREMENT_CHECK_ON_REQUIRED`: the condition adds nothing to a NOT NULL
+  column).
+
+A rule that depends on the caller (who may send what) is a validation action of the API instead; on the built-in
+auth APIs that is
+[`authentication.builtInApiChecks`](../system-services/authentication/users.md#rules-on-the-built-in-user-apis-builtinapichecks).
 
 ## Default values
 

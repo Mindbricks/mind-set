@@ -395,6 +395,29 @@ run events and finished run rows, never a session row or the session thread. Wit
 the shorter one decides how long a run's events live, and the conversation retention decides
 how long the conversation's messages live.
 
+## Confidential conversations
+
+A chat agent with `chatSettings.confidential: true` keeps its conversations readable by their
+owner only: the user who started the conversation. Every row its runs write (the run, its
+events, its transcript rows and the session row) is marked confidential at creation, and so is
+every run it starts (a sub-agent, an orchestration step, a step on another service).
+
+The owner reads the run (`<basePath>/runs/:runId`), its event timeline
+(`<basePath>/runs/:runId/events`, payloads included, a model call without the system prompt and
+tool definitions) and its own conversation list. Anyone else, administrators and platform
+operators included, sees metadata only on the run log (ids, states, lineage, tokens, cost, tool
+names): no input, output, error text, event payloads, pending tool arguments or held draft. The
+hub's conversation, execution and message reads do not list such a row for another user and a
+read by id answers 404. No role bypasses this. The result event of the agent carries no preview.
+
+Validation refuses a confidential agent that sets `guardrails.logPreviewChars` above 0, gates
+tools behind approval (`toolSettings.approvalRequiredTools`), holds its answers for approval
+(`outputSettings.requiresApproval`), whose run and conversation objects have a db-event consumer
+in the project, or whose generator does not enforce the mark yet.
+
+This is application-level confidentiality, not encryption at rest. Independently of the flag,
+the content columns of every agent's runs and sessions are not written to the search index.
+
 ## Runtime reconfiguration and dynamic agents
 
 The hub is reconfigurable at runtime: you do not have to regenerate and redeploy to change

@@ -3,6 +3,17 @@
 The package follows semantic versioning. Each release names the OpenAPPL version of its
 corpus (`openappl.version` in `package.json`).
 
+## 0.2.3
+
+- The corpus is OpenAPPL 1.104.0 (0.2.2 shipped 1.103.0): `mindset validate` accepts
+  `PropertyBasicSettings.requirementCheck`, `authentication.builtInApiChecks` and
+  `AgentChatSettings.confidential`, which the compiler already accepted.
+- Conditional requiredness is documented where blueprint agents read: the property-types
+  guide (`requirementCheck`), the users guide (rules on the built-in user APIs,
+  `builtInApiChecks`), the blueprint-authoring and auth procedures, the auth-spec writer
+  (a "required when" property and a built-in check are recorded, never left as a limit),
+  the review guide (sections 4 and 9) and the authoring skill.
+
 ## 0.2.2
 
 - The blueprint plan (`design/blueprint-plan.md`) is a short hand-over index: root and project

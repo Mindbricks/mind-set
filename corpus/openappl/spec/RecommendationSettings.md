@@ -31,6 +31,7 @@ Pattern rules:
 | `RECOMMENDATION_ACTOR_HISTORY_INDEX_MISSING` | warning | Recommendation list "…": source "…" has no discoverable full-domain actor/time index (…) on "…". |
 | `RECOMMENDATION_ACTOR_SOURCE_REQUIRED` | error | Recommendation list "…": kind … needs an interaction source for … that maps actorProperty and timeProperty. |
 | `RECOMMENDATION_ANCHOR_PARAM_REQUIRED` | error | Recommendation list "…": kind next is anchored to an item. |
+| `RECOMMENDATION_CART_SOURCE_NO_CHECKOUT_TIME` | error | Recommendation list "…": … reads the shopping-cart source "…", whose time is ….…, but …, so the recommendation layer of this … service cannot be generated. |
 | `RECOMMENDATION_ENGINE_DB_NOT_IMPLEMENTED` | warning | recommendationSettings on "…": the engine: sql refresh is generated for … services; this service uses …, so no refresh runs and every list is served empty (its fallbacks included) until a later slice adds the … engine. |
 | `RECOMMENDATION_EVIDENCE_SIGNAL_MISMATCH` | error | Recommendation list "…": source "…" records "…" and cannot feed … - views are alternatives, purchases are complements, and the two never melt into one score (ADR section 3). |
 | `RECOMMENDATION_EXCLUDE_SOURCE_UNKNOWN` | error | Recommendation list "…": excludeConsumedBy "…" names no source (or signal) of "…" that records an actor, so nothing could be excluded. |

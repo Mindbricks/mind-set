@@ -124,7 +124,23 @@ the runtime context, then merge into the WHERE.
 
 Properties set as `selectBy` or already declared in
 `requestParameters` are excluded from the auto-filter set: no
-duplicate params.
+duplicate params. A mapped `prop:alias`
+selectBy term does not scope a list (the list scope reads bare property
+names only), so its property keeps its auto filter and validation warns
+`LIST_SELECTBY_MAPPED_TERM_INERT`: use the bare property name, or an
+`additionalClauses` entry that reads the alias.
+
+**Pitfall: a declared parameter is not also a filter.** Declaring a
+request parameter named after a filterable property makes `this.<name>`
+the value's only binding: the rows are filtered by it only where your
+`whereClause` (or `selectBy`) reads it, and the caller's value is never
+ANDed a second time with your own scope. To filter rows by it, add it to
+`selectBy`, or read it in `whereClause.additionalClauses` with the
+condition `this.<name>` so it stays optional
+(`{ "name": "statusFilter", "condition": { "js": "this.status" }, "whereClause": { "js": "{ status: this.status }" } }`).
+Validation warns `LIST_PARAM_NOT_A_FILTER` when only an action or a
+check reads such a parameter (the list then answers the rows of every
+value), and `PARAM_UNUSED` when nothing reads it.
 
 ### Every surface, one binding
 

@@ -581,6 +581,16 @@ it. When a server-supplied value keeps 400-ing: REMOVE the request
 parameter (the field leaves the API contract and the dataClause entry
 becomes the source) — do not flip the property's `isRequired` off.
 
+**Required in some rows only: `requirementCheck`.** A third gate, for a
+column that must hold a value only while a condition holds (a `clinicId`
+for the clinic roles): keep `isRequired: false` and set
+`basicSettings.requirementCheck` to an MScript condition over
+`this.<property>` of the same object. Every write path refuses an empty value
+while it holds (`400 PROPERTY_REQUIRED_BY_CONDITION`), the built-in auth APIs
+and bulk writes included, so it needs no per-API validation. The condition is
+pure: no `session`, `LIB` or request; a rule about the caller is a validation
+action of the API.
+
 **Actor vs target FKs — the naming heuristic.** A NOT-NULL `ID` FK to
 `auth:user` whose name is actor-shaped (`ownerId`, `createdByUserId`,
 `senderUserId`, `reviewerUserId`, any `*ByUserId`) is almost always
@@ -871,10 +881,11 @@ idempotent function, removed in the next version) or `oncePerStart` (once per
 start era: a new build, a new deployment revision such as a rollout restart,
 or every replica stopped). Use a Business API
 `cronSettings` cron controller instead when the work is API-shaped
-(parameters, actions, events); on nodejs a cron controller runs on one
+(parameters, actions, events); on nodejs, rust and python a cron controller runs on one
 replica per tick (`cronSettings.singleReplica`, default true, claimed in
 `sys_cronJobRun`); `"singleReplica": false` and the other languages run it on
-EVERY replica. Cron jobs are nodejs-only (CRON_JOBS_LANGUAGE_NOT_PORTED on another
+EVERY replica (rust / python on mongodb too). Cron jobs are nodejs, rust and python only, rust and python on a
+relational service (CRON_JOBS_MONGODB_UNSUPPORTED on mongodb; CRON_JOBS_LANGUAGE_NOT_PORTED on another
 language). Guide: `guides/business-apis/scheduled-business.md`.
 
 ## 9. The authoring loop and the completeness gate

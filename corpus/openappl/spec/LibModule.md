@@ -41,5 +41,5 @@ Pattern rules:
 | `DECLARED_PUBLISH_ON_NON_CODE_MODULE` | warning | LibModule "…" declares published topics, but it is not a code module: only library `functions[]` and `edgeFunctions[]` publish, and the kafka producer census reads the declaration there alone. |
 | `DOTNET_LIB_INVOKE_METADATA_INVALID` | error | lib '…': … |
 | `DOTNET_LIB_INVOKE_METADATA_MISSING` | warning |  |
-| `LIB_EXPORT_CONTRACT` | warning |  |
+| `LIB_EXPORT_CONTRACT` | warning | lib '…': expected … for the Python LIB registry. |
 | `LIB_UNNAMESPACED_ELASTIC_INDEX` | error |  |

@@ -31,6 +31,11 @@ There is no output schema: the tool answers what the API answers.
   (3DS card inputs, biometric capture, anything that needs a frontend
   the model can't synthesize).
 - APIs without a REST controller, and the internal `_fetchList*` helpers.
+- On a system service, the framework's own delete and role-gated APIs,
+  except the reviewed ones (on auth: `createUser`, `updateUser`,
+  `listUsers`, `listUsersByRole`, `updateUserRole`, still role-gated at
+  call time). An API you author in `authentication.businessLogic` is
+  not one of them: it follows its own `blockMcp`.
 
 The MCP-BFF's `GET /tools` lists the tools the caller may see, with their
 metadata, which is useful for orchestrators that browse the catalogue at runtime.

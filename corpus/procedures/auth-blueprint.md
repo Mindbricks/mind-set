@@ -279,9 +279,19 @@ dominate. Write a complete value for chapters you replace wholesale
    drops the missing members). Each item is a `DataProperty` in the same
    shape as domain-service properties (`basicSettings`, optional
    activation blocks); Enum properties set `basicSettings.enumOptions`
-   directly.
+   directly. A spec line "required when <condition>" is a
+   `basicSettings.requirementCheck` (`isRequired: false`, the condition as
+   MScript over `this.<property>`, `this.roleId` for the role): it holds on
+   the built-in user APIs too.
 7. **`authentication/tenantProperties`** — same, multi-tenant only.
-8. **`authentication/businessLogic/<ApiName>`** — one bundled write per
+8. **`authentication/builtInApiChecks`** — the spec's built-in checks, the
+   COMPLETE array: one entry per check, `apiName` (the built-in API),
+   `workflowStep` (an `after<Step>` of its crud type, `afterCheckParameters`
+   for a request field on a create, `afterFetchInstance` or later to read
+   the stored user on an update) and a `validation` (`ValidationAction`,
+   status 400 or 422). Never author a custom API with a built-in's name to
+   add a rule (`AUTH_API_NAME_SHADOWED`).
+9. **`authentication/businessLogic/<ApiName>`** — one bundled write per
    API at its named-item path, exactly per `blueprint-authoring.md`
    sections 4-7 (explicit-mode arrays, milestones, validation gotchas all
    apply).

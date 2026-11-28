@@ -55,6 +55,21 @@ or for webhook endpoints whose contract is "the provider calls this."
 `blockMcp` hides the tool only: the REST route and the other controllers stay mounted with
 their normal auth. See [`ApiOptions`](../../spec/ApiOptions.md).
 
+### System-service APIs
+
+The framework's own APIs on a generated system service follow one more rule: a framework
+API with `crudType: delete` or a non-empty `checkRoles` is blocked from MCP unless it is on
+the compiler's reviewed exposure list. On the auth service that list holds the
+user-management APIs `createUser`, `updateUser`, `listUsers`, `listUsersByRole` and
+`updateUserRole`: they are tools, and their admin role gate still refuses a caller without
+the role at call time. The delete APIs (`deleteUser`, `deleteUserSession`, ...) and the
+other admin APIs stay hidden. An agent reaches the reviewed tools only with the acting user's own
+identity: the agentHub refuses them on a run with no caller token, and an agent's machine
+(`m2mTools`) arm refuses them always. They are tools only on runtimes that enforce that rule
+(nodejs today); in a build with a backend service in another language they stay hidden. An API you author in `authentication.businessLogic` is not a
+framework API: it is a tool like any other API unless it sets `blockMcp: true`, whatever
+its `checkRoles`.
+
 ## The registry document
 
 `GET /tools` needs no login: it is capability metadata. Calling a tool still goes through

@@ -80,8 +80,8 @@ dedupe on `messageId` before you record anything.
 
 ## 3. The api (Phase 2, the consuming service)
 
-A nodejs, dotnet or java service (the runtime mailbox reference is implemented
-there; a service in another language cannot name a template yet,
+A nodejs, rust, dotnet, java or python service (the runtime mailbox reference is
+implemented there; a service in another language cannot name a template yet,
 `MAIL_ACCOUNT_TEMPLATE_LANGUAGE_UNSUPPORTED`). One `create` api on an
 `inboxItem` object with a Kafka controller on `work-mail`, body parameters
 bound from the event's `data`, and this action chain:

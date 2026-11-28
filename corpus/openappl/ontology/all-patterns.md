@@ -94,6 +94,7 @@ Every pattern class in the OpenAPPL ontology, alphabetically. Use this index to 
 - [BucketProvider](./BucketProvider.md)
 - [BucketProviderConfig](./BucketProviderConfig.md)
 - [BucketProvidersSettings](./BucketProvidersSettings.md)
+- [BuiltInApiCheck](./BuiltInApiCheck.md)
 - [BulkColumnPolicy](./BulkColumnPolicy.md)
 - [BusinessApi](./BusinessApi.md)
 - [BusinessApiAction](./BusinessApiAction.md)

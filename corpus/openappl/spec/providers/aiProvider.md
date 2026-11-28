@@ -44,7 +44,7 @@ The key style `upperSnake` turns a camelCase key into UPPER_SNAKE; `verbatim` ke
 | `credentialScopes` | ["saas","tenant","resource","user"] |
 | `scopeField` | credentialScopes |
 | `scopedBrands` | ["openai","anthropic","xai","deepseek","moonshot","elevenlabs","runway","fal","custom"] |
-| `note` | The sets carry the SECRET keys only: a non-secret AI key is baked into the manifest. The `mock` BRAND is a keyless offline adapter a designer picks in the blueprint (provider `mock`, nodejs only, never a credential fallback); it is NOT the credential mode `mock`, which this family refuses (`PROVIDER_CREDENTIAL_MODE_MOCK_UNSUPPORTED`). Tenant, resource and user keys need `credentialScopes` on the entry and a brand in `scopedBrands`. A `subscriptionToken` credential (AgentHarness `modelSettings.auth: userSubscription`) is tenant or user only: the saas level is refused (`AGENT_HARNESS_SUBSCRIPTION_SCOPE_OFF`). |
+| `note` | The sets carry the SECRET keys only: a non-secret AI key is baked into the manifest. The `mock` BRAND is a keyless offline adapter a designer picks in the blueprint (provider `mock`, nodejs, rust and python, never a credential fallback); it is NOT the credential mode `mock`, which this family refuses (`PROVIDER_CREDENTIAL_MODE_MOCK_UNSUPPORTED`). Tenant, resource and user keys need `credentialScopes` on the entry and a brand in `scopedBrands`. A `subscriptionToken` credential (AgentHarness `modelSettings.auth: userSubscription`) is tenant or user only: the saas level is refused (`AGENT_HARNESS_SUBSCRIPTION_SCOPE_OFF`). |
 
 ## Keys of every brand
 
