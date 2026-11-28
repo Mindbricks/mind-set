@@ -172,6 +172,7 @@ deletes a `:id` path parameter or a `selectBy`.
 | `PUBLIC_API_WITH_ROLE_GATE` | error | a gate on an API that `loginRequired: false` switches off |
 | `PUBLIC_MUTATION_AUTHZ_PIPELINE_OFF` | warning | an anonymous write that authors gates that guard nobody |
 | `ABSOLUTE_ROLES_ONLY_ON_PUBLIC_WRITE` | error | a write whose only gate is `absoluteRoles`, which is a bypass list, so every logged-in caller passes |
+| `MACHINE_ROUTE_OPEN_TO_USERS` | error | an API that declares machine intent (an `m2m` / `machine` route segment, a name ending in `ForMachine`) but that users reach: `requiredCallerKind` is `any` and no gate runs ([Machine-only APIs](../openappl/guides/business-apis/overview.md#machine-only-apis)) |
 | `GEO_PUBLIC_SURFACE_UNFILTERED` | warning | a public object with a geo property and no visibility filter on its geo routes |
 | `DATAVIEW_PUBLIC_UNPROJECTED` | warning | a view without a property list read by a public API |
 | `EXPOSE_SECRETS_ON_ANONYMOUS_API` | warning | a secret column exposed by an API anonymous callers reach |

@@ -3,6 +3,21 @@
 The package follows semantic versioning. Each release names the OpenAPPL version of its
 corpus (`openappl.version` in `package.json`).
 
+## 0.2.4
+
+- The corpus is OpenAPPL 1.105.0, the version the compiler runs since 2026-11-28 (0.2.3
+  shipped 1.104.0): `mindset validate` accepts `LoginDefUserSettings.systemManagedUserProperties`,
+  `ApiKafkaSettings.notFoundRedeliverSeconds`, `PropertyBasicSettings.sortByEnumOrder`,
+  `ValidationAction.errorMessageScript` and `FetchObjectAction.notFoundMessage`, and the
+  guides describe them.
+- Guide pages catch up with behaviour the compiler already had: a list API with runtime
+  filters reads `filters` from the body of its own route (`forcePOSTMethod` plus its own
+  `routePath`; there is no `<route>/list` endpoint), the machine-only API rule
+  `MACHINE_ROUTE_OPEN_TO_USERS` (business API overview and review guide section 5), the
+  closed `MailAccount` key set, the agent hub inventory envelope (`data` + `paging`) and the
+  rest of the confidential-agent rules (rows written before the flag, ownerless runs, replay,
+  the validation codes).
+
 ## 0.2.3
 
 - The corpus is OpenAPPL 1.104.0 (0.2.2 shipped 1.103.0): `mindset validate` accepts

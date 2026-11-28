@@ -136,7 +136,7 @@ A required scalar Date with no authored default receives the current time when e
 
 ### `Enum`
 
-A fixed set of string values. Requires `enumOptions: ["a","b","c"]` (minimum two entries):
+A fixed set of string values. Requires `enumOptions: ["a","b","c"]` (at least one entry; an empty list is refused, `ENUM_MIN_OPTIONS`):
 
 ```json
 {
@@ -150,6 +150,12 @@ A fixed set of string values. Requires `enumOptions: ["a","b","c"]` (minimum two
 ```
 
 Enum options are data, not code identifiers: the value is stored verbatim and compared verbatim in MScript, so reserved words of a programming language (`public`, `default`, `class`) are legal option values. Write the value you want stored and use exactly that spelling in MScript.
+
+**Sort order.** A sort on an Enum compares the stored strings, so it is
+alphabetical. `"sortByEnumOrder": true` in `basicSettings` orders every sort
+on the property by the declaration order of `enumOptions` instead (a weekday
+declared `monday` ... `sunday` sorts Monday first), on SQL-stored objects; see
+[Sorting an Enum by its declaration order](../business-apis/list-api.md#sorting-an-enum-by-its-declaration-order).
 
 The column is a plain short string (PostgreSQL `VARCHAR(255)`, MongoDB string). The declared vocabulary is checked when an api writes the property, but the storage adds no database-level constraint of its own, so the vocabulary alone does not reject other strings written around the generated service. State machines build on this; see [Lifecycle and state](lifecycle-and-state.md).
 

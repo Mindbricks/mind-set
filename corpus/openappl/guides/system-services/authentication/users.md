@@ -367,6 +367,55 @@ fields:
 These columns are created on the `user` table in every database engine the compiler supports
 for the auth service.
 
+### Keeping a property off the built-in user APIs
+
+Every custom property is otherwise a body parameter AND a write target of
+the built-in user APIs, so a column the system maintains (a moderation
+flag, a lifecycle flag such as `staffProvisioningPending`, a balance) could
+be set by whoever calls them. Two lists under
+`loginDefinition.userSettings` narrow that surface; both name custom
+properties only (a name not declared in `userProperties`, or a built-in
+column, is a design-time error):
+
+| List | Create doors | Update doors |
+|---|---|---|
+| `registrationExcludedUserProperties` | dropped from the public register family (`register`, `registerUser`, `register<Tenant>Owner`, `register<Tenant>User`); the admin creates keep it | unchanged |
+| `systemManagedUserProperties` | dropped from EVERY create door: the register family and `createUser`, `create<Tenant>OwnerOnSaas`, `create<Tenant>UserOnSaas` | `updateUser` and `updateProfile` refuse a body that carries it with 400 |
+
+```json
+{
+  "authentication": {
+    "loginDefinition": {
+      "userSettings": {
+        "systemManagedUserProperties": ["staffProvisioningPending"]
+      }
+    }
+  }
+}
+```
+
+A system-managed property takes its `defaultValue` on every built-in
+create and is written only by the project's own APIs
+(`authentication.businessLogic`), CRUD actions and that default. The
+update refusal is `400` with the message
+`SystemManagedUserPropertiesCantBeUpdated: <names>` for every caller,
+absolute roles included (an update is never silently narrowed); a body
+that leaves the property out, or sends it as `null`, is accepted.
+
+- A system-managed property declared `isRequired` with no `defaultValue`
+  or `defaultFn`, and no create API of the project's own writing it,
+  could never be created: `SYSTEM_MANAGED_USER_PROPERTY_UNCREATABLE`.
+  Give it a default, declare `isRequired: false`, or declare the create
+  API that writes it.
+- The login gate (`loginBlockedProperty`) cannot be system-managed
+  (`SYSTEM_MANAGED_USER_PROPERTY_IS_LOGIN_GATE`): `updateUser` is the door
+  that invalidates a blocked user's cached sessions, so it must keep
+  writing that column. Remove it from the list.
+- Listing a property in BOTH lists is reported as INFO
+  (`SYSTEM_MANAGED_USER_PROPERTY_ALSO_REGISTRATION_EXCLUDED`): the
+  system-managed list already closes the register doors, so remove the
+  registration entry.
+
 ## Public profiles: showing a user to other users
 
 `GET /users/:userId` (`getUser`) is **owner/admin only by design**: it returns the full user

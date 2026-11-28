@@ -44,7 +44,7 @@ sequenceDiagram
   participant DB as DB / Elastic
 
   C->>R: GET /orders?status=paid&sortBy=createdAt&sortOrder=desc&page=2
-  Note over C,R: or POST /orders/list { filters, sortBy, q, page }
+  Note over C,R: with runtimeFilters.filtersEnabled, a JSON body { filters } on the same route
   R->>M: new manager(request, 'rest')
   M->>AS: run afterStartBusinessApi actions
   M->>M: readParameters (query-string filters → this.<param>)
@@ -141,6 +141,24 @@ condition `this.<name>` so it stays optional
 Validation warns `LIST_PARAM_NOT_A_FILTER` when only an action or a
 check reads such a parameter (the list then answers the rows of every
 value), and `PARAM_UNUSED` when nothing reads it.
+
+**Pitfall: an auto filter is ANDed with your own scope clause.** The
+reverse case: the property is NOT declared, so it stays an auto filter,
+and an `additionalClauses` entry scopes the same property, e.g. a
+receptionist's own clinic
+(`{ "name": "ownClinic", "condition": { "js": "this.session.roleId === 'receptionist'" }, "whereClause": { "js": "({ clinicId: this.session.clinicId })" } }`).
+Both apply: the caller's `?clinicId=` is ANDed with the clause, never
+replaced by it. That is safe (a scoped caller naming another clinic gets
+an empty page, never that clinic's rows), but it is rarely what the
+design meant: the scoped caller cannot use the filter, and nothing else
+changes. Validation warns `LIST_AUTO_FILTER_UNDER_SCOPE_CLAUSE` when an
+`additionalClauses` clause names an auto-filter property as a top-level
+key of its object with a value read from the session (`this.session...`);
+a clause that narrows by a declared parameter or a constant is your own
+filter and is not reported. To decide the combination yourself, declare the
+property in `requestParameters` (it then leaves the auto-filter set) and
+read `this.<name>` where it should apply, for example a second clause
+`{ "name": "clinicFilter", "condition": { "js": "this.session.roleId !== 'receptionist' && this.clinicId" }, "whereClause": { "js": "({ clinicId: this.clinicId })" } }`.
 
 ### Every surface, one binding
 
@@ -298,15 +316,22 @@ surface. Four independent flags:
 
 | Flag | Effect |
 |---|---|
-| `filtersEnabled` | Accept a `filters` POST body with operator-based per-field criteria. |
+| `filtersEnabled` | Accept a `filters` request body with operator-based per-field criteria, on the list API's own route. |
 | `searchEnabled` | Accept a `?q=` full-text search across `searchedFields`. |
 | `sortEnabled` | Accept runtime `?sortBy=&sortOrder=` query parameters; static `listSortBy` becomes the default. |
 | `savedFiltersEnabled` | Auto-generate `/filters` aux endpoints + a per-service `listSavedFilter` table. |
 
-When `filtersEnabled: true`, the API accepts:
+When `filtersEnabled: true`, the list API reads `filters` from the JSON
+body of its own route. No separate `<route>/list` endpoint is mounted. A
+list API is mounted as `GET` by default, and many HTTP clients and proxies
+cannot send a body with a `GET`, so set `restSettings.forcePOSTMethod: true`
+to mount the route as `POST`. A forced-`POST` list on the default
+`/<resource>` path would sit on the same method and path as the object's
+create API, so give it its own `routePath` too, for example
+`"restSettings": { "forcePOSTMethod": true, "routePath": "/orders/search" }`:
 
 ```http
-POST /orders/list
+POST /orders/search?sortBy=createdAt&sortOrder=desc&page=1
 Content-Type: application/json
 
 {
@@ -315,10 +340,7 @@ Content-Type: application/json
     "total":     { "operator": "gte",   "value":  100 },
     "createdAt": { "operator": "range", "values": ["2026-01-01", "2026-06-01"] },
     "title":     { "operator": "contains", "value": "annual" }
-  },
-  "sortBy":    "createdAt",
-  "sortOrder": "desc",
-  "page":      1
+  }
 }
 ```
 
@@ -765,6 +787,31 @@ computed by the compiler (sortable, non-secret columns plus `id` / `createdAt` /
 `updatedAt`; see [runtime list filters](../composition/runtime-list-filters.md#allow-lists)).
 Any other value is refused with `400 INVALID_SORT_FIELD`.
 
+### Sorting an Enum by its declaration order
+
+An Enum is stored as its option string, so a sort on it is alphabetical:
+`friday` before `monday`. Set `basicSettings.sortByEnumOrder: true` on the
+property to order every sort on it by the position of the value in
+`enumOptions` instead (`monday` ... `sunday` for a weekday declared in that
+order), with no extra Integer ordinal column:
+
+```json
+{ "basicSettings": { "name": "weekday", "type": "Enum",
+    "enumOptions": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"],
+    "sortByEnumOrder": true } }
+```
+
+It applies to every sort path: `listSortBy`, `listOrderSets`, a caller's
+`?sortBy=`, a paged and an unpaged list. Stored values, filters and
+equality do not change. A value outside the vocabulary (and a missing one)
+has no position and sorts last on `asc`, first on `desc`. A SQL-stored data object computes it in the query from the option's position;
+a data object stored in MongoDB, and a list served from a stored DataView
+(an Elasticsearch sort), are refused at design time
+(`ENUM_ORDER_UNSUPPORTED_STORE`); a stored view also leaves the property out
+of its default runtime sort fields, so a caller's `?sortBy=` naming it is a
+`400 INVALID_SORT_FIELD`. The key on anything but a single-valued Enum is
+refused too (`ENUM_ORDER_ON_NON_ENUM`).
+
 ### Sorting a view-backed list
 
 A list bound to a DataView orders the **view document**, and the view
@@ -963,11 +1010,20 @@ An empty set answers `pageSize: 0, totalPages: 0`, as a paged list
 does. One store read never returns more than 1000 rows, so the service
 **walks** the set in keyset chunks of 1000, resuming from the store's own
 cursor: rows an ABAC check drops from a chunk never end the walk early.
-That has two consequences:
+What that means:
 
-- **Order is the keyset `createdAt ASC, id ASC`.** A declared
-  `listOptions.listSortBy` does not apply (the validator warns,
-  `UNPAGED_IGNORES_SORT`). Sort where the rows are consumed.
+- **The answer is in the list's own order.** The store is walked in the
+  keyset order `createdAt ASC, id ASC` (the one total order a chunked walk
+  can resume from), and the whole walked set is then sorted with the
+  list's order: `listSortBy`, the selected `listOrderSets` entry or a
+  caller's `?sortBy=`, the same order a paged read applies. Missing values
+  sort last on `asc` and first on `desc`, `id` breaks ties, and text
+  compares linguistically (case does not split the alphabet); a list with
+  no order answers in the keyset order. Two shapes still answer in the
+  keyset order, and the validator warns `UNPAGED_IGNORES_SORT` for each:
+  an SSE stream (`responseMode: 'stream'`) sends chunks as the walk reads
+  them, and a column projection (`selectClause.selectProperties`) that
+  leaves out a sort column gives the sort nothing to read.
 - **There is a hard ceiling.** Above `UNPAGED_LIST_MAX_ROWS` rows (a
   service setting, a positive integer, default `10000`; anything
   else falls back to the default) the api refuses with `422` and
@@ -986,8 +1042,12 @@ That has two consequences:
   hands back a cursor it already returned ends the walk with `500`
   `UNPAGED_LIST_WALK_STALLED`.
 
-`listOptions.topPick` still caps an unpaged list (a bounded top-N
-answer). Two combinations are validation **errors**: `unpaged` with
+`listOptions.topPick` caps an unpaged list (a bounded top-N answer)
+AFTER that sort: the first N rows of the list's order. Ranking needs the
+whole filtered set, so a sorted topPick list is refused with
+`UNPAGED_LIST_TOO_LARGE` when that set (not the N rows) is over the
+ceiling; without an order the walk stops reading as soon as it holds N
+rows. Two combinations are validation **errors**: `unpaged` with
 `cursorMode` (a caller-driven keyset walk is the opposite contract,
 `UNPAGED_WITH_CURSOR_MODE`) and `unpaged` on a DataView-backed list
 (`apiOptions.dataViewName`; an Elasticsearch page cannot walk past its

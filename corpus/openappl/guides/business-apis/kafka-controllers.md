@@ -44,6 +44,7 @@ and opt into dead-lettering with these fields (see
 | `deadLetterEnabled` | | Default `false`. When `true`, a message the API pipeline **rejects** (`httpStatus >= 400`) is published to the dead-letter topic with the original payload and the problem body. Off, the service emits no dead-letter publishing at all for this API. |
 | `deadLetterPerTopic` | | Default `false`. With `deadLetterEnabled: true` and no explicit `deadLetterTopicName`, derive one default dead-letter topic per incoming topic. An explicit name always wins and stays shared. |
 | `deadLetterTopicName` | | Topic for the dead-lettered messages. Unset means `<wireRequestTopicName>-deadletter`, derived from the topic **as it goes on the wire**: if a `PublishEventAction` in this project authors the request topic, the [project scope](../best-practices/kafka-topic-naming.md#the-wire-name-is-project-scoped) applies to the dead-letter name too, so the pair stays in one namespace. A name you set here is not re-derived (no suffix, no composition; it is used exactly as written), but it is still published through the normal publish door, which scopes an authored topic of your project and leaves any other string alone: a name that is itself one of your `PublishEventAction` topics goes on the wire as `<projectCodename>-<name>`; any other name goes on the wire verbatim. The topic census reports the string that reaches the wire in both cases. Ignored unless `deadLetterEnabled` is `true` - naming it without the flag raises the `KAFKA_DEAD_LETTER_TOPIC_INERT` warning at design time, because nothing would be published to it. |
+| `notFoundRedeliverSeconds` | | Default `0` (off). For a get, update or delete API: a window in seconds during which a message whose main target row is not present yet is redelivered instead of rejected (an event that arrived before the row it targets). Measured from the event's publish time; once it has passed the miss is rejected as usual. Ceiling 900. See [An event that arrives before its row](#an-event-that-arrives-before-its-row). |
 
 The fields are flat - older blueprints that used a nested
 `configuration: { ... }` wrapper are still accepted on input but
@@ -393,7 +394,8 @@ resolve, auth, ownership, permission, a stale-version 409, a 5xx) is
 returned to the controller as a problem+json body with
 `httpStatus >= 400`. The Kafka handler reads that status and
 logs one of four outcomes, and an applied one may be partially applied
-(the last row of the table).
+(the last row of the table); an API with `notFoundRedeliverSeconds` adds
+the not-yet-present wait.
 
 **A bare not-found miss is a `rejected` outcome.** A get / update /
 delete whose addressed row does not resolve answers 404 - and 404 is
@@ -418,17 +420,81 @@ have succeeded on a redelivery, and the message is committed anyway.
 There is **no per-api option to leave the offset uncommitted**: under
 at-least-once redelivery a deterministic 4xx
 becomes an unbounded poison-message loop with no operator surface, so
-always-commit plus the opt-in dead-letter topic is the only policy. To
+always-commit plus the opt-in dead-letter topic is the only policy for a
+rejection. To
 keep a rejected payload for a 5xx, enable `deadLetterEnabled` and
-replay the dead-letter topic once the cause is fixed.
+replay the dead-letter topic once the cause is fixed. The one bounded
+exception is a target row that is not written YET: with
+`notFoundRedeliverSeconds` a main-target miss waits, uncommitted, for at
+most that many seconds of the event's age, and is rejected after it (see
+[An event that arrives before its row](#an-event-that-arrives-before-its-row)).
 
 | Outcome | When | Log event (level) | Response topic | Dead-letter topic |
 |---------|------|-------------------|----------------|-------------------|
 | **applied** | the pipeline ran and `httpStatus < 400` | `KafkaMessageResponded` (info) - carries the redacted response | published | - |
 | **completed-miss** | `apiOptions.onNotFound: "complete"` and the target row was absent | `KafkaCompletedMissingInstance` (info, `expected: onNotFound=complete`) followed by `KafkaMessageResponded` | published with the `_outcome` marker and the `<object>.<crud>.missed` type | - |
 | **rejected** | `httpStatus >= 400` - including a bare not-found miss on an api WITHOUT `apiOptions.onNotFound: "complete"` | `KafkaMessageRejected` (**error**) - `function`, `topic`, `status`, `errorCode`, `detail`, `errors`, `requestId` and the redacted inbound `message` | **not** published | published only when `deadLetterEnabled` |
+| **not yet present** | `notFoundRedeliverSeconds` is set, the api's MAIN target row was absent (404) and the event is younger than the window | `KafkaTargetNotYetPresent` (**warn**) - `ageMs`, `ageSource`, `windowSeconds`, `redeliverInMs` | - | - (the message is not committed and comes back after 1 to 30 s; once the window has passed it is **rejected**, marked `notFoundRedeliveryExhausted: true`) |
 | **dead-lettered** | rejected, on an api with `deadLetterEnabled: true` | `KafkaMessageRejected` (error); `KafkaDeadLetterPublishFailed` (error) if the publish itself throws; a publish that declines without throwing (no producer registered, send retries exhausted) adds no controller log line, the publisher's own diagnostic is the only trace | - | `{ function, topic, status, problem, message }` wrapped in the standard event envelope, type `<object>.<crud>.rejected` |
 | **partially applied** | applied (`httpStatus < 400`), but the 2xx carries `actionFailures`: the row was written and a post-write action did not complete | `KafkaMessageResponded` (info); on an api with `deadLetterEnabled: true` also `KafkaMessagePartiallyApplied` (**warn**) with the `actionFailures` | published (the body carries `actionFailures`) | only when `deadLetterEnabled`: ONE record `{ function, topic, status, actionFailures, message }`, type `<object>.<crud>.partiallyApplied` |
+
+### An event that arrives before its row
+
+Two services that write in parallel do not order their events for each
+other: a `charge.cancelled` event can reach the billing consumer before
+the `charge` row it cancels was written. The update then misses its
+target, answers 404 and is rejected (and dead-lettered), although it
+would have applied a few seconds later.
+
+`kafkaSettings.notFoundRedeliverSeconds` makes a get, update or delete
+API wait for such a row for a bounded time. A positive value is a window
+in seconds, measured from the publish time the event envelope carries
+(`time`); a message without one is aged by its Kafka record timestamp,
+and a message with neither is rejected as without the option (its
+`KafkaMessageRejected` line carries `notFoundRedeliverySkipped:
+"noEventTime"`). While the event is younger than the window, a miss of
+the API's main target is logged as `KafkaTargetNotYetPresent` (warn) and
+the message is NOT committed: the listener pauses its partition and delivers
+it again after a wait equal to the event's age, at least 1 s and at most
+30 s, so the attempts thin out. Once the window has passed, the miss is
+an ordinary **rejected** outcome, and its `KafkaMessageRejected` line and
+dead-letter record carry `notFoundRedeliveryExhausted: true`. The window
+cannot be stretched: an event time more than 30 s ahead of the
+consumer's clock is not used.
+
+- **Only the main target waits.** A 404 raised by an action (a required
+  `FetchObjectAction`) is rejected at once, with or without the option.
+- **Head-of-line blocking.** The waiting message holds its
+  topic-partition: the later messages of that partition wait behind it
+  (their order is kept), other partitions keep flowing. One row that is
+  never written stalls its partition for the whole window, so keep the
+  window short (120 is a good start; the ceiling is 900).
+- **Pair it with the dead-letter topic.** Set `deadLetterEnabled: true`
+  as well, so an event whose row never arrives lands in the dead-letter
+  topic, replayable, instead of being only logged and committed.
+- **Make the applier idempotent.** A redelivered message is handled again
+  from the start (its `KafkaMessageReceived` line repeats), and Kafka may
+  deliver any message twice. Guard the write with the state it moves
+  from - a validation on the fetched row that the charge is not settled
+  yet (`settledAt` is null) - so a second delivery changes nothing
+  instead of applying twice. Do not put that guard in a `whereClause`:
+  a row the where clause excludes is a miss of the main target, exactly
+  like a row not written yet, so with this option a duplicate would wait
+  out the whole window before it is rejected. The same holds for a
+  delete API: a duplicate of a delete that already applied finds no row
+  (an archived row of a soft-delete object included) and waits out the
+  window, holding its partition.
+- **Refused where it cannot work.** A create or list API has no main
+  target (`KAFKA_NOT_FOUND_REDELIVERY_NO_MAIN_TARGET`), and
+  `apiOptions.onNotFound: "complete"` already answers the miss as a
+  success (`KAFKA_NOT_FOUND_REDELIVERY_WITH_COMPLETE`); both are
+  validation errors. Set without a Kafka controller, the option raises
+  `INERT_OPTION`.
+
+When the row can take longer than the window, or the partition cannot
+wait, keep the option off: let the miss dead-letter and replay the
+dead-letter topic once the row exists, or have the producer of the row
+publish the event that the late consumer needs.
 
 **A partial write is acknowledged, and dead-lettered once.** A
 post-write action that fails after the row was committed does not turn

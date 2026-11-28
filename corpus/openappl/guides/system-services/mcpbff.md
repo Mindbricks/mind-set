@@ -303,7 +303,12 @@ gates them directly:
 
   **Is this mailbox exposed here at all**: the question is about the *mailbox*, not the
   caller, because a project account is "a REAL MAILBOX the PROJECT owns" with no per-user
-  owner to compare a session against. The routes serve project accounts only (`ownerScope`
+  owner to compare a session against. `MailAccount`'s top-level key set is closed (`name`,
+  `ownerScope`, `address`, `platform`, `authKind`, `autoListen`, `listenTopic`, `markAsSeen`,
+  `sendEnabled`, `replyEnabled`, `maxMailboxesPerOwner`, `inlineBody`, `configuration`): a
+  top-level `ownerUserId` is rejected `UNKNOWN_PROPERTY`, and one parked inside the free-form
+  `configuration` map (where unknown keys only warn) is read by nothing. The tools set no
+  allowed-role or owner check either. The routes serve project accounts only (`ownerScope`
   absent or `project`): a mailbox template (`ownerScope` `tenant` / `user`) has no route or
   tool here (its connected mailboxes are listened to, see
   [Mail listener for connected mailboxes](#mail-listener-for-connected-mailboxes)). So the

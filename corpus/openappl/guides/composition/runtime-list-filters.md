@@ -410,7 +410,7 @@ Pagination is its own block, `query.paginationOptions`
 | Field | Notes |
 |---|---|
 | `defaultPageRowCount` | Default rows per page (positive integer; `null` / `0` = 25). |
-| `unpaged` | `true` answers the whole filtered set in one response, keyset-ordered (`listSortBy` does not apply), refused with 422 `UNPAGED_LIST_TOO_LARGE` above the service's unpaged row limit (default 10000; an SSE stream is not capped). Meant for internal/kafka/cron callers; see [list-api](../business-apis/list-api.md#unpaged-the-whole-set-in-one-response). |
+| `unpaged` | `true` answers the whole filtered set in one response, in the list's own order (sorted after the keyset walk; `topPick` takes the first N of it), refused with 422 `UNPAGED_LIST_TOO_LARGE` above the service's unpaged row limit (default 10000; an SSE stream is not capped). Meant for internal/kafka/cron callers; see [list-api](../business-apis/list-api.md#unpaged-the-whole-set-in-one-response). |
 | `paginationEnabled` | Retired and ignored: every list is paged unless it declares `unpaged: true`. |
 
 Pagination pages *within* the filtered + capped result set

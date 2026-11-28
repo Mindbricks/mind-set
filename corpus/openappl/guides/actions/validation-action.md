@@ -23,6 +23,7 @@ title: ValidationAction
 | `checkType` | `ApiCheckType` |   | `liveCheck` throws on failure and aborts the API. `storedCheck` writes the boolean result to context and lets execution continue: combine multiple checks later. |
 | `validationScript` | `MScript` | ✓ | Expression returning a boolean. Compared against `shouldBeTrue` to decide pass/fail. |
 | `errorMessage` | `String` |   | Message returned to the client on failure when `checkType: liveCheck`. Keep it actionable: "Your plan does not allow creating more projects." rather than "Validation failed." |
+| `errorMessageScript` | `MScript` |   | Optional. Computes the refusal message; evaluated only when the check FAILS, in the same context as `validationScript`. A non-empty string result replaces `errorMessage`; any other result (null, an empty string) or a script that throws answers `errorMessage`. String results only. The status stays `errorStatus`. No effect with `storedCheck`, nor with `errorStatus` `500` / `503` (a 5xx answer never carries a computed message; a 503 keeps the static `errorMessage`): an `INERT_OPTION` warning. |
 | `errorStatus` | `ErrorStatus` |   | HTTP status code to return on failure (`liveCheck` only). One of `400`, `401`, `403`, `404`, `409`, `422`, `429`, `500`, `503`. Default `400`. See guidance below. |
 
 Plus the [`BusinessApiAction`](../../spec/BusinessApiAction.md) base properties.
@@ -50,6 +51,21 @@ The runtime evaluates `validationScript` against the current context and compare
 - Pass: `validationScript` matches `shouldBeTrue`. Execution continues.
 - Fail with `liveCheck`: the API throws an error with `errorStatus` and `errorMessage`. Subsequent actions do not run.
 - Fail with `storedCheck`: the boolean is written to `this.<contextPropertyName>` (or the action's default slot). Execution continues, and downstream actions can combine multiple stored checks.
+
+**One refusal, every reason.** When one rule has several reasons to refuse, compute the message instead of writing one check per reason:
+
+```json
+{
+  "name": "checkBookable",
+  "checkType": "liveCheck",
+  "validationScript": { "js": "this.patient && this.slotIsFree" },
+  "errorMessage": "The appointment cannot be booked.",
+  "errorMessageScript": { "js": "[this.patient ? null : 'patient not found', this.slotIsFree ? null : 'slot is taken'].filter(Boolean).join('; ')" },
+  "errorStatus": "422"
+}
+```
+
+The script runs only on the failure path, so it may assume the check failed; it never runs on a passing call.
 
 ## Example
 

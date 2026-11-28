@@ -28,13 +28,14 @@ Inherits the common fields from [`BusinessApiAction`](../../spec/BusinessApiActi
 | `properties` | `PropRefer[]` | no | Subset of fields to return. Empty / omitted means all fields. Dot notation supported for nested fields. |
 | `isArray` | `Boolean` | no | When true, return a list. When false (default), return a single object. |
 | `isRequired` | `Boolean` | no | When true and `isArray: false`, a null result throws a 404. Honours `onActionError`: set it to `completeApi` to suppress the abort. |
+| `notFoundMessage` | `String` | no | The message of the 404 a required single fetch answers when it finds nothing (`Patient profile not found` instead of `<targetObject> not found`). A plain string, not MScript; unset keeps the generated message. Read only with `isRequired: true` and `isArray: false` (an `INERT_OPTION` warning otherwise). |
 
 ## Behaviour
 
 The action builds a query, then reads through the service's data layer:
 
 - **Query build**: starts from `whereClause` (when set), then assigns `query[localKey] = matchValue` (when both set).
-- **`isArray: false`**: reads a single row by the query. When `isRequired: true` and the result is null, throws `ApiError(404, '<targetObject> not found')`.
+- **`isArray: false`**: reads a single row by the query. When `isRequired: true` and the result is null, throws `ApiError(404, '<targetObject> not found')`, or `ApiError(404, <notFoundMessage>)` when `notFoundMessage` is set.
 - **`isArray: true`**: reads the list matching the query and returns the rows.
 - **`properties`**: when non-empty, projects each row through a whitelist of property names before returning.
 

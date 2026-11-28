@@ -514,7 +514,14 @@ lifecycle as every other path.
   `afterInvoicePartiallyPaid`, `afterInvoiceVoided`,
   `afterInvoiceUncollectible`, `afterCreditNoteIssued`, `afterPaymentApplied`.
 - In scope: `invoice`, `allocation`, `creditNote`, `LIB.*` (and `API.*` where
-  the compiler binds internal calls). There is **no request, session or user**.
+  the compiler binds internal calls); the Node.js compiler also binds
+  `firedAt` (ISO 8601, when the hook runs). There is **no request, session or user**.
+- A trigger fires only while it is still current: a late provider event the
+  invoice state machine refused fires nothing, and a trigger whose state the
+  invoice has left by the time its hooks run (an `afterInvoiceFinalized` of an
+  invoice voided since) is skipped with a warning. A hook that writes the
+  invoice onto another row guards the write with `invoice.issuedAt` (write only
+  when that row names no invoice or one issued no later).
   Hooks run after the transition is persisted; a failure is logged and never
   rolls back the ledger write. A throwing hook condition counts as false: the
   hook name and trigger are logged and the script is skipped.

@@ -128,6 +128,35 @@ store via `permissionCheckActions`, `objectPermissionActions`, or
 `membershipCheckActions`. See [`ApiAuthOptions`](../../spec/ApiAuthOptions.md)
 and the [Authentication](../system-services/authentication/overview.md) section.
 
+### Machine-only APIs
+
+A route segment exactly equal to `m2m` or `machine` (case-insensitive), or an
+API name ending in `ForMachine`, declares machine intent. Validation reports
+`MACHINE_ROUTE_OPEN_TO_USERS` as an error when that API is human-reachable,
+has `requiredCallerKind: "any"` (the default), and has no runnable authorization
+gate. This applies to private/protected reads and to mutations of public
+objects. The message names the route and whether any logged-in user or
+anonymous callers can reach it. Use
+
+```json
+"authOptions": { "requiredCallerKind": "machine", "M2MAllowed": true }
+```
+
+for a machine-only API, or require login and put the intended defined roles
+in `checkRoles` for a human role gate. `M2MAllowed` alone admits machine callers
+without restricting human callers; `absoluteRoles` is a bypass, not a gate.
+The error holds for an API written long ago exactly as for a new one.
+
+The rule shares its gate detection with `ABSOLUTE_ROLES_WITHOUT_GATE`: role
+checks, emitted permission checks, enforceable ownership, 401/403 validation
+actions, live membership checks, session-scoped WHERE clauses, list membership
+filters, and valid supported parent-ownership checks. A gate on
+`loginRequired: false` does not count. Public-object get/list reads,
+JobStream-hidden targets, injected framework APIs, and APIs without REST or
+another human-facing non-Kafka transport are exempt. The segments
+`internal` and `system` do not declare machine intent. Machine callers and
+their tokens are described in [M2M](../system-services/authentication/m2m.md).
+
 ### Name → route / event / constant generation
 
 The API name is more than a label: `apiOptions.name`, `crudType`, and

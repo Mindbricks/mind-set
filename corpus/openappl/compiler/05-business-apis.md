@@ -237,7 +237,8 @@ Rule example. `GET /v1/orders?page=2&pageSize=2` on a service with five orders:
 - `paginationOptions.cursorMode: true`: the caller sends an opaque `cursor`; the order is
   `createdAt ASC, id ASC`; the answer's `paging` is `{ "pageSize", "nextCursor" }`, with
   `nextCursor` null at the end. No total is computed.
-- `paginationOptions.unpaged: true`: the whole set, ordered `createdAt ASC, id ASC`, with
+- `paginationOptions.unpaged: true`: the whole set, in the API's order (as below; `createdAt ASC, id ASC`
+  when it declares none) and capped by `topPick` after that order, with
   `paging = { page: 1, pageSize: n, totalCount: n, totalPages: n > 0 ? 1 : 0 }`; above the
   service's limit the API answers **422** `UNPAGED_LIST_TOO_LARGE`.
 - Sorting is the API's `listSortBy` with a unique `id ASC` tie-break. Runtime sorting

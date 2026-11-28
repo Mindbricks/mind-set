@@ -19,6 +19,7 @@ Fetches one or more records from a foreign or related data object and stores the
 | `properties` | [`PropRefer`](./PropRefer.md)[] | no |  |  | names a [DataProperty](./DataProperty.md) from `targetObject` | An array of field names to include in the result. Leave empty to fetch all fields. Dot notation is allowed for nested fields (e.g., `profile.name`). |
 | `isArray` | `Boolean` | no | `false` |  |  | If true, the action will return a list of objects. If false, a single object is expected. This affects both response shape and loop behavior. |
 | `isRequired` | `Boolean` | no | `false` |  |  | Set to true if you want to use this fetch also for an existince validation. If isRequired is true, a null or empty result will create a 404 error, however this error either can be thrown or logged according to the onError property of the main action configuration. |
+| `notFoundMessage` | `String` | no | `null` |  |  | The message of the 404 a REQUIRED fetch answers when it finds nothing (`isRequired: true`), e.g. `Patient profile not found` instead of the generated `<targetObject> not found`. A plain string, not MScript; unset (the default) keeps the generated message. The status stays 404, and `onActionError` still decides whether the error is thrown or logged. It has no effect while `isRequired` is false (an optional fetch never answers 404, it leaves its context property null) or on a list fetch (`isArray: true`), which answers an empty list instead of 404. |
 
 ## Constraints
 
